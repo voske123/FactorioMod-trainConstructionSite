@@ -1,0 +1,12 @@
+{
+  "name": "trainConstructionSite",
+  "version": "0.1.0",
+  "factorio_version": "0.16",
+  "title": "Train construction site",
+  "author": "voske_123&lovely_santa",
+  "homepage": "https://mods.factorio.com/mod/trainConstructionSite",
+  "description": "A nice, automated way of creating trains",
+  "dependencies": [
+        "base >= 0.16.51"
+  ]
+}
