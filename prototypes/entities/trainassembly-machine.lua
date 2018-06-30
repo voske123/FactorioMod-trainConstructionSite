@@ -17,6 +17,9 @@ trainassembly.icon_size = util.table.deepcopy(data.raw["item"][trainassembly.min
 -- define the order since this entity doesn't have a dedicated item
 trainassembly.order = data.raw["item"][trainassembly.minable.result].order
 
+-- make sure you can't blueprint it, becose you can't let robots place trains anyway
+table.insert(trainassembly.flags, "not-blueprintable")
+
 -- selection box
 trainassembly.selection_box = {{-3, -3}, {3, 3}}
 
