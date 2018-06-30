@@ -109,6 +109,23 @@ trainassembly.pictures =
       },
       hr_version = nil,
     },
+    {
+      width = 82,
+      height = 82,
+      direction_count = 4,
+      allow_low_quality_rotation = true,
+      frame_count = 1,
+      line_length = 1,
+      lines_per_file = 1,
+      filenames =
+      {
+        "__trainConstructionSite__/graphics/placeholders/direction_north.png",
+        "__trainConstructionSite__/graphics/placeholders/direction_east.png",
+        "__trainConstructionSite__/graphics/placeholders/direction_south.png",
+        "__trainConstructionSite__/graphics/placeholders/direction_west.png",
+      },
+      hr_version = nil,
+    },
   },
 }
 
