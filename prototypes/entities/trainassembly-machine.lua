@@ -36,7 +36,21 @@ end
 
 trainassembly.fast_replaceable_group = nil
 
-trainassembly.fluid_boxes = nil
+trainassembly.fluid_boxes = -- give it an output pipe so it has a direction
+{
+  off_when_no_fluid_recipe = false, -- makes sure it is showing the arrow
+  {
+    production_type = "output",
+    pipe_picture = nil,
+    pipe_covers = nil,
+    base_area = 10,
+    base_level = 1,
+    pipe_connections = {{ type="output", position = {0, -3.5} }}, -- output on the north side
+    --secondary_draw_orders = { north = -1 }
+  },
+}
+-- NOTE: This output is always on a train track, so no worries that a pipe
+--       would empty the fluid that is comming out of this.
 
 trainassembly.max_health = data.raw["locomotive"]["trainassembly-placeable"].max_health
 
