@@ -54,6 +54,110 @@ trainassembly.fluid_boxes = -- give it an output pipe so it has a direction
 
 trainassembly.max_health = data.raw["locomotive"]["trainassembly-placeable"].max_health
 
+-- 4 way animation
+trainassembly.animation =
+{
+  north =
+  {
+    layers =
+    {
+      {
+        filename = "__trainConstructionSite__/graphics/placeholders/6x6.png",
+        priority = "high",
+        width = 256,
+        height = 256,
+        frame_count = 1,
+        line_length = 1,
+        --shift = util.by_pixel(0, 4),
+        hr_version = nil,
+      },
+      {
+        filename = "__trainConstructionSite__/graphics/placeholders/direction_north.png",
+        width = 82,
+        height = 82,
+        frame_count = 1,
+        line_length = 1,
+        shift = util.by_pixel(0, -32*1.25),
+        hr_version = nil,
+      },
+    },
+  },
+  east =
+  {
+    layers =
+    {
+      {
+        filename = "__trainConstructionSite__/graphics/placeholders/6x6.png",
+        priority = "high",
+        width = 256,
+        height = 256,
+        frame_count = 1,
+        line_length = 1,
+        --shift = util.by_pixel(0, 4),
+        hr_version = nil,
+      },
+      {
+        filename = "__trainConstructionSite__/graphics/placeholders/direction_east.png",
+        width = 82,
+        height = 82,
+        frame_count = 1,
+        line_length = 1,
+        shift = util.by_pixel(0, -32*1.25),
+        hr_version = nil,
+      },
+    },
+  },
+  south =
+  {
+    layers =
+    {
+      {
+        filename = "__trainConstructionSite__/graphics/placeholders/6x6.png",
+        priority = "high",
+        width = 256,
+        height = 256,
+        frame_count = 1,
+        line_length = 1,
+        --shift = util.by_pixel(0, 4),
+        hr_version = nil,
+      },
+      {
+        filename = "__trainConstructionSite__/graphics/placeholders/direction_south.png",
+        width = 82,
+        height = 82,
+        frame_count = 1,
+        line_length = 1,
+        shift = util.by_pixel(0, -32*1.25),
+        hr_version = nil,
+      },
+    },
+  },
+  west =
+  {
+    layers =
+    {
+      {
+        filename = "__trainConstructionSite__/graphics/placeholders/6x6.png",
+        priority = "high",
+        width = 256,
+        height = 256,
+        frame_count = 1,
+        line_length = 1,
+        --shift = util.by_pixel(0, 4),
+        hr_version = nil,
+      },
+      {
+        filename = "__trainConstructionSite__/graphics/placeholders/direction_west.png",
+        width = 82,
+        height = 82,
+        frame_count = 1,
+        line_length = 1,
+        shift = util.by_pixel(0, -32*1.25),
+        hr_version = nil,
+      },
+    },
+  },
+}
 
 
 data:extend({
