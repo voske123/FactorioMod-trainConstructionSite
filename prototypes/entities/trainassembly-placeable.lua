@@ -23,7 +23,7 @@ end
 
 -- selection box
 trainassembly.selection_box = {{-3, -3}, {3, 3}} -- when train is facing north
-trainassembly.vertical_selection_shift = 0
+trainassembly.vertical_selection_shift = -.5 -- correction for vertical tracks
 
 -- collision masks
 trainassembly.collision_mask =
@@ -31,7 +31,7 @@ trainassembly.collision_mask =
   "train-layer", "player-layer", -- default layers
   "layer-13", -- curved rails
 }
-trainassembly.collision_box = {{-3, -3}, {3, 3}} -- when train is facing north
+trainassembly.collision_box = {{-3, -3.3}, {3, 3.5}} -- when train is facing north
 
 --add collision mask to curved rails
 local defaultRailMask = {"object-layer", "item-layer", "floor-layer", "water-tile"}
@@ -64,7 +64,7 @@ trainassembly.connection_distance = -5
 -- no need to fix this becose this item gets replaced when its build.
 
 -- drawing box (for graphics)
-trainassembly.drawing_box = {{-3, -3.5}, {3, 3.5}} -- drawing box covering the extra tile
+trainassembly.drawing_box = {{-3, -3}, {3, 3}} -- drawing box covering the extra tile
 
 -- graphics
 trainassembly.front_light = nil
