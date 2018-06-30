@@ -3,7 +3,7 @@ require "util"
 local trainassembly = util.table.deepcopy(data.raw["assembling-machine"]["assembling-machine-3"])
 trainassembly.name = "trainassembly-machine"
 
-trainassembly.minable.result = "trainassembly"
+trainassembly.minable.result = "trainassembly" -- name of the item
 
 -- copy localisation from the item
 trainassembly.localised_name = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].localised_name)
@@ -14,19 +14,22 @@ trainassembly.icon = util.table.deepcopy(data.raw["item"][trainassembly.minable.
 trainassembly.icons = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].icons)
 trainassembly.icon_size = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].icon_size)
 
+-- define the order since this entity doesn't have a dedicated item
+trainassembly.order = data.raw["item"][trainassembly.minable.result].order
+
 -- selection box
 trainassembly.selection_box = {{-3, -3}, {3, 3}}
 
--- collision_mask
+-- collision mask & box
 trainassembly.collision_mask = util.table.deepcopy(data.raw["locomotive"]["trainassembly-placeable"].collision_mask)
+trainassembly.collision_box = {{-3, -3}, {3, 3}}
 
+-- delete train-layer so it doesn't collide with trains
 for collisionIndex, collisionLayer in pairs(trainassembly.collision_mask) do
   if collisionLayer == "train-layer" then
     trainassembly.collision_mask[collisionIndex] = nil
   end
 end
-
-trainassembly.collision_box = {{-3, -3}, {3, 3}}
 
 trainassembly.fast_replaceable_group = nil
 
