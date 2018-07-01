@@ -28,3 +28,9 @@ script.on_event(defines.events.on_built_entity, function(event)
   -- Called when player builds something.
   Trainassembly:onPlayerBuildEntity(event.created_entity)
 end)
+
+
+script.on_event(defines.events.on_player_rotated_entity, function(event)
+  --Called when player rotates a building.
+  Trainassembly:onPlayerRotatedEntity(event.entity)
+end)

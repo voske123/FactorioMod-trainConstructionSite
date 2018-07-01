@@ -45,11 +45,16 @@ end
 function Debug:onPlayerCreated(player_index)
   local mainInventory = game.players[player_index].get_main_inventory()
   local quickbar = game.players[player_index].get_quickbar()
+  local toolInventory = game.players[player_index].get_inventory(defines.inventory.player_tools)
 
   if quickbar and quickbar.valid then
     quickbar.insert("rail")
     quickbar.insert("rail-signal")
     quickbar.insert("trainassembly")
+  end
+
+  if toolInventory and toolInventory.valid then
+    toolInventory.insert("steel-axe")
   end
 
   log(game.players[player_index].force.name)

@@ -20,9 +20,9 @@ function Trainassembly:initGlobalData()
 
     ["prototypeData"] = -- data storing info about the prototypes
     {
-      ["itemName"] = "trainassembly",                -- the item
-      ["placeableName"] = "trainassembly-placeable", -- locomotive entity
-      ["machineName"] = "trainassembly-machine",     -- assembling entity
+      ["itemName"]      = "trainassembly",                -- the item
+      ["placeableName"] = "trainassembly-placeable",      -- locomotive entity
+      ["machineName"]   = "trainassembly-machine",        -- assembling entity
     },
 
     ["trainBuilders"] = {}, -- keep track of all builders containing builderEntities
@@ -32,7 +32,21 @@ function Trainassembly:initGlobalData()
   return util.table.deepcopy(TA_data)
 end
 
+function Trainassembly:saveNewStructure(machineEntity)
+  if not global.TA_data.["trainBuilders"][machine.surface.index] then
+    global.TA_data.["trainBuilders"][machine.surface.index] = {}
+  end
 
+  if not global.TA_data.["trainBuilders"][machine.surface.index][machine.position.y] then
+    global.TA_data.["trainBuilders"][machine.surface.index][machine.position.y] = {}
+  end
+
+  global.TA_data.["trainBuilders"][machine.surface.index][machine.position.y][machine.position.x] =
+  {
+    ["entity"]    = machine,
+    ["direction"] = machine.direction,
+  }
+end
 
 function Trainassembly:getPlaceableEntityName()
   return global.TA_data.prototypeData.placeableName
@@ -41,6 +55,23 @@ function Trainassembly:getMachineEntityName()
   return global.TA_data.prototypeData.machineName
 end
 
+function Trainassembly:getMachineDirection(machineEntity)
+
+  if not (machineEntity and machineEntity.valid) then
+    return nil
+  end
+  if not global.TA_data.["trainBuilders"][machineEntity.surface.index] then
+    return nil
+  end
+  if not global.TA_data.["trainBuilders"][machineEntity.surface.index][machineEntity.position.y] then
+    return nil
+  end
+  if not global.TA_data.["trainBuilders"][machineEntity.surface.index][machineEntity.position.y][machineEntity.position.x] then
+    return nil
+  end
+
+  return global.TA_data.["trainBuilders"][machineEntity.surface.index][machineEntity.position.y][machineEntity.position.x].direction
+end
 
 
 function Trainassembly:onPlayerBuildEntity(createdEntity)
@@ -50,7 +81,7 @@ function Trainassembly:onPlayerBuildEntity(createdEntity)
   --
   -- Player experience: The player thinks he builded an assembling machine on top of rails.
   if createdEntity and createdEntity.valid and createdEntity.name == self:getPlaceableEntityName() then
-    -- we know the createdEntity is the placable entity.
+    -- we know the createdEntity is the placeable entity.
 
     -- step 1: temporary store where the locomotive was placed and by who
     local entitySurface  = createdEntity.surface   -- surface it was build on
@@ -70,4 +101,11 @@ function Trainassembly:onPlayerBuildEntity(createdEntity)
     })
 
   end
+  -- Step 4: save values to TA.data
+  self:saveNewStructure(machineEntity)
+
+end
+
+function Trainassembly:onPlayerRotatedEntity(rotatedEntity)
+
 end
