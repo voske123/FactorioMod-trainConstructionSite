@@ -1,5 +1,5 @@
 require 'util'
-require "lib.utilities"
+require "lib.directions"
 
 -- Create class
 Trainassembly = {}
@@ -125,7 +125,7 @@ end
 --------------------------------------------------------------------------------
 -- Behaviour functions, mostly event handlers
 --------------------------------------------------------------------------------
--- When a player builds a new placeable entity structure
+-- When a player builds a new entity
 function Trainassembly:onPlayerBuildEntity(createdEntity)
   -- The player created a new entity, the player can only place the placeable item.
   -- So we have to check if the player placed this entity, if so, we remove it.
@@ -139,7 +139,7 @@ function Trainassembly:onPlayerBuildEntity(createdEntity)
     -- STEP 1: temporary store where the locomotive was placed and by who (the force)
     local entitySurface  = createdEntity.surface   -- surface it was build on
     local entityPosition = createdEntity.position  -- position it was placed
-    local entityDirecton = orientationTo4WayDirection(createdEntity.orientation) -- the orientation it was placed in
+    local entityDirecton = lib.directions.orientationTo4WayDirection(createdEntity.orientation) -- the orientation it was placed in
     local entityForce    = createdEntity.force
 
     -- STEP 2: delete the locomotive we've build since we're gonna replace it.
@@ -155,13 +155,12 @@ function Trainassembly:onPlayerBuildEntity(createdEntity)
 
     -- STEP 4: Save the newly made trainassembly to our data structure so we can keep track of it
     self:saveNewStructure(machineEntity)
-
   end
 end
 
 
 
--- When a player rotates a machine entity
+-- When a player rotates an entity
 function Trainassembly:onPlayerRotatedEntity(rotatedEntity)
   -- The player rotated the machine entity 90 degrees, the building can only be
   -- rotated on 180 degree angles. So we have to manualy rotate it another 90 degree.
@@ -169,4 +168,5 @@ function Trainassembly:onPlayerRotatedEntity(rotatedEntity)
   -- Player experience: The player thinks he rotated the entity 180 degree
 
   -- TODO
+
 end

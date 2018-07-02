@@ -7,6 +7,7 @@ script.on_init(function(event)
   -- when a save file is loaded that previously didn't contain the mod.
 
   if Debug.enabled then
+    -- Terraforming the land to fit our debugging needs
     Debug:onMapCreated()
   end
 
@@ -16,8 +17,9 @@ end)
 
 
 script.on_event(defines.events.on_player_created, function(event)
-  -- Called after the player was created.
+  -- Called after the new player was created.
   if Debug.enabled then
+    -- Insert items we want for debugging purposes
     Debug:onPlayerCreated(event.player_index)
   end
 end)
@@ -25,12 +27,13 @@ end)
 
 
 script.on_event(defines.events.on_built_entity, function(event)
-  -- Called when player builds something.
+  -- Called when player builds an entity.
   Trainassembly:onPlayerBuildEntity(event.created_entity)
 end)
 
 
+
 script.on_event(defines.events.on_player_rotated_entity, function(event)
-  --Called when player rotates a building.
+  --Called when player rotates an entity.
   Trainassembly:onPlayerRotatedEntity(event.entity)
 end)

@@ -42,10 +42,16 @@ function Debug:onMapCreated()
 
 end
 
+
+
 function Debug:onPlayerCreated(player_index)
   local mainInventory = game.players[player_index].get_main_inventory()
-  local quickbar = game.players[player_index].get_quickbar()
+  local quickbar      = game.players[player_index].get_quickbar()
   local toolInventory = game.players[player_index].get_inventory(defines.inventory.player_tools)
+
+  if mainInventory and mainInventory.valid then
+    -- nothing to insert yet
+  end
 
   if quickbar and quickbar.valid then
     quickbar.insert("rail")
