@@ -52,14 +52,14 @@ function Trainassembly:saveNewStructure(machineEntity)
   -- be standing in 1 place. So we index it by surface and position.
 
   -- STEP 1: This step should be obsolite, we need to check if the entity is
-  --         valid, if not, the surface an position it was placed on will
+  --         valid, if not, the surface and position it was placed on will
   --         be invalid as well.
   if not (machineEntity and machineEntity.valid) then
     return nil
   end
 
-  -- STEP 2: Make sure we can index it, meaning, check if there exists already
-  --         a table for the surface, if not, we make one. Afther that we also
+  -- STEP 2: Make sure we can index it, meaning, check if the table already
+  --         excists for the surface, if not, we make one. Afther that we also
   --         have to check if the surface table has a table we can index for
   --         the y-position, if not, we make one.
   if not global.TA_data["trainBuilders"][machineEntity.surface.index] then
@@ -79,7 +79,23 @@ function Trainassembly:saveNewStructure(machineEntity)
   }
 end
 
+function Trainassembly:updateMachineDirection(machineEntity)
 
+  if not (machineEntity and machineEntity.valid) then
+    return nil
+  end
+  if not global.TA_data["trainBuilders"][machineEntity.surface.index] then
+    return nil
+  end
+  if not global.TA_data["trainBuilders"][machineEntity.surface.index][machineEntity.position.y] then
+    return nil
+  end
+  if not global.TA_data["trainBuilders"][machineEntity.surface.index][machineEntity.position.y][machineEntity.position.x] then
+    return nil
+  end
+
+  global.TA_data["trainBuilders"][machineEntity.surface.index][machineEntity.position.y][machineEntity.position.x]["direction"] = machineEntity.direction
+end
 
 --------------------------------------------------------------------------------
 -- Getter functions to extract data from the data structure
@@ -166,7 +182,12 @@ function Trainassembly:onPlayerRotatedEntity(rotatedEntity)
   -- rotated on 180 degree angles. So we have to manualy rotate it another 90 degree.
   --
   -- Player experience: The player thinks he rotated the entity 180 degree
+  if rotatedEntity and rotatedEntity.valid and rotatedEntity.name == self:getMachineEntityName() then
+    local newDirection = lib.directions.oposite(self:getMachineDirection(rotatedEntity))
 
-  -- TODO
+    rotatedEntity.direction = newDirection
 
+    self:updateMachineDirection(rotatedEntity)
+
+  end
 end
