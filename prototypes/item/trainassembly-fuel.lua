@@ -10,8 +10,13 @@ trainassemblyTrainfuel.order       = "b"
 
 local trainassemblyRecipefuel = util.table.deepcopy(trainassemblyTrainfuel)
 
-trainassemblyRecipefuel.name       = "trainassembly-Recipefuel"
-trainassemblyRecipefuel.fuel_value = nil
+trainassemblyRecipefuel.name                          = "trainassembly-Recipefuel"
+trainassemblyRecipefuel.fuel_value                    = nil
+trainassemblyRecipefuel.fuel_category                 = nil
+trainassemblyRecipefuel.fuel_acceleration_multiplier  = nil
+trainassemblyRecipefuel.fuel_top_speed_multiplier     = nil
+trainassemblyRecipefuel.fuel_glow_color               = nil
+trainassemblyRecipefuel.fuel_emission_multiplier      = nil
 
 data:extend({
   trainassemblyTrainfuel,
