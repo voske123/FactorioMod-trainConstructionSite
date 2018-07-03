@@ -12,9 +12,7 @@ for _, trainType in pairs({
   for _,trainEntity in pairs(data.raw[trainType]) do
 
     if trainEntity.minable and trainEntity.minable.result then
-        local itemName = trainEntity.minable.result
-
-        table.insert(trainassemblyItemTable, itemName)
+        table.insert(trainassemblyItemTable, trainEntity.minable.result)
     end
   end
 end
