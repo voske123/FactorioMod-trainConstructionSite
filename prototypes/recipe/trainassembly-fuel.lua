@@ -12,6 +12,7 @@ for fuelOrder, fuelIngredient in pairs ({
     {
       type = "recipe",
       name = "trainassembly-trainfuel-" .. fuelIngredient[1],
+      category = "advanced-crafting",
       expensive = nil,
       normal =
       {

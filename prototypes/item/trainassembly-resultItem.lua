@@ -1,4 +1,3 @@
-require "util"
 
 for _, trainType in pairs({
   "locomotive",

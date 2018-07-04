@@ -54,6 +54,8 @@ trainassembly.fluid_boxes = -- give it an output pipe so it has a direction
 
 trainassembly.max_health = data.raw["locomotive"]["trainassembly-placeable"].max_health
 
+trainassembly.crafting_categories = {"trainassembling",}
+
 -- 4 way animation
 trainassembly.animation =
 {
@@ -158,6 +160,7 @@ trainassembly.animation =
     },
   },
 }
+
 
 
 data:extend({
