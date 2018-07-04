@@ -4,6 +4,9 @@ local trainassembly = util.table.deepcopy(data.raw["assembling-machine"]["assemb
 trainassembly.name = "trainassembly-machine"
 
 trainassembly.minable.result = "trainassembly" -- name of the item
+trainassembly.minable.mining_time = 5
+trainassembly.minable.hardness = 0.5
+
 
 -- copy localisation from the item
 trainassembly.localised_name = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].localised_name)
@@ -55,6 +58,10 @@ trainassembly.fluid_boxes = -- give it an output pipe so it has a direction
 trainassembly.max_health = data.raw["locomotive"]["trainassembly-placeable"].max_health
 
 trainassembly.crafting_categories = {"trainassembling",}
+trainassembly.crafting_speed = 0.20
+trainassembly.energy_usage = "500kW"
+trainassembly.module_specification.module_slots = 5
+trainassembly.allowed_effects = {"consumption",}
 
 -- 4 way animation
 trainassembly.animation =
