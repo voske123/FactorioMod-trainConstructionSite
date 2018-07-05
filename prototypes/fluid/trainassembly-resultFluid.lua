@@ -15,23 +15,26 @@ for _, trainType in pairs({
     if trainEntity.minable and trainEntity.minable.result then
 
         local itemName = trainEntity.minable.result
-
         -- Now that we have the item name, we create the fluid
         local itemFluid = util.table.deepcopy(data.raw["fluid"]["crude-oil"])
         itemFluid.auto_barrel = false -- We don't want to end up with barreling recipes
 
-        itemFluid.name        = itemName .. "-fluid"
 
-        itemFluid.icon        = data.raw["item-with-entity-data"][itemName].icon
-        itemFluid.icon_size   = data.raw["item-with-entity-data"][itemName].icon_size
-        itemFluid.icons       = util.table.deepcopy(data.raw["item-with-entity-data"][itemName].icons)
+        itemFluid.name            = itemName .. "-fluid"
+        itemFluid.localised_name  = {"item-name.localisedEntity", trainEntity.name}
+        itemFluid.icon            = data.raw["item-with-entity-data"][itemName].icon
+        itemFluid.icon_size       = data.raw["item-with-entity-data"][itemName].icon_size
+        itemFluid.icons           = util.table.deepcopy(data.raw["item-with-entity-data"][itemName].icons)
 
-        itemFluid.order       = data.raw["item-with-entity-data"][itemName].order
-        itemFluid.subgroup    = "transport-trains"
+        itemFluid.order           = data.raw["item-with-entity-data"][itemName].order
+        itemFluid.subgroup        = "transport-trains"
 
         data:extend({
           itemFluid,
         })
+
+
+
 
     end
   end

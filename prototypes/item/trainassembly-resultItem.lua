@@ -27,6 +27,9 @@ for _, trainType in pairs({
       -- And finaly remove the place_result.
       item.place_result =  nil
 
+      item.localised_name = {"item-name.trainparts", trainEntity.name}
+
+
     end
   end
 end

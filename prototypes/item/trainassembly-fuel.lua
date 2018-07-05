@@ -12,11 +12,12 @@ require "util"
 -- STEP 1: create the actual fuel item
 local trainassemblyTrainfuel = util.table.deepcopy(data.raw["item"]["rocket-fuel"])
 
-trainassemblyTrainfuel.name        = "trainassembly-trainfuel"
-trainassemblyTrainfuel.icon        = "__trainConstructionSite__/graphics/placeholders/icon.png"
-trainassemblyTrainfuel.icon_size   = 32
-trainassemblyTrainfuel.subgroup    = "transport-trains"
-trainassemblyTrainfuel.order       = "b"
+trainassemblyTrainfuel.name           = "trainassembly-trainfuel"
+trainassemblyTrainfuel.localised_name = {"item-name.trainassemblyFuel"}
+trainassemblyTrainfuel.icon           = "__trainConstructionSite__/graphics/placeholders/icon.png"
+trainassemblyTrainfuel.icon_size      = 32
+trainassemblyTrainfuel.subgroup       = "transport-trains"
+trainassemblyTrainfuel.order          = "b"
 
 -- STEP 2: create a duplicate of this item and remove the fuel information
 local trainassemblyRecipefuel = util.table.deepcopy(trainassemblyTrainfuel)
