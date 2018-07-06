@@ -1,15 +1,17 @@
 // example https://pastebin.com/embed_iframe/faVj8bXA
 
-var gulp      = require("gulp");
-var gulpClean = require("gulp-clean");
+var gulp        = require("gulp");
+var gulpClean   = require("gulp-clean");
+var gulpDebug   = require("gulp-debug");
 
-var fs        = require("fs");
+var fs          = require("fs");
 
 let factorioFolder = process.env.APPDATA + "\\" + fs.readdirSync(process.env.APPDATA).filter(function(d) {return d.indexOf('Factorio') > -1}).join("/");
 let modName, modVersion;
 
 gulp.task('log1', () => {
-  console.log("== My First Log Task ==");
+  console.log("\n== Launching Factorio.exe ==");
+  console.log("todo\n");
 
   return new Promise(function(resolve, reject) {
     resolve();
@@ -49,20 +51,31 @@ gulp.task("build_modinfo", () => {
 gulp.task("build_remove_old_build", () => {
   console.log("\n== Removing old builds ==");
 
-  let directory = factorioFolder+"\\mods\\"+modName+"_*.zip"
-  console.log("  Files: " + directory );
-
-  return gulp.src(directory, {read:false})
+  return gulp.src(factorioFolder+"\\mods\\"+modName+"_*.zip", {read:false})
+             .pipe(gulpDebug())
              .pipe(gulpClean({force:true}));
 });
 
+
+
+gulp.task("build_create_directory", () => {
+  console.log("\n== Build directory ==")
+
+  return gulp.src(["../**/*",
+                   "!../**/.*",
+                   "!../{build,build/**}",
+    ],  {base: '..'})
+    .pipe(gulpDebug())
+    .pipe(gulp.dest("tmp/" + modName + "_" + modVersion));
+});
 
 
 
 // Task building the zip file
 gulp.task("build_process", gulp.series(
   "build_modinfo",
-  "build_remove_old_build"
+  "build_remove_old_build",
+  "build_create_directory"
 ));
 
 

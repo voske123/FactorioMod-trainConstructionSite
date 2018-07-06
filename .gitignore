@@ -89,3 +89,6 @@ typings/
 
 # Mod version history
 version-history/
+
+# Code folders
+build/tmp
