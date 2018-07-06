@@ -1,0 +1,7 @@
+{
+  "devDependencies": {
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-util": "latest",
+    "gulp-zip": "latest"
+  }
+}
