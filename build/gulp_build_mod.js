@@ -1,10 +1,12 @@
 // example https://pastebin.com/embed_iframe/faVj8bXA
 
-var gulp     = require("gulp");
-var fs = require("fs");
+var gulp      = require("gulp");
+var gulpClean = require("gulp-clean");
 
+var fs        = require("fs");
+
+let factorioFolder = process.env.APPDATA + "\\" + fs.readdirSync(process.env.APPDATA).filter(function(d) {return d.indexOf('Factorio') > -1}).join("/");
 let modName, modVersion;
-
 
 gulp.task('log1', () => {
   console.log("== My First Log Task ==");
@@ -31,7 +33,7 @@ gulp.task("build_modinfo", () => {
   modName    = modInfo.name;
   modVersion = modInfo.version
     .split(".")
-    .map(function(v) {return parseInt(v);})
+    .map((v) => {return parseInt(v);})
     .join(".");
 
   return new Promise(function(resolve, reject) {
@@ -42,12 +44,16 @@ gulp.task("build_modinfo", () => {
   });
 });
 
-gulp.task('log2', () => {
-  console.log("== My Second Log Task ==");
 
-  return new Promise(function(resolve, reject) {
-    resolve();
-  });
+
+gulp.task("build_remove_old_build", () => {
+  console.log("\n== Removing old builds ==");
+
+  let directory = factorioFolder+"\\mods\\"+modName+"_*.zip"
+  console.log("  Files: " + directory );
+
+  return gulp.src(directory, {read:false})
+             .pipe(gulpClean({force:true}));
 });
 
 
@@ -56,7 +62,7 @@ gulp.task('log2', () => {
 // Task building the zip file
 gulp.task("build_process", gulp.series(
   "build_modinfo",
-  "log1"
+  "build_remove_old_build"
 ));
 
 
@@ -64,5 +70,5 @@ gulp.task("build_process", gulp.series(
 // Main program
 gulp.task("main", gulp.series(
   "build_process",
-  "log2"
+  "log1"
 ));
