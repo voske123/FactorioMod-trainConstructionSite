@@ -4,6 +4,8 @@ local trainTech = util.table.deepcopy(data.raw["technology"]["railway"])
 
   trainTech.name = "trainassembly-trainTechnology"
   trainTech.effects = {}
+  trainTech.localised_name = {"technology-name.trainTech"}
+  trainTech.localised_description = {"technology-description.trainTech"}
 
   data:extend({
     trainTech,
