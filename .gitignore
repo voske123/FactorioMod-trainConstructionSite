@@ -1,3 +1,7 @@
+#############################
+# Lua files                 #
+#############################
+
 # Compiled Lua sources
 luac.out
 
@@ -37,3 +41,54 @@ luac.out
 *.i*86
 *.x86_64
 *.hex
+
+
+
+#############################
+# Node/gulp                 #
+#############################
+
+# Logs
+logs
+*.log
+# Locks
+*-lock.json
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons (http://nodejs.org/api/addons.html)
+build/Release
+
+# Dependency directories
+node_modules/
+
+# Typescript v1 declaration files
+typings/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# dotenv environment variables file
+.env
+
+# Webstorm project file
+.idea/
+
+# Mod version history
+version-history/
+
+# Code folders
+build/tmp
