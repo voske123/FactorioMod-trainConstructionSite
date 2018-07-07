@@ -1,5 +1,6 @@
 require 'util'
 require "lib.directions"
+require "lib.table"
 
 -- Create class
 Trainassembly = {}
@@ -22,11 +23,13 @@ function Trainassembly:initGlobalData()
     ["version"] = 1, -- version of the global data
     ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
 
-    ["trainBuilders"] = {}, -- keep track of all builders containing builderEntities
+    ["trainAssemblers"] = {}, -- keep track of all assembling machines
+    ["trainBuiders"] = {},    -- keep track of all builders that contain one or more trainAssemblers
   }
 
   return util.table.deepcopy(TA_data)
 end
+
 
 
 -- Initialisation of the prototye data inside the global data
@@ -57,44 +60,138 @@ function Trainassembly:saveNewStructure(machineEntity)
   if not (machineEntity and machineEntity.valid) then
     return nil
   end
+  local machineSurface  = machineEntity.surface
+  local machinePosition = machineEntity.position
 
-  -- STEP 2: Make sure we can index it, meaning, check if the table already
+  -- STEP 2: Save the assembler in the trainAssemblers datastructure
+  -- STEP 2a:Make sure we can index it, meaning, check if the table already
   --         excists for the surface, if not, we make one. Afther that we also
   --         have to check if the surface table has a table we can index for
   --         the y-position, if not, we make one.
-  if not global.TA_data["trainBuilders"][machineEntity.surface.index] then
-    global.TA_data["trainBuilders"][machineEntity.surface.index] = {}
+  if not global.TA_data["trainAssemblers"][machineSurface.index] then
+    global.TA_data["trainAssemblers"][machineSurface.index] = {}
   end
-  if not global.TA_data["trainBuilders"][machineEntity.surface.index][machineEntity.position.y] then
-    global.TA_data["trainBuilders"][machineEntity.surface.index][machineEntity.position.y] = {}
+  if not global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y] then
+    global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y] = {}
   end
 
-  -- STEP 3: Now we know we can index (without crashing) to the position as:
+  -- STEP 2b:Now we know we can index (without crashing) to the position as:
   --         dataStructure[surfaceIndex][positionY][positionX]
   --         Now we can store our wanted data at this position
-  global.TA_data["trainBuilders"][machineEntity.surface.index][machineEntity.position.y][machineEntity.position.x] =
+  global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] =
   {
     ["entity"]    = machineEntity,
     ["direction"] = machineEntity.direction,
   }
+
+  -- STEP 3: Check if this assembler is linked to another assemblers to make
+  --         single but bigger trains
+  -- STEP 3a:Check for entities around this one. We know we only have to look
+  --         in the same direction as its facing, as that is the directon the
+  --         train will be build in
+  local trainAssemblerNorthWest, trainAssemblerSouthEast
+  if machineEntity.direction == defines.direction.north or machineEntity.direction == defines.direction.south then
+    -- machine is placed vertical, look vertical (y-axis)
+    -- north
+    trainAssemblerNorthWest = machineSurface.find_entities_filtered{
+      name     = machineEntity.name,
+      type     = machineEntity.type,
+      force    = machineEntity.force,
+      position = { x = machinePosition.x, y = machinePosition.y - 7 },
+      limit    = 1,
+    }
+    -- south
+    trainAssemblerSouthEast = machineSurface.find_entities_filtered{
+      name     = machineEntity.name,
+      type     = machineEntity.type,
+      force    = machineEntity.force,
+      position = { x = machinePosition.x, y = machinePosition.y + 7 },
+      limit    = 1,
+    }
+  else
+    -- machine is placed horizontal, look horizontal (x-axis)
+    -- west
+    trainAssemblerNorthWest = machineSurface.find_entities_filtered{
+      name     = machineEntity.name,
+      type     = machineEntity.type,
+      force    = machineEntity.force,
+      position = { x = machinePosition.x - 7, y = machinePosition.y },
+      limit    = 1,
+    }
+    -- east
+    trainAssemblerSouthEast = machineSurface.find_entities_filtered{
+      name     = machineEntity.name,
+      type     = machineEntity.type,
+      force    = machineEntity.force,
+      position = { x = machinePosition.x + 7, y = machinePosition.y },
+      limit    = 1,
+    }
+  end
+
+  -- find_entities_filtered returns a list, we want only the entity,
+  --so we get it out of the table. Also make sure it is valid
+  if not lib.table.isEmpty(trainAssemblerNorthWest) then
+    trainAssemblerNorthWest = trainAssemblerNorthWest[1]
+    if not trainAssemblerNorthWest.valid then
+      trainAssemblerNorthWest = nil
+    end
+  else
+    trainAssemblerNorthWest = nil
+  end
+  if not lib.table.isEmpty(trainAssemblerSouthEast) then
+    trainAssemblerSouthEast = trainAssemblerSouthEast[1]
+    if not trainAssemblerSouthEast.valid then
+      trainAssemblerSouthEast = nil
+    end
+  else
+    trainAssemblerSouthEast = nil
+  end
+
+  -- STEP 3b:We found some entities now (maybe), but we still have to check if
+  --         they are validly placed. If they aren't valid, we discard them too
+  --         Validly placed item: - has same or oposite direction
+  if trainAssemblerNorthWest and trainAssemblerNorthWest.valid then
+    -- Check if its facing the same or oposite direction, if not, discard.
+    if not (trainAssemblerNorthWest.direction == machineEntity.direction
+            or trainAssemblerNorthWest.direction == lib.directions.oposite(machineEntity.direction) ) then
+      trainAssemblerNorthWest = nil
+    end
+  end
+  if trainAssemblerSouthEast and trainAssemblerSouthEast.valid then
+    -- Check if its facing the same or oposite direction, if not, discard.
+    if not (trainAssemblerSouthEast.direction == machineEntity.direction
+            or trainAssemblerSouthEast.direction == lib.directions.oposite(machineEntity.direction) ) then
+      trainAssemblerSouthEast = nil
+    end
+  end
+
+  if trainAssemblerNorthWest then game.print("found one on the north or west side") end
+  if trainAssemblerSouthEast then game.print("found one on the south or east side") end
+
+  -- TODO
+
 end
+
+
 
 function Trainassembly:updateMachineDirection(machineEntity)
 
   if not (machineEntity and machineEntity.valid) then
     return nil
   end
-  if not global.TA_data["trainBuilders"][machineEntity.surface.index] then
+  local machineSurface  = machineEntity.surface
+  if not global.TA_data["trainAssemblers"][machineSurface.index] then
     return nil
   end
-  if not global.TA_data["trainBuilders"][machineEntity.surface.index][machineEntity.position.y] then
+  local machinePosition = machineEntity.position
+  if not global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y] then
     return nil
   end
-  if not global.TA_data["trainBuilders"][machineEntity.surface.index][machineEntity.position.y][machineEntity.position.x] then
+  if not global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] then
     return nil
   end
 
-  global.TA_data["trainBuilders"][machineEntity.surface.index][machineEntity.position.y][machineEntity.position.x]["direction"] = machineEntity.direction
+  global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["direction"] = machineEntity.direction
 end
 
 --------------------------------------------------------------------------------
@@ -121,19 +218,21 @@ function Trainassembly:getMachineDirection(machineEntity)
   -- STEP 2: If we don't have a trainBuilder saved on that surface, or not
   --         on that y position or on that x position, it means that we don't
   --         have a direction available for that machine.
-  if not global.TA_data["trainBuilders"][machineEntity.surface.index] then
+  local machineSurface = machineEntity.surface
+  if not global.TA_data["trainAssemblers"][machineSurface.index] then
     return nil
   end
-  if not global.TA_data["trainBuilders"][machineEntity.surface.index][machineEntity.position.y] then
+  local machinePosition = machineEntity.position
+  if not global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y] then
     return nil
   end
-  if not global.TA_data["trainBuilders"][machineEntity.surface.index][machineEntity.position.y][machineEntity.position.x] then
+  if not global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] then
     return nil
   end
 
   -- STEP 3: In step 2 we checked for an invalid data structure. So now we
   --         can return the direction the machine is/was facing.
-  return global.TA_data["trainBuilders"][machineEntity.surface.index][machineEntity.position.y][machineEntity.position.x]["direction"]
+  return global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["direction"]
 end
 
 
