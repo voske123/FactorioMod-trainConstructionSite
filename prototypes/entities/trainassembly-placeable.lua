@@ -129,7 +129,19 @@ trainassembly.pictures =
   },
 }
 
+for _, beltType in pairs({
+  "transport-belt",
+  "underground-belt",
+  "splitter",
+}) do
+  for _, beltEntity in pairs(data.raw[beltType]) do
 
+    if not beltEntity.collision_mask then
+      beltEntity.collision_mask = {}
+    end
+    table.insert(data.raw[beltType][beltEntity.name].collision_mask, "layer-13")
+  end
+end
 
 
 data:extend({
