@@ -24,7 +24,9 @@ function Trainassembly:initGlobalData()
     ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
 
     ["trainAssemblers"] = {}, -- keep track of all assembling machines
-    ["trainBuiders"] = {},    -- keep track of all builders that contain one or more trainAssemblers
+
+    ["trainBuilders"] = {},    -- keep track of all builders that contain one or more trainAssemblers
+    ["nextTrainBuilderIndex"] = 1,
   }
 
   return util.table.deepcopy(TA_data)
@@ -80,20 +82,22 @@ function Trainassembly:saveNewStructure(machineEntity)
   --         Now we can store our wanted data at this position
   global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] =
   {
-    ["entity"]    = machineEntity,
-    ["direction"] = machineEntity.direction,
+    ["entity"]            = machineEntity,           -- the entity
+    ["direction"]         = machineEntity.direction, -- the direction its facing
+    ["trainBuilderIndex"] = nil,                     -- the trainBuilder it belongs to (see further down)
   }
+  log(serpent.block(global.TA_data["trainAssemblers"]))
 
   -- STEP 3: Check if this assembler is linked to another assemblers to make
   --         single but bigger trains
   -- STEP 3a:Check for entities around this one. We know we only have to look
   --         in the same direction as its facing, as that is the directon the
   --         train will be build in
-  local trainAssemblerNorthWest, trainAssemblerSouthEast
+  local trainAssemblerNW, trainAssemblerSE
   if machineEntity.direction == defines.direction.north or machineEntity.direction == defines.direction.south then
     -- machine is placed vertical, look vertical (y-axis)
     -- north
-    trainAssemblerNorthWest = machineSurface.find_entities_filtered{
+    trainAssemblerNW = machineSurface.find_entities_filtered{
       name     = machineEntity.name,
       type     = machineEntity.type,
       force    = machineEntity.force,
@@ -101,7 +105,7 @@ function Trainassembly:saveNewStructure(machineEntity)
       limit    = 1,
     }
     -- south
-    trainAssemblerSouthEast = machineSurface.find_entities_filtered{
+    trainAssemblerSE = machineSurface.find_entities_filtered{
       name     = machineEntity.name,
       type     = machineEntity.type,
       force    = machineEntity.force,
@@ -111,7 +115,7 @@ function Trainassembly:saveNewStructure(machineEntity)
   else
     -- machine is placed horizontal, look horizontal (x-axis)
     -- west
-    trainAssemblerNorthWest = machineSurface.find_entities_filtered{
+    trainAssemblerNW = machineSurface.find_entities_filtered{
       name     = machineEntity.name,
       type     = machineEntity.type,
       force    = machineEntity.force,
@@ -119,7 +123,7 @@ function Trainassembly:saveNewStructure(machineEntity)
       limit    = 1,
     }
     -- east
-    trainAssemblerSouthEast = machineSurface.find_entities_filtered{
+    trainAssemblerSE = machineSurface.find_entities_filtered{
       name     = machineEntity.name,
       type     = machineEntity.type,
       force    = machineEntity.force,
@@ -129,47 +133,145 @@ function Trainassembly:saveNewStructure(machineEntity)
   end
 
   -- find_entities_filtered returns a list, we want only the entity,
-  --so we get it out of the table. Also make sure it is valid
-  if not lib.table.isEmpty(trainAssemblerNorthWest) then
-    trainAssemblerNorthWest = trainAssemblerNorthWest[1]
-    if not trainAssemblerNorthWest.valid then
-      trainAssemblerNorthWest = nil
+  -- so we get it out of the table. Also make sure it is valid
+  if not lib.table.isEmpty(trainAssemblerNW) then
+    trainAssemblerNW = trainAssemblerNW[1]
+    if not trainAssemblerNW.valid then
+      trainAssemblerNW = nil
     end
   else
-    trainAssemblerNorthWest = nil
+    trainAssemblerNW = nil
   end
-  if not lib.table.isEmpty(trainAssemblerSouthEast) then
-    trainAssemblerSouthEast = trainAssemblerSouthEast[1]
-    if not trainAssemblerSouthEast.valid then
-      trainAssemblerSouthEast = nil
+  if not lib.table.isEmpty(trainAssemblerSE) then
+    trainAssemblerSE = trainAssemblerSE[1]
+    if not trainAssemblerSE.valid then
+      trainAssemblerSE = nil
     end
   else
-    trainAssemblerSouthEast = nil
+    trainAssemblerSE = nil
   end
 
   -- STEP 3b:We found some entities now (maybe), but we still have to check if
   --         they are validly placed. If they aren't valid, we discard them too
   --         Validly placed item: - has same or oposite direction
-  if trainAssemblerNorthWest and trainAssemblerNorthWest.valid then
+  if trainAssemblerNW and trainAssemblerNW.valid then
     -- Check if its facing the same or oposite direction, if not, discard.
-    if not (trainAssemblerNorthWest.direction == machineEntity.direction
-            or trainAssemblerNorthWest.direction == lib.directions.oposite(machineEntity.direction) ) then
-      trainAssemblerNorthWest = nil
+    if not (trainAssemblerNW.direction == machineEntity.direction
+            or trainAssemblerNW.direction == lib.directions.oposite(machineEntity.direction) ) then
+      trainAssemblerNW = nil
     end
   end
-  if trainAssemblerSouthEast and trainAssemblerSouthEast.valid then
+  if trainAssemblerSE and trainAssemblerSE.valid then
     -- Check if its facing the same or oposite direction, if not, discard.
-    if not (trainAssemblerSouthEast.direction == machineEntity.direction
-            or trainAssemblerSouthEast.direction == lib.directions.oposite(machineEntity.direction) ) then
-      trainAssemblerSouthEast = nil
+    if not (trainAssemblerSE.direction == machineEntity.direction
+            or trainAssemblerSE.direction == lib.directions.oposite(machineEntity.direction) ) then
+      trainAssemblerSE = nil
     end
   end
 
-  if trainAssemblerNorthWest then game.print("found one on the north or west side") end
-  if trainAssemblerSouthEast then game.print("found one on the south or east side") end
+  -- STEP 3c:We found valid entities (maybe), either way, we have to add this
+  --         assembling machine to a trainBuilder
+  if (not trainAssemblerNW) and (not trainAssemblerSE) then
+    -- there is no neighbour detected, we create a new one
+    local trainBuiderIndex = global.TA_data["nextTrainBuilderIndex"]
 
-  -- TODO
+    -- add reference to the trainassembly
+    global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"] = trainBuiderIndex
 
+    -- and add the new trainBuilder with a single trainAssembler reference
+    global.TA_data["trainBuilders"][trainBuiderIndex] =
+    {
+      {
+        ["surfaceIndex"] = machineSurface.index,
+        ["position"]     = { x = machinePosition.x, y = machinePosition.y },
+      },
+    }
+
+    -- new trainbuilder added, now increment the nextIndex
+    global.TA_data["nextTrainBuilderIndex"] = trainBuiderIndex + 1
+
+  else -- there is one or more neighbours
+
+    if (trainAssemblerNW and (not trainAssemblerSE)) then
+      -- only the northwest one was detected, we add it to his trainbuilder.
+      -- First we need to get his builderIndex
+      local trainBuiderIndex = global.TA_data["trainAssemblers"][trainAssemblerNW.surface.index][trainAssemblerNW.position.y][trainAssemblerNW.position.x]["trainBuilderIndex"]
+
+      -- add reference to the trainassembly
+      global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"] = trainBuiderIndex
+
+      -- and add this trainAssembler reference to that existing trainBuilder
+      table.insert(global.TA_data["trainBuilders"][trainBuiderIndex], {
+        ["surfaceIndex"] = machineSurface.index,
+        ["position"]     = { x = machinePosition.x, y = machinePosition.y },
+      })
+
+    elseif (trainAssemblerSE and (not trainAssemblerNW)) then
+      -- only the southeast one was detected, we add it to his trainbuilder.
+      local trainBuiderIndex = global.TA_data["trainAssemblers"][trainAssemblerSE.surface.index][trainAssemblerSE.position.y][trainAssemblerSE.position.x]["trainBuilderIndex"]
+
+      -- add reference to the trainassembly
+      global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"] = trainBuiderIndex
+
+      -- and add this trainAssembler reference to that existing trainBuilder
+      table.insert(global.TA_data["trainBuilders"][trainBuiderIndex], {
+        ["surfaceIndex"] = machineSurface.index,
+        ["position"]     = { x = machinePosition.x, y = machinePosition.y },
+      })
+
+    else
+      -- both neighbours are detected
+
+      -- First we need to merge the two existing trainBuilders together
+      -- let's merge the SE one inside the NW one
+      local trainBuiderIndexNW = global.TA_data["trainAssemblers"][trainAssemblerNW.surface.index][trainAssemblerNW.position.y][trainAssemblerNW.position.x]["trainBuilderIndex"]
+      local trainBuiderIndexSE = global.TA_data["trainAssemblers"][trainAssemblerSE.surface.index][trainAssemblerSE.position.y][trainAssemblerSE.position.x]["trainBuilderIndex"]
+
+      for _, trainAssemblerReference in pairs(global.TA_data["trainBuilders"][trainBuiderIndexSE]) do
+        table.insert(global.TA_data["trainBuilders"][trainBuiderIndexNW], util.table.deepcopy(trainAssemblerReference))
+      end
+
+      -- new all the assemblers of the SE one are in the NW one, we can now delete
+      -- the whole SE trainbuilder. If we delete it, we have a 'hole' in our list
+      -- to fix that, we move the last one in this spot * fixed XD *. But if this
+      -- is already the last one, we don't have this issue.
+      -- And when we move the last one over, our nextIndex can also move one down.
+      local lastIndex = global.TA_data["nextTrainBuilderIndex"] - 1
+      -- check if its the last one
+      if (trainBuiderIndexSE == lastIndex) then
+        -- it was the last one
+        global.TA_data["trainBuilders"][trainBuiderIndexSE] = nil
+      else
+        -- copy the last one over
+        global.TA_data["trainBuilders"][trainBuiderIndexSE] = util.table.deepcopy(global.TA_data["trainBuilders"][lastIndex])
+        -- delete the reference of the last index
+        global.TA_data["trainBuilders"][lastIndex] = nil
+        -- and make sure to check if we moved the other one over
+        if trainBuiderIndexNW == lastIndex then
+          trainBuiderIndexNW = trainBuiderIndexSE
+        end
+
+        -- TODO: change builderIndex on the assembling machines of the last trainbuilder
+      end
+      -- since we removed a trainBuilder, we have to update the nextIndex as well
+      global.TA_data["nextTrainBuilderIndex"] = lastIndex
+
+      -- now we finaly merged them both together, now we can start adding our
+      -- newly placed one to this table, start adding reference to the trainassembly
+      global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"] = trainBuiderIndexNW
+
+      log(trainBuiderIndexNW)
+      log(trainBuiderIndexSE)
+      log(serpent.block(global.TA_data))
+      --log(serpent.block(global.TA_data["trainBuilders"]))
+
+      -- and add this trainAssembler reference to that existing trainBuilder
+      table.insert(global.TA_data["trainBuilders"][trainBuiderIndexNW], {
+        ["surfaceIndex"] = machineSurface.index,
+        ["position"]     = { x = machinePosition.x, y = machinePosition.y },
+      })
+    end
+  end
 end
 
 
