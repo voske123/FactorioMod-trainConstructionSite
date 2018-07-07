@@ -14,3 +14,5 @@ require "prototypes.recipe.trainassembly-placeable"
 
 require "prototypes.entities.trainassembly-placeable"
 require "prototypes.entities.trainassembly-machine"
+
+require "prototypes.technology.trainassembly-technology"
