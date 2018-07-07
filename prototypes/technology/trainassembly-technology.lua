@@ -1,3 +1,26 @@
+require "util"
+
+local trainTech = util.table.deepcopy(data.raw["technology"]["railway"])
+
+  trainTech.name = "trainassembly-trainTechnology"
+  trainTech.effects = {}
+
+  data:extend({
+    trainTech,
+  })
+
+for _, trainTechn in pairs ({
+  "locomotive",
+  "cargo-wagon",
+}) do
+  table.insert(data.raw["technology"][trainTech.name].effects,
+  {
+    type = "unlock-recipe",
+    recipe = trainTechn,
+  })
+end
+
+
 
 if data.raw["technology"]["railway"].effects then
   for effectIndex, effect in pairs(data.raw["technology"]["railway"].effects) do
