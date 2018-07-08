@@ -86,7 +86,6 @@ function Trainassembly:saveNewStructure(machineEntity)
     ["direction"]         = machineEntity.direction, -- the direction its facing
     ["trainBuilderIndex"] = nil,                     -- the trainBuilder it belongs to (see further down)
   }
-  log(serpent.block(global.TA_data["trainAssemblers"]))
 
   -- STEP 3: Check if this assembler is linked to another assemblers to make
   --         single but bigger trains
@@ -172,7 +171,7 @@ function Trainassembly:saveNewStructure(machineEntity)
   -- STEP 3c:We found valid entities (maybe), either way, we have to add this
   --         assembling machine to a trainBuilder
   if (not trainAssemblerNW) and (not trainAssemblerSE) then
-    -- there is no neighbour detected, we create a new one
+    -- OPTION 3c.1: there is no neighbour detected, we create a new one
     local trainBuiderIndex = global.TA_data["nextTrainBuilderIndex"]
 
     -- add reference to the trainassembly
@@ -191,85 +190,87 @@ function Trainassembly:saveNewStructure(machineEntity)
     global.TA_data["nextTrainBuilderIndex"] = trainBuiderIndex + 1
 
   else -- there is one or more neighbours
-
     if (trainAssemblerNW and (not trainAssemblerSE)) then
-      -- only the northwest one was detected, we add it to his trainbuilder.
-      -- First we need to get his builderIndex
+      -- OPTION 3c.2a: There is only one neighbour detected.
+      --               Only the northwest one was detected, we add it to his
+      --               trainbuilder.
       local trainBuiderIndex = global.TA_data["trainAssemblers"][trainAssemblerNW.surface.index][trainAssemblerNW.position.y][trainAssemblerNW.position.x]["trainBuilderIndex"]
 
-      -- add reference to the trainassembly
+      -- add reference to the trainBuilder in the trainassembly
       global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"] = trainBuiderIndex
 
-      -- and add this trainAssembler reference to that existing trainBuilder
+      -- and add this trainAssembler reference to the existing trainBuilder
       table.insert(global.TA_data["trainBuilders"][trainBuiderIndex], {
         ["surfaceIndex"] = machineSurface.index,
         ["position"]     = { x = machinePosition.x, y = machinePosition.y },
       })
 
     elseif (trainAssemblerSE and (not trainAssemblerNW)) then
-      -- only the southeast one was detected, we add it to his trainbuilder.
+      -- OPTION 3c.2b: There is only one neighbour detected.
+      --               Only the southeast one was detected, we add it to his
+      --               trainbuilder.
       local trainBuiderIndex = global.TA_data["trainAssemblers"][trainAssemblerSE.surface.index][trainAssemblerSE.position.y][trainAssemblerSE.position.x]["trainBuilderIndex"]
 
-      -- add reference to the trainassembly
+      -- add reference to the trainBuilder in the trainassembly
       global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"] = trainBuiderIndex
 
-      -- and add this trainAssembler reference to that existing trainBuilder
+      -- and add this trainAssembler reference to the existing trainBuilder
       table.insert(global.TA_data["trainBuilders"][trainBuiderIndex], {
         ["surfaceIndex"] = machineSurface.index,
         ["position"]     = { x = machinePosition.x, y = machinePosition.y },
       })
 
     else
-      -- both neighbours are detected
-
-      -- First we need to merge the two existing trainBuilders together
-      -- let's merge the SE one inside the NW one
+      -- OPTION 3c.3: Both neighbours are detected
+      --              First we need to merge the two existing trainBuilders
+      --              together. Let's merge the SE one inside the NW one
       local trainBuiderIndexNW = global.TA_data["trainAssemblers"][trainAssemblerNW.surface.index][trainAssemblerNW.position.y][trainAssemblerNW.position.x]["trainBuilderIndex"]
       local trainBuiderIndexSE = global.TA_data["trainAssemblers"][trainAssemblerSE.surface.index][trainAssemblerSE.position.y][trainAssemblerSE.position.x]["trainBuilderIndex"]
 
-      for _, trainAssemblerReference in pairs(global.TA_data["trainBuilders"][trainBuiderIndexSE]) do
-        table.insert(global.TA_data["trainBuilders"][trainBuiderIndexNW], util.table.deepcopy(trainAssemblerReference))
+      for trainAssemblerIndex, trainAssemblerRef in pairs(global.TA_data["trainBuilders"][trainBuiderIndexSE]) do
+        -- Move the reference into the other trainBuilder
+        table.insert(global.TA_data["trainBuilders"][trainBuiderIndexNW], util.table.deepcopy(trainAssemblerRef))
       end
 
-      -- new all the assemblers of the SE one are in the NW one, we can now delete
+      -- Now all the assemblers of the SE one are in the NW one, we can now delete
       -- the whole SE trainbuilder. If we delete it, we have a 'hole' in our list
       -- to fix that, we move the last one in this spot * fixed XD *. But if this
-      -- is already the last one, we don't have this issue.
-      -- And when we move the last one over, our nextIndex can also move one down.
+      -- is already the last one, we don't have this issue. And when we move the're
+      -- is a possibility we moved the NW over. We've also deleted a trainbuiler,
+      -- so we'll have to update our nextIndex - 1.
       local lastIndex = global.TA_data["nextTrainBuilderIndex"] - 1
-      -- check if its the last one
-      if (trainBuiderIndexSE == lastIndex) then
-        -- it was the last one
-        global.TA_data["trainBuilders"][trainBuiderIndexSE] = nil
-      else
-        -- copy the last one over
+
+      -- check if its the last one, if not the last one we fill the hole of the SE one
+      if (trainBuiderIndexSE ~= lastIndex) then
+        -- copy the last one over to the hole and adapt all the references to the
+        -- trianBuilder of all the trainAssemblers we moved
         global.TA_data["trainBuilders"][trainBuiderIndexSE] = util.table.deepcopy(global.TA_data["trainBuilders"][lastIndex])
-        -- delete the reference of the last index
-        global.TA_data["trainBuilders"][lastIndex] = nil
-        -- and make sure to check if we moved the other one over
+        for _, trainAssemblerRef in pairs(global.TA_data["trainBuilders"][trainBuiderIndexSE]) do
+          global.TA_data["trainAssemblers"][trainAssemblerRef.surfaceIndex][trainAssemblerRef.position.y][trainAssemblerRef.position.x]["trainBuilderIndex"] = trainBuiderIndexSE
+        end
+
+        -- it could be the other one we moved
         if trainBuiderIndexNW == lastIndex then
           trainBuiderIndexNW = trainBuiderIndexSE
         end
-
-        -- TODO: change builderIndex on the assembling machines of the last trainbuilder
       end
-      -- since we removed a trainBuilder, we have to update the nextIndex as well
+
+      -- delete the reference of the last index
+      global.TA_data["trainBuilders"][lastIndex] = nil
       global.TA_data["nextTrainBuilderIndex"] = lastIndex
-
-      -- now we finaly merged them both together, now we can start adding our
-      -- newly placed one to this table, start adding reference to the trainassembly
-      global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"] = trainBuiderIndexNW
-
-      log(trainBuiderIndexNW)
-      log(trainBuiderIndexSE)
-      log(serpent.block(global.TA_data))
-      --log(serpent.block(global.TA_data["trainBuilders"]))
 
       -- and add this trainAssembler reference to that existing trainBuilder
       table.insert(global.TA_data["trainBuilders"][trainBuiderIndexNW], {
         ["surfaceIndex"] = machineSurface.index,
         ["position"]     = { x = machinePosition.x, y = machinePosition.y },
       })
+
+      -- now we finaly merged them both together and added the new assembler, now
+      -- we can start updating the reference in the trainassembly to the trainbuilders
+      --global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"] = trainBuiderIndexNW
+      for _, trainAssemblerRef in pairs(global.TA_data["trainBuilders"][trainBuiderIndexNW]) do
+        global.TA_data["trainAssemblers"][trainAssemblerRef.surfaceIndex][trainAssemblerRef.position.y][trainAssemblerRef.position.x]["trainBuilderIndex"] = trainBuiderIndexNW
+      end
     end
   end
 end
