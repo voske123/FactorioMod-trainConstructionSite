@@ -57,7 +57,8 @@ data:extend(
 {
   {
     type = "technology",
-    name = "train-fuel-1",
+    name = "trainfuel-solid-fuel",
+    localised_name = {"technology-name.trainfuel-solid-fuel"},
     icon_size = 128,
     icon = "__trainConstructionSite__/graphics/placeholders/2x2.png",
     effects =
@@ -71,13 +72,54 @@ data:extend(
     unit =
     {
       count = 75,
-      ingredients =
-      {
-        {"science-pack-1", 1},
-        {"science-pack-2", 1},
-      },
+      ingredients = util.table.deepcopy(data.raw["technology"]["military-2"].unit.ingredients),
       time = 5,
     },
     order = "c-g-a-b",
+  },
+  {
+    type = "technology",
+    name = "trainfuel-rocket-fuel",
+    localised_name = {"technology-name.trainfuel-solid-fuel"},
+    icon_size = 128,
+    icon = "__trainConstructionSite__/graphics/placeholders/2x2.png",
+    effects =
+    {
+      {
+        type = "unlock-recipe",
+        recipe = "trainassembly-trainfuel-rocket-fuel",
+      },
+    },
+    prerequisites = {"trainfuel-solid-fuel", "rocket-silo"},
+    unit =
+    {
+      count = 75,
+      ingredients = util.table.deepcopy(data.raw["technology"]["automation-3"].unit.ingredients),
+
+      time = 30,
+    },
+    order = "c-g-a-c",
+  },
+  {
+    type = "technology",
+    name = "trainfuel-nuclear-fuel",
+    localised_name = {"technology-name.trainfuel-nuclear-fuel"},
+    icon_size = 128,
+    icon = "__trainConstructionSite__/graphics/placeholders/2x2.png",
+    effects =
+    {
+      {
+        type = "unlock-recipe",
+        recipe = "trainassembly-trainfuel-nuclear-fuel",
+      },
+    },
+    prerequisites = {"trainfuel-rocket-fuel", "kovarex-enrichment-process"},
+    unit =
+    {
+      count = 500,
+      ingredients = util.table.deepcopy(data.raw["technology"]["kovarex-enrichment-process"].unit.ingredients),
+      time = 60,
+    },
+    order = "c-g-a-d",
   },
 })
