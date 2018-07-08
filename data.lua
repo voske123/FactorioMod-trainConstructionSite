@@ -1,6 +1,7 @@
 
 
-require "prototypes.categories"
+require "prototypes.categories.recipe-category"
+require "prototypes.categories.groups"
 
 require "prototypes.item.trainassembly-placeable"
 require "prototypes.item.trainassembly-fuel"

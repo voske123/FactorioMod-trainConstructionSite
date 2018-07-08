@@ -67,7 +67,7 @@ data:extend(
     prerequisites =
       {
         "railway",
-        "trainassembly-trainTechnology"
+        "trainassembly-trainTechnology",
       },
     unit =
     {
@@ -92,9 +92,7 @@ data:extend(
     },
     prerequisites =
       {
-        "railway",
         "oil-processing",
-        "trainassembly-trainTechnology",
         "trainfuel-2",
       },
     unit =
