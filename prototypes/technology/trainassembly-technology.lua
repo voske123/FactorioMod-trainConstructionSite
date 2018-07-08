@@ -35,16 +35,12 @@ else
   data.raw["technology"]["railway"].effects = {}
 end
 
-for _, fuelIngredient in pairs ({
-  "raw-wood",
-  "coal",
-}) do
-  table.insert(data.raw["technology"]["railway"].effects,
-  {
-    type = "unlock-recipe",
-    recipe = "trainassembly-trainfuel-" .. fuelIngredient,
-  })
-end
+
+table.insert(data.raw["technology"]["railway"].effects,
+{
+  type = "unlock-recipe",
+  recipe = "trainassembly-trainfuel-raw-wood",
+})
 
 table.insert(data.raw["technology"]["railway"].effects,
 {
@@ -57,8 +53,34 @@ data:extend(
 {
   {
     type = "technology",
-    name = "trainfuel-solid-fuel",
-    localised_name = {"technology-name.trainfuel-solid-fuel"},
+    name = "trainfuel-2",
+    localised_name = {"technology-name.trainfuel-2"},
+    icon_size = 128,
+    icon = "__trainConstructionSite__/graphics/placeholders/2x2.png",
+    effects =
+    {
+      {
+        type = "unlock-recipe",
+        recipe = "trainassembly-trainfuel-coal",
+      },
+    },
+    prerequisites =
+      {
+        "railway",
+        "trainassembly-trainTechnology"
+      },
+    unit =
+    {
+      count = 75,
+      ingredients = util.table.deepcopy(data.raw["technology"]["military-2"].unit.ingredients),
+      time = 10,
+    },
+    order = "c-g-a-b",
+  },
+  {
+    type = "technology",
+    name = "trainfuel-3",
+    localised_name = {"technology-name.trainfuel-3"},
     icon_size = 128,
     icon = "__trainConstructionSite__/graphics/placeholders/2x2.png",
     effects =
@@ -68,19 +90,25 @@ data:extend(
         recipe = "trainassembly-trainfuel-solid-fuel",
       },
     },
-    prerequisites = {"railway", "oil-processing", "trainassembly-trainTechnology"},
+    prerequisites =
+      {
+        "railway",
+        "oil-processing",
+        "trainassembly-trainTechnology",
+        "trainfuel-2",
+      },
     unit =
     {
-      count = 75,
+      count = 100,
       ingredients = util.table.deepcopy(data.raw["technology"]["military-2"].unit.ingredients),
-      time = 5,
+      time = 10,
     },
-    order = "c-g-a-b",
+    order = "c-g-a-c",
   },
   {
     type = "technology",
-    name = "trainfuel-rocket-fuel",
-    localised_name = {"technology-name.trainfuel-solid-fuel"},
+    name = "trainfuel-4",
+    localised_name = {"technology-name.trainfuel-4"},
     icon_size = 128,
     icon = "__trainConstructionSite__/graphics/placeholders/2x2.png",
     effects =
@@ -90,7 +118,7 @@ data:extend(
         recipe = "trainassembly-trainfuel-rocket-fuel",
       },
     },
-    prerequisites = {"trainfuel-solid-fuel", "rocket-silo"},
+    prerequisites = {"trainfuel-3", "rocket-silo"},
     unit =
     {
       count = 75,
@@ -98,12 +126,12 @@ data:extend(
 
       time = 30,
     },
-    order = "c-g-a-c",
+    order = "c-g-a-d",
   },
   {
     type = "technology",
-    name = "trainfuel-nuclear-fuel",
-    localised_name = {"technology-name.trainfuel-nuclear-fuel"},
+    name = "trainfuel-5",
+    localised_name = {"technology-name.trainfuel-5"},
     icon_size = 128,
     icon = "__trainConstructionSite__/graphics/placeholders/2x2.png",
     effects =
@@ -113,13 +141,13 @@ data:extend(
         recipe = "trainassembly-trainfuel-nuclear-fuel",
       },
     },
-    prerequisites = {"trainfuel-rocket-fuel", "kovarex-enrichment-process"},
+    prerequisites = {"trainfuel-4", "kovarex-enrichment-process"},
     unit =
     {
       count = 500,
       ingredients = util.table.deepcopy(data.raw["technology"]["kovarex-enrichment-process"].unit.ingredients),
       time = 60,
     },
-    order = "c-g-a-d",
+    order = "c-g-a-e",
   },
 })
