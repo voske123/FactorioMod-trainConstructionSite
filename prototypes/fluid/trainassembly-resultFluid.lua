@@ -27,7 +27,7 @@ for _, trainType in pairs({
         itemFluid.icons           = util.table.deepcopy(data.raw["item-with-entity-data"][itemName].icons)
 
         itemFluid.order           = data.raw["item-with-entity-data"][itemName].order
-        itemFluid.subgroup        = "transport-trains"
+        itemFluid.subgroup        = "trainparts-fluid"
 
         data:extend({
           itemFluid,

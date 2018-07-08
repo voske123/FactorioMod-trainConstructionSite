@@ -5,7 +5,7 @@ data:extend({
     category = "trainassembling",
     normal =
     {
-      enabled = true,
+      enabled = false,
       energy_required = 30,
       ingredients =
       {
