@@ -2,26 +2,48 @@ require "util"
 
 local trainTech = util.table.deepcopy(data.raw["technology"]["railway"])
 
-  trainTech.name = "trainassembly-trainTechnology"
-  trainTech.effects = {}
-  trainTech.localised_name = {"technology-name.trainTech"}
-  trainTech.localised_description = {"technology-description.trainTech"}
+trainTech.name = "trainassembly-trainTechnology"
+trainTech.effects = {}
+trainTech.localised_name = {"technology-name.trainTech"}
+trainTech.localised_description = {"technology-description.trainTech"}
+trainTech.prerequisites = {"railway",}
 
-  data:extend({
-    trainTech,
-  })
-
-for _, trainTechn in pairs ({
+for _, trainRecipe in pairs ({
   "locomotive",
   "cargo-wagon",
 }) do
-  table.insert(data.raw["technology"][trainTech.name].effects,
+  table.insert(trainTech.effects,
   {
     type = "unlock-recipe",
-    recipe = trainTechn,
+    recipe = trainRecipe,
+  })
+  table.insert(trainTech.effects,
+  {
+    type = "unlock-recipe",
+    recipe = trainRecipe .. "-fluid",
   })
 end
 
+for techName, techPrototype in pairs(data.raw["technology"]) do
+  if techPrototype.effects then
+    for techEffectIndex, techEffect in pairs(techPrototype.effects) do
+      if techEffect.type == "unlock-recipe" then
+        for _, wagonName in pairs({
+          "fluid-wagon",
+          "artillery-wagon",
+        }) do
+          if techEffect.recipe == wagonName then
+            table.insert(data.raw["technology"][techName].effects, techEffectIndex + 1,
+            {
+              type = "unlock-recipe",
+              recipe = wagonName .. "-fluid",
+            })
+          end
+        end
+      end
+    end
+  end
+end
 
 if data.raw["technology"]["railway"].effects then
   for effectIndex, effect in pairs(data.raw["technology"]["railway"].effects) do
@@ -35,19 +57,17 @@ else
   data.raw["technology"]["railway"].effects = {}
 end
 
-
-table.insert(data.raw["technology"]["railway"].effects,
-{
-  type = "unlock-recipe",
-  recipe = "trainassembly-trainfuel-raw-wood",
-})
-
 table.insert(data.raw["technology"]["railway"].effects,
 {
   type = "unlock-recipe",
   recipe = "trainassembly",
 })
 
+table.insert(data.raw["technology"]["railway"].effects,
+{
+  type = "unlock-recipe",
+  recipe = "trainassembly-trainfuel-raw-wood",
+})
 
 data:extend(
 {
@@ -148,4 +168,8 @@ data:extend(
     },
     order = "c-g-a-e",
   },
+})
+
+data:extend({
+  trainTech,
 })
