@@ -15,6 +15,7 @@ for fuelOrder, fuelIngredient in pairs ({
     {
       type = "recipe",
       name = "trainassembly-trainfuel-" .. fuelIngredient[1],
+      localised_name = {"recipe-name.trainfuel", "trainassemblyfuel", fuelIngredient[1]},
       category = "advanced-crafting",
       expensive = nil,
       normal =

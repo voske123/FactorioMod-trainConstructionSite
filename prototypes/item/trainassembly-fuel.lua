@@ -13,10 +13,10 @@ require "util"
 local trainassemblyTrainfuel = util.table.deepcopy(data.raw["item"]["rocket-fuel"])
 
 trainassemblyTrainfuel.name           = "trainassembly-trainfuel"
-trainassemblyTrainfuel.localised_name = {"item-name.trainassemblyFuel"}
+trainassemblyTrainfuel.localised_name = {"item-name.trainassemblyfuel"}
 trainassemblyTrainfuel.icon           = "__trainConstructionSite__/graphics/placeholders/icon.png"
 trainassemblyTrainfuel.icon_size      = 32
-trainassemblyTrainfuel.subgroup       = "transport-trains"
+trainassemblyTrainfuel.subgroup       = "trainassembler-fuel"
 trainassemblyTrainfuel.order          = "b"
 
 -- STEP 2: create a duplicate of this item and remove the fuel information
