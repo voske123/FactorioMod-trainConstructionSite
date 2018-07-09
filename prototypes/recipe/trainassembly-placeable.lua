@@ -2,7 +2,7 @@ data:extend({
   {
     type = "recipe",
     name = "trainassembly",
-    category = "trainassembling",
+    category = "advanced-crafting",
     normal =
     {
       enabled = false,
