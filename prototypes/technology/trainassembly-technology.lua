@@ -72,7 +72,7 @@ data:extend(
     unit =
     {
       count = 75,
-      ingredients = util.table.deepcopy(data.raw["technology"]["military-2"].unit.ingredients),
+      ingredients = util.table.deepcopy(data.raw["technology"]["railway"].unit.ingredients),
       time = 10,
     },
     order = "c-g-a-b",
@@ -98,7 +98,7 @@ data:extend(
     unit =
     {
       count = 100,
-      ingredients = util.table.deepcopy(data.raw["technology"]["military-2"].unit.ingredients),
+      ingredients = util.table.deepcopy(data.raw["technology"]["oil-processing"].unit.ingredients),
       time = 10,
     },
     order = "c-g-a-c",
