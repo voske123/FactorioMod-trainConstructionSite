@@ -5,6 +5,7 @@ local transportLogistics = util.table.deepcopy(data.raw["item-group"]["logistics
   --Maingroup for all the subgroups involved in trains
 
   transportLogistics.name = "transport-logistics"
+  transportLogistics.localised_name = {"item-group-name.transportLogistics"}
   transportLogistics.order = transportLogistics.order .. "a[transport]"
   transportLogistics.icon = "__trainConstructionSite__/graphics/placeholders/icon.png"
   transportLogistics.icon_size = 32
