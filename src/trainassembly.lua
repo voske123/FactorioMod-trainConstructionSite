@@ -278,7 +278,6 @@ end
 function Trainassembly:deleteBuilding(machineEntity)
 
   --Step 1: check if the machineEntity is valid.
-
   if not (machineEntity and machineEntity.valid) then
     return nil
   end
@@ -344,9 +343,9 @@ function Trainassembly:deleteBuilding(machineEntity)
     trainAssemblerSE = nil
   end
 
-  -- STEP 2b:We found some entities now (maybe), but we still have to check if
-  --         they are validly placed. If they aren't valid, we discard them too
-  --         Validly placed item: - has same or oposite direction
+  -- STEP 2b: We found some entities now (maybe), but we still have to check if
+  --          they are validly placed. If they aren't valid, we discard them too
+  --          Validly placed item: - has same or oposite direction
   if trainAssemblerNW and trainAssemblerNW.valid then
     -- Check if its facing the same or oposite direction, if not, discard.
     if not (trainAssemblerNW.direction == machineEntity.direction
@@ -362,17 +361,54 @@ function Trainassembly:deleteBuilding(machineEntity)
     end
   end
 
+  -- STEP 2c: Now that we found the entities, we can start updating the trainBuilder
   if (not trainAssemblerNW) and (not trainAssemblerSE) then
-
     local trainBuilderIndex = global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"]
 
     global.TA_data["trainBuilders"][trainBuilderIndex] = nil
+    local lastTrainBuilderIndex = global.TA_data["nextTrainBuilderIndex"] - 1
 
-    if not (trainBuilderIndex == global.TA_data["nextTrainBuilderIndex"] - 1) then
-       
+    if not (trainBuilderIndex == lastTrainBuilderIndex) then
+      global.TA_data["trainBuilders"][trainBuilderIndex] = util.table.deepcopy(global.TA_data["trainBuilders"][lastTrainBuilderIndex])
     end
+
+    -- update all the trainAssemblers
+    for _, location in pairs(global.TA_data["trainBuilders"][trainBuilderIndex]) do
+      global.TA_data["trainAssemblers"][location["surfaceIndex"]][location["position"].y][location["position"].x]["trainBuilderIndex"] = trainBuilderIndex
+    end
+
+    global.TA_data["nextTrainBuilderIndex"] = lastTrainBuilderIndex
+
+  else -- there is one or more neighbours
+
+    if (trainAssemblerNW and (not trainAssemblerSE)) or (trainAssemblerSE and (not trainAssemblerNW)) then -- only one neighbour
+
+      local trainBuilderIndex = global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"]
+
+      -- delete the assembler out of the trainbuilder
+      for locationIndex, location in pairs(global.TA_data["trainBuilders"][trainBuilderIndex]) do
+        if location["surfaceIndex"] == machineSurface.index and location["position"].y == machinePosition.y and location["position"].y == machinePosition.x then
+          table.remove(global.TA_data["trainBuilders"][trainBuilderIndex], locationIndex)
+          break
+        end
+      end
+
+    else -- there are two neighbours
+      -- TODO
+    end
+
   end
 
+  -- STEP 3: Deleting the trainAssembler
+  global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] = nil
+
+  if lib.table.isEmpty(global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y]) then
+    global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y] = nil
+
+    if lib.table.isEmpty(global.TA_data["trainAssemblers"][machineSurface.index]) then
+      global.TA_data["trainAssemblers"][machineSurface.index] = nil
+    end
+  end
 
 
 end
@@ -476,6 +512,20 @@ function Trainassembly:onPlayerBuildEntity(createdEntity)
 
     -- STEP 4: Save the newly made trainassembly to our data structure so we can keep track of it
     self:saveNewStructure(machineEntity)
+  end
+end
+
+-- When a player/robot removes the building
+function Trainassembly:onRemoveEntity(removedEntity)
+  -- In some way the building got removed. This results in that the builder is
+  -- removed. This also means we have to delete the train that was in this spot.
+  --
+  -- Player experience: Everything with the trainAssembler gets removed
+  if removedEntity and removedEntity.valid and removedEntity.name == self:getMachineEntityName() then
+    -- STEP 1: all the stuff that needs deletion
+
+    -- STEP 4: Update the data structure
+    self:deleteBuilding(removedEntity)
   end
 end
 
