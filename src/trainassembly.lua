@@ -275,6 +275,109 @@ function Trainassembly:saveNewStructure(machineEntity)
   end
 end
 
+function Trainassembly:deleteBuilding(machineEntity)
+
+  --Step 1: check if the machineEntity is valid.
+
+  if not (machineEntity and machineEntity.valid) then
+    return nil
+  end
+  local machineSurface  = machineEntity.surface
+  local machinePosition = machineEntity.position
+
+  --Step 2a: check what direction it is facing (vertical or horizontal)
+  local trainAssemblerNW, trainAssemblerSE
+  if machineEntity.direction == defines.direction.north or machineEntity.direction == defines.direction.south then
+    -- machine is placed vertical, look vertical (y-axis)
+    -- north
+    trainAssemblerNW = machineSurface.find_entities_filtered{
+      name     = machineEntity.name,
+      type     = machineEntity.type,
+      force    = machineEntity.force,
+      position = { x = machinePosition.x, y = machinePosition.y - 7 },
+      limit    = 1,
+    }
+    -- south
+    trainAssemblerSE = machineSurface.find_entities_filtered{
+      name     = machineEntity.name,
+      type     = machineEntity.type,
+      force    = machineEntity.force,
+      position = { x = machinePosition.x, y = machinePosition.y + 7 },
+      limit    = 1,
+    }
+  else
+    -- machine is placed horizontal, look horizontal (x-axis)
+    -- west
+    trainAssemblerNW = machineSurface.find_entities_filtered{
+      name     = machineEntity.name,
+      type     = machineEntity.type,
+      force    = machineEntity.force,
+      position = { x = machinePosition.x - 7, y = machinePosition.y },
+      limit    = 1,
+    }
+    -- east
+    trainAssemblerSE = machineSurface.find_entities_filtered{
+      name     = machineEntity.name,
+      type     = machineEntity.type,
+      force    = machineEntity.force,
+      position = { x = machinePosition.x + 7, y = machinePosition.y },
+      limit    = 1,
+    }
+  end
+
+  -- find_entities_filtered returns a list, we want only the entity,
+  -- so we get it out of the table. Also make sure it is valid
+  if not lib.table.isEmpty(trainAssemblerNW) then
+    trainAssemblerNW = trainAssemblerNW[1]
+    if not trainAssemblerNW.valid then
+      trainAssemblerNW = nil
+    end
+  else
+    trainAssemblerNW = nil
+  end
+  if not lib.table.isEmpty(trainAssemblerSE) then
+    trainAssemblerSE = trainAssemblerSE[1]
+    if not trainAssemblerSE.valid then
+      trainAssemblerSE = nil
+    end
+  else
+    trainAssemblerSE = nil
+  end
+
+  -- STEP 2b:We found some entities now (maybe), but we still have to check if
+  --         they are validly placed. If they aren't valid, we discard them too
+  --         Validly placed item: - has same or oposite direction
+  if trainAssemblerNW and trainAssemblerNW.valid then
+    -- Check if its facing the same or oposite direction, if not, discard.
+    if not (trainAssemblerNW.direction == machineEntity.direction
+            or trainAssemblerNW.direction == lib.directions.oposite(machineEntity.direction) ) then
+      trainAssemblerNW = nil
+    end
+  end
+  if trainAssemblerSE and trainAssemblerSE.valid then
+    -- Check if its facing the same or oposite direction, if not, discard.
+    if not (trainAssemblerSE.direction == machineEntity.direction
+            or trainAssemblerSE.direction == lib.directions.oposite(machineEntity.direction) ) then
+      trainAssemblerSE = nil
+    end
+  end
+
+  if (not trainAssemblerNW) and (not trainAssemblerSE) then
+
+    local trainBuilderIndex = global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"]
+
+    global.TA_data["trainBuilders"][trainBuilderIndex] = nil
+
+    if not (trainBuilderIndex == global.TA_data["nextTrainBuilderIndex"] - 1) then
+       
+    end
+  end
+
+
+
+end
+
+
 
 
 function Trainassembly:updateMachineDirection(machineEntity)
@@ -375,7 +478,6 @@ function Trainassembly:onPlayerBuildEntity(createdEntity)
     self:saveNewStructure(machineEntity)
   end
 end
-
 
 
 -- When a player rotates an entity
