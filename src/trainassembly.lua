@@ -370,11 +370,11 @@ function Trainassembly:deleteBuilding(machineEntity)
 
     if not (trainBuilderIndex == lastTrainBuilderIndex) then
       global.TA_data["trainBuilders"][trainBuilderIndex] = util.table.deepcopy(global.TA_data["trainBuilders"][lastTrainBuilderIndex])
-    end
 
-    -- update all the trainAssemblers
-    for _, location in pairs(global.TA_data["trainBuilders"][trainBuilderIndex]) do
-      global.TA_data["trainAssemblers"][location["surfaceIndex"]][location["position"].y][location["position"].x]["trainBuilderIndex"] = trainBuilderIndex
+      -- update all the trainAssemblers
+      for _, location in pairs(global.TA_data["trainBuilders"][trainBuilderIndex]) do
+        global.TA_data["trainAssemblers"][location["surfaceIndex"]][location["position"].y][location["position"].x]["trainBuilderIndex"] = trainBuilderIndex
+      end
     end
 
     global.TA_data["nextTrainBuilderIndex"] = lastTrainBuilderIndex
@@ -399,6 +399,8 @@ function Trainassembly:deleteBuilding(machineEntity)
 
   end
 
+  game.print(serpent.block(global.TA_data["trainBuilders"]))
+
   -- STEP 3: Deleting the trainAssembler
   global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] = nil
 
@@ -409,7 +411,6 @@ function Trainassembly:deleteBuilding(machineEntity)
       global.TA_data["trainAssemblers"][machineSurface.index] = nil
     end
   end
-
 
 end
 
