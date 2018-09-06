@@ -98,8 +98,10 @@ trainassembly.pictures =
       direction_count = 4,
       allow_low_quality_rotation = true,
       frame_count = 1,
-      line_length = 1,
+      line_length = 4,
       lines_per_file = 1,
+      filename = "__trainConstructionSite__/graphics/placeholders/6x6-4.png",
+      --[[
       filenames =
       {
         "__trainConstructionSite__/graphics/placeholders/6x6.png",
@@ -107,6 +109,7 @@ trainassembly.pictures =
         "__trainConstructionSite__/graphics/placeholders/6x6.png",
         "__trainConstructionSite__/graphics/placeholders/6x6.png",
       },
+      ]]--
       hr_version = nil,
     },
     {
@@ -115,8 +118,10 @@ trainassembly.pictures =
       direction_count = 4,
       allow_low_quality_rotation = true,
       frame_count = 1,
-      line_length = 1,
+      line_length = 4,
       lines_per_file = 1,
+      filename = "__trainConstructionSite__/graphics/placeholders/directions.png",
+      --[[
       filenames =
       {
         "__trainConstructionSite__/graphics/placeholders/direction_north.png",
@@ -124,6 +129,7 @@ trainassembly.pictures =
         "__trainConstructionSite__/graphics/placeholders/direction_south.png",
         "__trainConstructionSite__/graphics/placeholders/direction_west.png",
       },
+      ]]--
       hr_version = nil,
     },
   },
