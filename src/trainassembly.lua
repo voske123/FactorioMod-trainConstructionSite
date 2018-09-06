@@ -383,28 +383,9 @@ function Trainassembly:deleteBuilding(machineEntity)
 
     if (trainAssemblerNW and (not trainAssemblerSE)) or (trainAssemblerSE and (not trainAssemblerNW)) then -- only one neighbour
 
-      local trainBuilderIndex = global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"]
+    local trainBuilderIndex = global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"]
 
       -- delete the assembler out of the trainbuilder
-      for locationIndex, location in pairs(global.TA_data["trainBuilders"][trainBuilderIndex]) do
-        if location["surfaceIndex"] == machineSurface.index and location["position"].y == machinePosition.y and location["position"].x == machinePosition.x then
-          table.remove(global.TA_data["trainBuilders"][trainBuilderIndex], locationIndex)
-          break
-      end
-    end
-
-  else -- there are two neighbours
-
-    local trainBuilderIndex  = global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"]
-    local newTrainBuilderIndex = global.TA_data["nextTrainBuilderIndex"]
-    global.TA_data["trainBuilders"][lastTrainBuilderIndex] = {}
-
-    local builderIsVertical = false
-    if trainAssemblerNW.direction == defines.direction.north then
-      builderIsVertical = true
-    end
-
-    -- delete the assembler out of the trainbuilder
     for locationIndex, location in pairs(global.TA_data["trainBuilders"][trainBuilderIndex]) do
       if location["surfaceIndex"] == machineSurface.index and location["position"].y == machinePosition.y and location["position"].x == machinePosition.x then
         table.remove(global.TA_data["trainBuilders"][trainBuilderIndex], locationIndex)
@@ -412,27 +393,47 @@ function Trainassembly:deleteBuilding(machineEntity)
       end
     end
 
-    for locationIndex, location in pairs(global.TA_data["trainbuilders"][trainbuilderIndex]) do
-      local needToMove = false
+    else -- there are two neighbours
 
-      if builderIsVertical then
-        if location["position"].y < machinePosition.y then
-          needToMove = true
-        end
-      else
-        if location["position"].x < machinePosition.x then
-          needToMove = true
+      local trainBuilderIndex  = global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"]
+      local newTrainBuilderIndex = global.TA_data["nextTrainBuilderIndex"]
+      global.TA_data["trainBuilders"][newTrainBuilderIndex] = {}
+
+      local builderIsVertical = false
+      if trainAssemblerNW.direction == defines.direction.north then
+        builderIsVertical = true
+      end
+
+      -- delete the assembler out of the trainbuilder
+      for locationIndex, location in pairs(global.TA_data["trainBuilders"][trainBuilderIndex]) do
+        if location["surfaceIndex"] == machineSurface.index and location["position"].y == machinePosition.y and location["position"].x == machinePosition.x then
+          table.remove(global.TA_data["trainBuilders"][trainBuilderIndex], locationIndex)
+          break
         end
       end
 
-      if needToMove then --moving assemblers over to different builder
-        table.insert(global.TA_data["trainBuilders"][lastTrainBuilderIndex], util.table.deepcopy(global.TA_data["trainbuilders"][trainBuilderIndex][locationIndex])) --copy over to different builder
-        global.TA_data["trainbuilders"][trainBuiderIndex][locationIndex] = nil --delete the old one
-        global.TA_data["trainAssemblers"][location["surfaceIndex"]][location["position"].y][location["position"].x]["trainBuilderIndex"] = newTrainBuilderIndex --adjusting trainbuilderindex in assembler
+      for locationIndex, location in pairs(global.TA_data["trainBuilders"][trainbuilderIndex]) do
+        local needToMove = false
+
+        if builderIsVertical then
+          if location["position"].y < machinePosition.y then
+            needToMove = true
+          end
+        else
+          if location["position"].x < machinePosition.x then
+            needToMove = true
+          end
+        end
+
+        if needToMove then --moving assemblers over to different builder
+          table.insert(global.TA_data["trainBuilders"][newTrainBuilderIndex], util.table.deepcopy(global.TA_data["trainBuilders"][trainBuilderIndex][locationIndex])) --copy over to different builder
+          global.TA_data["trainBuilders"][trainBuiderIndex][locationIndex] = nil --delete the old one
+          global.TA_data["trainAssemblers"][location["surfaceIndex"]][location["position"].y][location["position"].x]["trainBuilderIndex"] = newTrainBuilderIndex --adjusting trainbuilderindex in assembler
+        end
       end
+
+      global.TA_data["nextTrainBuilderIndex"] = newTrainBuilderIndex + 1
     end
-
-    global.TA_data["nextTrainBuilderIndex"] = newTrainBuilderIndex + 1
   end
 
   game.print(serpent.block(global.TA_data["trainBuilders"]))
