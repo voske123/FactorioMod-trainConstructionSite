@@ -35,7 +35,7 @@ end)
 
 
 
-script.on_event(defines.events.on_player_mined_entity), function(event)
+script.on_event(defines.events.on_player_mined_entity, function(event)
   -- Called when player mines an entity.
   Trainassembly:onRemoveEntity(event.entity)
   log(serpent.block(global.TA_data["trainAssemblers"]))
