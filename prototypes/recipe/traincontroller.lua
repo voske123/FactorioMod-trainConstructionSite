@@ -4,13 +4,14 @@ data:extend({
     name = "traincontroller",
     normal =
     {
-      enabled = true,
+      enabled = false,
       energy_required = 1,
       ingredients =
       {
-        {"train-stop", 1},
+        {"iron-chest", 1},
         {"decider-combinator", 3},
-        {"iron-chest", 1}
+        {"arithmetic-combinator", 1},
+        {"programmable-speaker", 2},
       },
       expensive = nil,
       results =
