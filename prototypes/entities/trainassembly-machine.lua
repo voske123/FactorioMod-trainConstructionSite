@@ -3,10 +3,10 @@ require "util"
 local trainassembly = util.table.deepcopy(data.raw["assembling-machine"]["assembling-machine-3"])
 trainassembly.name = "trainassembly-machine"
 
-trainassembly.minable.result = "trainassembly" -- name of the item
 trainassembly.minable.mining_time = 5
 trainassembly.minable.hardness = 0.5
-
+trainassembly.minable.result = "trainassembly" -- name of the item
+trainassembly.placeable_by = {item="trainassembly", count= 1}
 
 -- copy localisation from the item
 trainassembly.localised_name = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].localised_name)
