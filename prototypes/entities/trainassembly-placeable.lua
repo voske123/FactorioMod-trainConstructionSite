@@ -150,6 +150,6 @@ for _, beltType in pairs({
 end
 
 
-data:extend({
+data:extend{
   trainassembly,
-})
+}
