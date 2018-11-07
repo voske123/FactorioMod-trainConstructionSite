@@ -47,7 +47,7 @@ end
 
 
 --------------------------------------------------------------------------------
--- Setter functions to insert data into the data structure
+-- Setter functions to alter data into the data structure
 --------------------------------------------------------------------------------
 -- Save a new trainassembly to our data structure
 function Trainassembly:saveNewStructure(machineEntity)
@@ -273,7 +273,10 @@ function Trainassembly:saveNewStructure(machineEntity)
       end
     end
   end
+
 end
+
+
 
 function Trainassembly:deleteBuilding(machineEntity)
 
@@ -412,7 +415,7 @@ function Trainassembly:deleteBuilding(machineEntity)
         end
       end
 
-      for locationIndex, location in pairs(global.TA_data["trainBuilders"][trainbuilderIndex]) do
+      for locationIndex, location in pairs(global.TA_data["trainBuilders"][trainBuilderIndex]) do
         local needToMove = false
 
         if builderIsVertical then
@@ -427,7 +430,7 @@ function Trainassembly:deleteBuilding(machineEntity)
 
         if needToMove then --moving assemblers over to different builder
           table.insert(global.TA_data["trainBuilders"][newTrainBuilderIndex], util.table.deepcopy(global.TA_data["trainBuilders"][trainBuilderIndex][locationIndex])) --copy over to different builder
-          global.TA_data["trainBuilders"][trainBuiderIndex][locationIndex] = nil --delete the old one
+          global.TA_data["trainBuilders"][trainBuilderIndex][locationIndex] = nil --delete the old one
           global.TA_data["trainAssemblers"][location["surfaceIndex"]][location["position"].y][location["position"].x]["trainBuilderIndex"] = newTrainBuilderIndex --adjusting trainbuilderindex in assembler
         end
       end
@@ -435,8 +438,6 @@ function Trainassembly:deleteBuilding(machineEntity)
       global.TA_data["nextTrainBuilderIndex"] = newTrainBuilderIndex + 1
     end
   end
-
-  game.print(serpent.block(global.TA_data["trainBuilders"]))
 
   -- STEP 3: Deleting the trainAssembler
   global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] = nil
@@ -450,7 +451,6 @@ function Trainassembly:deleteBuilding(machineEntity)
   end
 
 end
-
 
 
 
