@@ -31,8 +31,8 @@ trainassemblyRecipefuel.fuel_glow_color               = nil
 trainassemblyRecipefuel.fuel_emission_multiplier      = nil
 
 -- STEP 3: add both items to the game
-data:extend({
+data:extend{
   trainassemblyTrainfuel,
   trainassemblyRecipefuel,
 
-})
+}

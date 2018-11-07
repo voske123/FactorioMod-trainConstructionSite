@@ -3,10 +3,11 @@ require "util"
 local trainassembly = util.table.deepcopy(data.raw["assembling-machine"]["assembling-machine-3"])
 trainassembly.name = "trainassembly-machine"
 
+-- adjusting minable time/hardness/result and pipette tool
 trainassembly.minable.mining_time = 5
 trainassembly.minable.hardness = 0.5
 trainassembly.minable.result = "trainassembly" -- name of the item
-trainassembly.placeable_by = {item="trainassembly", count= 1}
+trainassembly.placeable_by = {item=trainassembly.minable.result, count= 1}
 
 -- copy localisation from the item
 trainassembly.localised_name = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].localised_name)
@@ -170,6 +171,6 @@ trainassembly.animation =
 
 
 
-data:extend({
+data:extend{
   trainassembly,
-})
+}
