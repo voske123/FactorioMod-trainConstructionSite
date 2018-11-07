@@ -29,9 +29,9 @@ for _, trainType in pairs({
         itemFluid.order           = data.raw["item-with-entity-data"][itemName].order
         itemFluid.subgroup        = "trainparts-fluid"
 
-        data:extend({
+        data:extend{
           itemFluid,
-        })
+        }
 
 
 
