@@ -47,7 +47,7 @@ end
 
 
 --------------------------------------------------------------------------------
--- Setter functions to insert data into the data structure
+-- Setter functions to alter data into the data structure
 --------------------------------------------------------------------------------
 -- Save a new trainassembly to our data structure
 function Trainassembly:saveNewStructure(machineEntity)
@@ -273,6 +273,183 @@ function Trainassembly:saveNewStructure(machineEntity)
       end
     end
   end
+
+end
+
+
+
+function Trainassembly:deleteBuilding(machineEntity)
+
+  --Step 1: check if the machineEntity is valid.
+  if not (machineEntity and machineEntity.valid) then
+    return nil
+  end
+  local machineSurface  = machineEntity.surface
+  local machinePosition = machineEntity.position
+
+  --Step 2a: check what direction it is facing (vertical or horizontal)
+  local trainAssemblerNW, trainAssemblerSE
+  if machineEntity.direction == defines.direction.north or machineEntity.direction == defines.direction.south then
+    -- machine is placed vertical, look vertical (y-axis)
+    -- north
+    trainAssemblerNW = machineSurface.find_entities_filtered{
+      name     = machineEntity.name,
+      type     = machineEntity.type,
+      force    = machineEntity.force,
+      position = { x = machinePosition.x, y = machinePosition.y - 7 },
+      limit    = 1,
+    }
+    -- south
+    trainAssemblerSE = machineSurface.find_entities_filtered{
+      name     = machineEntity.name,
+      type     = machineEntity.type,
+      force    = machineEntity.force,
+      position = { x = machinePosition.x, y = machinePosition.y + 7 },
+      limit    = 1,
+    }
+  else
+    -- machine is placed horizontal, look horizontal (x-axis)
+    -- west
+    trainAssemblerNW = machineSurface.find_entities_filtered{
+      name     = machineEntity.name,
+      type     = machineEntity.type,
+      force    = machineEntity.force,
+      position = { x = machinePosition.x - 7, y = machinePosition.y },
+      limit    = 1,
+    }
+    -- east
+    trainAssemblerSE = machineSurface.find_entities_filtered{
+      name     = machineEntity.name,
+      type     = machineEntity.type,
+      force    = machineEntity.force,
+      position = { x = machinePosition.x + 7, y = machinePosition.y },
+      limit    = 1,
+    }
+  end
+
+  -- find_entities_filtered returns a list, we want only the entity,
+  -- so we get it out of the table. Also make sure it is valid
+  if not lib.table.isEmpty(trainAssemblerNW) then
+    trainAssemblerNW = trainAssemblerNW[1]
+    if not trainAssemblerNW.valid then
+      trainAssemblerNW = nil
+    end
+  else
+    trainAssemblerNW = nil
+  end
+  if not lib.table.isEmpty(trainAssemblerSE) then
+    trainAssemblerSE = trainAssemblerSE[1]
+    if not trainAssemblerSE.valid then
+      trainAssemblerSE = nil
+    end
+  else
+    trainAssemblerSE = nil
+  end
+
+  -- STEP 2b: We found some entities now (maybe), but we still have to check if
+  --          they are validly placed. If they aren't valid, we discard them too
+  --          Validly placed item: - has same or oposite direction
+  if trainAssemblerNW and trainAssemblerNW.valid then
+    -- Check if its facing the same or oposite direction, if not, discard.
+    if not (trainAssemblerNW.direction == machineEntity.direction
+            or trainAssemblerNW.direction == lib.directions.oposite(machineEntity.direction) ) then
+      trainAssemblerNW = nil
+    end
+  end
+  if trainAssemblerSE and trainAssemblerSE.valid then
+    -- Check if its facing the same or oposite direction, if not, discard.
+    if not (trainAssemblerSE.direction == machineEntity.direction
+            or trainAssemblerSE.direction == lib.directions.oposite(machineEntity.direction) ) then
+      trainAssemblerSE = nil
+    end
+  end
+
+  -- STEP 2c: Now that we found the entities, we can start updating the trainBuilder
+  if (not trainAssemblerNW) and (not trainAssemblerSE) then
+    local trainBuilderIndex = global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"]
+
+    global.TA_data["trainBuilders"][trainBuilderIndex] = nil
+    local lastTrainBuilderIndex = global.TA_data["nextTrainBuilderIndex"] - 1
+
+    if not (trainBuilderIndex == lastTrainBuilderIndex) then
+      global.TA_data["trainBuilders"][trainBuilderIndex] = util.table.deepcopy(global.TA_data["trainBuilders"][lastTrainBuilderIndex])
+
+      -- update all the trainAssemblers
+      for _, location in pairs(global.TA_data["trainBuilders"][trainBuilderIndex]) do
+        global.TA_data["trainAssemblers"][location["surfaceIndex"]][location["position"].y][location["position"].x]["trainBuilderIndex"] = trainBuilderIndex
+      end
+    end
+
+    global.TA_data["nextTrainBuilderIndex"] = lastTrainBuilderIndex
+
+  else -- there is one or more neighbours
+
+    if (trainAssemblerNW and (not trainAssemblerSE)) or (trainAssemblerSE and (not trainAssemblerNW)) then -- only one neighbour
+
+    local trainBuilderIndex = global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"]
+
+      -- delete the assembler out of the trainbuilder
+    for locationIndex, location in pairs(global.TA_data["trainBuilders"][trainBuilderIndex]) do
+      if location["surfaceIndex"] == machineSurface.index and location["position"].y == machinePosition.y and location["position"].x == machinePosition.x then
+        table.remove(global.TA_data["trainBuilders"][trainBuilderIndex], locationIndex)
+        break
+      end
+    end
+
+    else -- there are two neighbours
+
+      local trainBuilderIndex  = global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"]
+      local newTrainBuilderIndex = global.TA_data["nextTrainBuilderIndex"]
+      global.TA_data["trainBuilders"][newTrainBuilderIndex] = {}
+
+      local builderIsVertical = false
+      if trainAssemblerNW.direction == defines.direction.north then
+        builderIsVertical = true
+      end
+
+      -- delete the assembler out of the trainbuilder
+      for locationIndex, location in pairs(global.TA_data["trainBuilders"][trainBuilderIndex]) do
+        if location["surfaceIndex"] == machineSurface.index and location["position"].y == machinePosition.y and location["position"].x == machinePosition.x then
+          table.remove(global.TA_data["trainBuilders"][trainBuilderIndex], locationIndex)
+          break
+        end
+      end
+
+      for locationIndex, location in pairs(global.TA_data["trainBuilders"][trainBuilderIndex]) do
+        local needToMove = false
+
+        if builderIsVertical then
+          if location["position"].y < machinePosition.y then
+            needToMove = true
+          end
+        else
+          if location["position"].x < machinePosition.x then
+            needToMove = true
+          end
+        end
+
+        if needToMove then --moving assemblers over to different builder
+          table.insert(global.TA_data["trainBuilders"][newTrainBuilderIndex], util.table.deepcopy(global.TA_data["trainBuilders"][trainBuilderIndex][locationIndex])) --copy over to different builder
+          global.TA_data["trainBuilders"][trainBuilderIndex][locationIndex] = nil --delete the old one
+          global.TA_data["trainAssemblers"][location["surfaceIndex"]][location["position"].y][location["position"].x]["trainBuilderIndex"] = newTrainBuilderIndex --adjusting trainbuilderindex in assembler
+        end
+      end
+
+      global.TA_data["nextTrainBuilderIndex"] = newTrainBuilderIndex + 1
+    end
+  end
+
+  -- STEP 3: Deleting the trainAssembler
+  global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] = nil
+
+  if lib.table.isEmpty(global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y]) then
+    global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y] = nil
+
+    if lib.table.isEmpty(global.TA_data["trainAssemblers"][machineSurface.index]) then
+      global.TA_data["trainAssemblers"][machineSurface.index] = nil
+    end
+  end
+
 end
 
 
@@ -376,6 +553,19 @@ function Trainassembly:onPlayerBuildEntity(createdEntity)
   end
 end
 
+-- When a player/robot removes the building
+function Trainassembly:onRemoveEntity(removedEntity)
+  -- In some way the building got removed. This results in that the builder is
+  -- removed. This also means we have to delete the train that was in this spot.
+  --
+  -- Player experience: Everything with the trainAssembler gets removed
+  if removedEntity and removedEntity.valid and removedEntity.name == self:getMachineEntityName() then
+    -- STEP 1: all the stuff that needs deletion
+
+    -- STEP 4: Update the data structure
+    self:deleteBuilding(removedEntity)
+  end
+end
 
 
 -- When a player rotates an entity
