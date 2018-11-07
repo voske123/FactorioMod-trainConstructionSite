@@ -143,7 +143,7 @@ for _, beltType in pairs({
   for _, beltEntity in pairs(data.raw[beltType]) do
 
     if not beltEntity.collision_mask then
-      beltEntity.collision_mask = {}
+      beltEntity.collision_mask = {"item-layer", "object-layer", "water-tile"} -- default layers of a transport belt
     end
     table.insert(data.raw[beltType][beltEntity.name].collision_mask, "layer-13")
   end
