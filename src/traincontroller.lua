@@ -23,7 +23,6 @@ function Traincontroller:initGlobalData()
     ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
 
     ["trainControllers"] = {},       -- keep track of all controllers
-    ["nextTrainControllerIndex"] = 1, -- next free space in the trainControllers table
     ["nextTrainControllerIterate"] = nil, -- next controller to iterate over
   }
 
@@ -52,8 +51,24 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuiderIndex)
   -- entry knows what controller is before or afther itself.
 
   -- STEP 1: We can already store the wanted data in the structure
-  local thisController = global.TC_data["nextTrainControllerIndex"]
-  global.TC_data["trainControllers"][thisController] = {
+  -- STEP 1a:Make sure we can index it, meaning, check if the table already
+  --         excists for the surface, if not, we make one. Afther that we also
+  --         have to check if the surface table has a table we can index for
+  --         the y-position, if not, we make one.
+  local controllerSurface  = controllerEntity.surface
+  local controllerPosition = controllerEntity.position
+  if not global.TC_data["trainControllers"][controllerSurface.index] then
+    global.TC_data["trainControllers"][controllerSurface.index] = {}
+  end
+  if not global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y] then
+    global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y] = {}
+  end
+
+  -- STEP 1b:Now we know we can index (without crashing) to the position as:
+  --         dataStructure[surfaceIndex][positionY][positionX]
+  --         Now we can store our wanted data at this position
+  global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y][controllerPosition.x] =
+  {
     ["entity"]           = controllerEntity, -- the controller entity
     ["trainBuiderIndex"] = trainBuiderIndex, -- the trainbuilder it controls
 
@@ -63,38 +78,43 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuiderIndex)
   }
 
   -- STEP 2: We need to add this controller to the chain of the linked list
-  if thisController == 1 then
+  local thisController = {
+    ["surfaceIndex"] = controllerSurface.index,
+    ["position"]     = controllerPosition,
+  }
+
+  if not global.TC_data["nextTrainControllerIterate"] then
     -- STEP 2a: When it is the first one, it is easy to add, since its the first
-    global.TC_data["trainControllers"][thisController]["prevController"] = thisController
-    global.TC_data["trainControllers"][thisController]["nextController"] = thisController
     global.TC_data["nextTrainControllerIterate"] = thisController
+    global.TC_data["trainControllers"][thisController["surfaceIndex"]][thisController["position"].y][thisController["position"].x]["prevController"] = thisController
+    global.TC_data["trainControllers"][thisController["surfaceIndex"]][thisController["position"].y][thisController["position"].x]["nextController"] = thisController
 
     -- STEP 2b: start on_tick events becose we need to start iterating
     -- TODO
   else
     -- when we've added it to the list, we know there is at least one in front
-    -- of us. This one has a next set. We add it inbetween.
+    -- of us. This one has a prev set. We add it inbetween.
 
     -- STEP 2a: extract the previous and next index
-    local prevController = thisController - 1
-    local nextController = global.TC_data["trainControllers"][prevController]["nextController"]
+    local nextController = global.TC_data["nextTrainControllerIterate"]
+    local prevController = global.TC_data["trainControllers"][nextController["surfaceIndex"]][nextController["position"].y][nextController["position"].x]["prevController"]
 
     -- STEP 2b: adapt the previous controller
-    global.TC_data["trainControllers"][prevController]["nextController"] = thisController
-    global.TC_data["trainControllers"][thisController]["prevController"] = prevController
+    global.TC_data["trainControllers"][prevController["surfaceIndex"]][prevController["position"].y][prevController["position"].x]["nextController"] = thisController
+    global.TC_data["trainControllers"][thisController["surfaceIndex"]][thisController["position"].y][thisController["position"].x]["prevController"] = prevController
 
     -- STEP 2c: adapt the next controller
-    global.TC_data["trainControllers"][nextController]["prevController"] = thisController
-    global.TC_data["trainControllers"][thisController]["nextController"] = nextController
+    global.TC_data["trainControllers"][nextController["surfaceIndex"]][nextController["position"].y][nextController["position"].x]["prevController"] = thisController
+    global.TC_data["trainControllers"][thisController["surfaceIndex"]][thisController["position"].y][thisController["position"].x]["nextController"] = nextController
 
     -- STEP 2d: make sure the next iteration doesn't skip this new controller
-    if global.TC_data["nextTrainControllerIterate"] == nextController then
-      global.TC_data["nextTrainControllerIterate"] = thisController
-    end
+    global.TC_data["nextTrainControllerIterate"] = thisController
   end
+end
 
-  -- STEP 3: register this controller on the trainbuilder
-  -- TODO
+
+
+function Trainassembly:deleteBuilding(controllerEntity)
 
 end
 
