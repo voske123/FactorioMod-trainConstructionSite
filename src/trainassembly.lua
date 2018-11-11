@@ -477,6 +477,12 @@ end
 --------------------------------------------------------------------------------
 -- Getter functions to extract data from the data structure
 --------------------------------------------------------------------------------
+function Trainassembly:getItemName()
+  return global.TA_data.prototypeData.itemName
+end
+
+
+
 function Trainassembly:getPlaceableEntityName()
   return global.TA_data.prototypeData.placeableName
 end
@@ -585,13 +591,86 @@ function Trainassembly:checkValidPlacement(createdEntity, playerIndex)
   -- trainassembler on the ground where the trainassembler was placed.
 
   local notValid = function(localisedMessage)
+    -- Try return the item to the player (or drop it)
+    if playerIndex then -- return if possible
+      local player = game.players[playerIndex]
+      player.print(localisedMessage)
+      player.insert{
+        name = self:getItemName(),
+        count = 1,
+      }
+    else -- drop it otherwise
+      local droppedItem = createdEntity.surface.create_entity{
+        name = "item-on-ground",
+        stack = {
+          name = self:getItemName(),
+          count = 1,
+        },
+        position = createdEntity.position,
+        force = createdEntity.force,
+        fast_replace = true,
+        spill = false, -- delete excess items (only if fast_replace = true)
+      }
+      droppedItem.to_be_looted = true
+      droppedItem.order_deconstruction(createdEntity.force)
+    end
+
+    -- Destroy the placed item
+    createdEntity.destroy()
     return false
   end
 
-  -- TODO: Check placement on a crossing
-  -- TODO: Check placement on rail next to another line
-  -- TODO: Check placement on diagonal rail
+  local entitySurface = createdEntity.surface
+  local entityPosition = createdEntity.position
+  local entityDirection = lib.directions.orientationTo4WayDirection(createdEntity.orientation)
+  local entityOpositeDirection = lib.directions.oposite(entityDirection)
 
+  -- STEP 1: check the rails underneath
+  for _,railEntity in pairs(entitySurface.find_entities_filtered{
+    name = "straight-rail",
+    type = "straight-rail",
+    area = {
+      {entityPosition.x - 3.1, entityPosition.y - 3.1},
+      {entityPosition.x + 3.1, entityPosition.y + 3.1},
+    },
+  }) do
+    local railDirection = railEntity.direction
+    if railDirection == entityDirection or railDirection == entityOpositeDirection then
+      -- STEP 1a: If the rail is in the correct direction, there could still be
+      --          a rail that is parallel to the one its standing on.
+      if railDirection == defines.direction.north or railDirection == defines.direction.south then
+        -- check the x position
+        if railEntity.position.x ~= entityPosition.x then
+          return notValid{"trainassembler-message.noMultipleRailways", {"item-name.trainassembly"}}
+        end
+      else
+        -- check the y position
+        if railEntity.position.y ~= entityPosition.y then
+          return notValid{"trainassembler-message.noMultipleRailways", {"item-name.trainassembly"}}
+        end
+      end
+
+    else
+      -- STEP 1b: If there is a rail oriented wrong, check whats wrong to
+      --          display a suitable message. The message depends on what
+      --          direction the rail is facing (diagonal or perpendicular)
+      local localisedMessage = {
+        -- crossings (vertical or horizontal)
+        [defines.direction.north    ] = {"trainassembler-message.noCrossingPlacement", {"item-name.trainassembly"}},
+        [defines.direction.east     ] = {"trainassembler-message.noCrossingPlacement", {"item-name.trainassembly"}},
+        [defines.direction.south    ] = {"trainassembler-message.noCrossingPlacement", {"item-name.trainassembly"}},
+        [defines.direction.west     ] = {"trainassembler-message.noCrossingPlacement", {"item-name.trainassembly"}},
+        -- diagonal
+        [defines.direction.northeast] = {"trainassembler-message.noDiagonalPlacement", {"item-name.trainassembly"}},
+        [defines.direction.southeast] = {"trainassembler-message.noDiagonalPlacement", {"item-name.trainassembly"}},
+        [defines.direction.southwest] = {"trainassembler-message.noDiagonalPlacement", {"item-name.trainassembly"}},
+        [defines.direction.northwest] = {"trainassembler-message.noDiagonalPlacement", {"item-name.trainassembly"}},
+      }
+      return notValid(localisedMessage[railDirection])
+    end
+  end
+
+  -- STEP 2: If all previous checks succeeded, it means it is validly placed.
   return true
 end
 
@@ -613,19 +692,36 @@ function Trainassembly:onBuildEntity(createdEntity, playerIndex)
 
     -- STEP 1: check if the assembling machine is validly placed.
     if self:checkValidPlacement(createdEntity, playerIndex) then
+      local entitySurface = createdEntity.surface
+      local entityPosition = createdEntity.position
+      local entityForce = createdEntity.force
 
-      -- STEP 2: place the assembling machine on the same spot (saved in step 1)
+      -- STEP 2: place the assembling machine on the same spot
       local machineEntity = createdEntity.surface.create_entity({
         name      = self:getMachineEntityName(),
-        position  = createdEntity.position,
+        position  = entityPosition,
         direction = lib.directions.orientationTo4WayDirection(createdEntity.orientation),
-        force     = createdEntity.force,
+        force     = entityForce,
       })
 
-      -- STEP 3: delete the locomotive that was build.
+      -- STEP 3: make the rails underneath unminable
+      for _,railEntity in pairs(entitySurface.find_entities_filtered{
+        name  = "straight-rail",
+        type  = "straight-rail",
+        force = entityForce,
+        area  = {
+          {entityPosition.x - 3.1, entityPosition.y - 3.1},
+          {entityPosition.x + 3.1, entityPosition.y + 3.1},
+        },
+      }) do
+        railEntity.destructible = false -- entity can't be damaged
+        railEntity.minable      = false -- entity can't be mined
+      end
+
+      -- STEP 4: delete the locomotive that was build.
       createdEntity.destroy()
 
-      -- STEP 4: Save the newly made trainassembly to our data structure so we can keep track of it
+      -- STEP 5: Save the newly made trainassembly to our data structure so we can keep track of it
       self:saveNewStructure(machineEntity)
     end
   end
@@ -638,7 +734,22 @@ function Trainassembly:onRemoveEntity(removedEntity)
   --
   -- Player experience: Everything with the trainAssembler gets removed
   if removedEntity and removedEntity.valid and removedEntity.name == self:getMachineEntityName() then
-    -- STEP 1: Update the data structure
+    -- STEP 1: make the rails underneath minable again
+    local entityPosition = removedEntity.position
+    for _,railEntity in pairs(removedEntity.surface.find_entities_filtered{
+      name  = "straight-rail",
+      type  = "straight-rail",
+      force = removedEntity.force,
+      area  = {
+        {entityPosition.x - 3.1, entityPosition.y - 3.1},
+        {entityPosition.x + 3.1, entityPosition.y + 3.1},
+      },
+    }) do
+      railEntity.destructible = true -- entity can be damaged
+      railEntity.minable      = true -- entity can be mined
+    end
+
+    -- STEP 2: Update the data structure
     self:deleteBuilding(removedEntity)
   end
 end
