@@ -1,5 +1,6 @@
 require 'util'
 require 'lib.util'
+require 'lib.table'
 
 -- Create class
 Traincontroller = {}
@@ -86,8 +87,8 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuiderIndex)
   if not global.TC_data["nextTrainControllerIterate"] then
     -- STEP 2a: When it is the first one, it is easy to add, since its the first
     global.TC_data["nextTrainControllerIterate"] = thisController
-    global.TC_data["trainControllers"][thisController["surfaceIndex"]][thisController["position"].y][thisController["position"].x]["prevController"] = thisController
-    global.TC_data["trainControllers"][thisController["surfaceIndex"]][thisController["position"].y][thisController["position"].x]["nextController"] = thisController
+    global.TC_data["trainControllers"][thisController["surfaceIndex"]][thisController["position"].y][thisController["position"].x]["prevController"] = util.table.deepcopy(thisController)
+    global.TC_data["trainControllers"][thisController["surfaceIndex"]][thisController["position"].y][thisController["position"].x]["nextController"] = util.table.deepcopy(thisController)
 
     -- STEP 2b: start on_tick events becose we need to start iterating
     -- TODO
@@ -95,26 +96,78 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuiderIndex)
     -- when we've added it to the list, we know there is at least one in front
     -- of us. This one has a prev set. We add it inbetween.
 
-    -- STEP 2a: extract the previous and next index
+    -- STEP 2a: extract the previous and next controller
     local nextController = global.TC_data["nextTrainControllerIterate"]
     local prevController = global.TC_data["trainControllers"][nextController["surfaceIndex"]][nextController["position"].y][nextController["position"].x]["prevController"]
 
     -- STEP 2b: adapt the previous controller
-    global.TC_data["trainControllers"][prevController["surfaceIndex"]][prevController["position"].y][prevController["position"].x]["nextController"] = thisController
-    global.TC_data["trainControllers"][thisController["surfaceIndex"]][thisController["position"].y][thisController["position"].x]["prevController"] = prevController
+    global.TC_data["trainControllers"][prevController["surfaceIndex"]][prevController["position"].y][prevController["position"].x]["nextController"] = util.table.deepcopy(thisController)
+    global.TC_data["trainControllers"][thisController["surfaceIndex"]][thisController["position"].y][thisController["position"].x]["prevController"] = util.table.deepcopy(prevController)
 
     -- STEP 2c: adapt the next controller
-    global.TC_data["trainControllers"][nextController["surfaceIndex"]][nextController["position"].y][nextController["position"].x]["prevController"] = thisController
-    global.TC_data["trainControllers"][thisController["surfaceIndex"]][thisController["position"].y][thisController["position"].x]["nextController"] = nextController
+    global.TC_data["trainControllers"][nextController["surfaceIndex"]][nextController["position"].y][nextController["position"].x]["prevController"] = util.table.deepcopy(thisController)
+    global.TC_data["trainControllers"][thisController["surfaceIndex"]][thisController["position"].y][thisController["position"].x]["nextController"] = util.table.deepcopy(nextController)
 
     -- STEP 2d: make sure the next iteration doesn't skip this new controller
-    global.TC_data["nextTrainControllerIterate"] = thisController
+    if lib.table.areEqual(global.TC_data["nextTrainControllerIterate"], nextController) then
+      global.TC_data["nextTrainControllerIterate"] = util.table.deepcopy(thisController)
+    end
   end
+
+  game.print(serpent.block(global.TC_data["trainControllers"]))
 end
 
 
 
-function Trainassembly:deleteBuilding(controllerEntity)
+function Traincontroller:deleteController(controllerEntity)
+  -- STEP 1: make sure we can index the table
+  local controllerSurface  = controllerEntity.surface
+  local controllerPosition = controllerEntity.position
+  if not global.TC_data["trainControllers"][controllerSurface.index] then
+    return
+  end
+  if not global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y] then
+    return
+  end
+
+  -- STEP 2: remove this controller from the list
+  local thisController = {
+    ["surfaceIndex"] = controllerSurface.index,
+    ["position"]     = controllerPosition,
+  }
+
+  -- STEP 2a: extract the previous and next controller
+  local prevController = global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y][controllerPosition.x]["prevController"]
+  local nextController = global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y][controllerPosition.x]["nextController"]
+
+  -- STEP 2b: adapt the prevController
+  global.TC_data["trainControllers"][prevController["surfaceIndex"]][prevController["position"].y][prevController["position"].x]["nextController"] = util.table.deepcopy(nextController)
+
+  -- STEP 2c: adapt the next controller
+  global.TC_data["trainControllers"][nextController["surfaceIndex"]][nextController["position"].y][nextController["position"].x]["prevController"] = util.table.deepcopy(prevController)
+
+  -- STEP 2d: make sure the next iteration does skip this old controller
+  if lib.table.areEqual(global.TC_data["nextTrainControllerIterate"], thisController) then
+    -- Make sure the next controller isn't this controller, then there are no controllers.
+    if lib.table.areEqual(thisController, nextController) then
+      global.TC_data["nextTrainControllerIterate"] = nil
+      -- TODO: stop on_tick
+    else
+      global.TC_data["nextTrainControllerIterate"] = util.table.deepcopy(nextController)
+    end
+  end
+
+  -- STEP 2e: Delete this controller
+  global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y][controllerPosition.x] = nil
+
+  if lib.table.isEmpty(global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y]) then
+    global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y] = nil
+  end
+  if lib.table.isEmpty(global.TC_data["trainControllers"][controllerSurface.index]) then
+    global.TC_data["trainControllers"][controllerSurface.index] = nil
+  end
+
+  game.print(serpent.block(global.TC_data["trainControllers"]))
 
 end
 
@@ -131,6 +184,25 @@ end
 
 function Traincontroller:getControllerEntityName()
   return global.TC_data.prototypeData.trainControllerName
+end
+
+
+
+function Traincontroller:getTrainController(trainBuilderIndex)
+  for surfaceIndex,_ in pairs(global.TC_data["trainControllers"]) do
+    for positionY,_ in pairs(global.TC_data["trainControllers"][surfaceIndex]) do
+      for positionX,_ in pairs(global.TC_data["trainControllers"][surfaceIndex][positionY]) do
+        local trainController = global.TC_data["trainControllers"][surfaceIndex][positionY][positionX]
+
+        if trainController["trainBuiderIndex"] == trainBuilderIndex then
+          return trainController["entity"]
+        end
+
+      end
+    end
+  end
+
+  return nil
 end
 
 
@@ -204,11 +276,18 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
     return notValid{"traincontroller-message.noTrainbuilderFound", {"item-name.trainassembly"}}
   end
 
-  -- STEP 2: Find the trainbuilder that this trainassembler is part of, if there
-  --         is no trainbuilder found, the controller is placed wrong
+  -- STEP 2: Find the trainbuilder that this trainassembler is part of
   local builderIndex = Trainassembly:getTrainBuilderIndex(builderEntity)
+  -- STEP 2a: If there is no trainbuilder found, the controller is placed wrong.
   if not builderIndex then
     return notValid{"traincontroller-message.invalidTrainbuilderFound", {"item-name.trainassembly"}}
+  end
+  -- STEP 2b: If there is one, we need to make sure it isn't controlled yet.
+  if self:getTrainController(builderIndex) then
+    return notValid{"traincontroller-message.isAlreadyControlled",
+      --[[1]]{"item-name.trainassembly"},
+      --[[2]]{"item-name.traincontroller", {"item-name.trainassembly"}},
+    }
   end
 
   -- STEP 3: Make sure the trainbuilder has all recipes set, and at least
@@ -263,5 +342,56 @@ function Traincontroller:onBuildEntity(createdEntity, playerIndex)
     if validPlacement then -- It is valid, now we have to add the entity to the list
       self:saveNewStructure(createdEntity, trainBuiderIndex)
     end
+  end
+end
+
+-- When a player/robot removes the building
+function Traincontroller:onRemoveEntity(removedEntity)
+  -- In some way the building got removed. This results in that the builder is
+  -- removed. This also means we have to delete the train that was in this spot.
+  --
+  -- Player experience: Everything with the trainAssembler gets removed
+  if removedEntity and removedEntity.valid and removedEntity.name == self:getControllerEntityName() then
+    -- STEP 1: Update the data structure
+    self:deleteController(removedEntity)
+  end
+end
+
+-- When a player rotates an entity
+function Traincontroller:onPlayerRotatedEntity(rotatedEntity, playerIndex)
+  -- The player rotated the machine entity, we need to make sure the controller
+  -- is still valid.
+  if rotatedEntity and rotatedEntity.valid and rotatedEntity.name == Trainassembly:getMachineEntityName() then
+    local trainController = self:getTrainController(Trainassembly:getTrainBuilderIndex(rotatedEntity))
+    if trainController then
+      self:checkValidPlacement(trainController, playerIndex)
+    end
+  end
+end
+
+
+-- when a trainbuilder gets altered
+function Traincontroller:onTrainbuilderAltered(trainBuilderIndex)
+  -- if there is a traincontroller, we drop it on the floor
+  local trainController = self:getTrainController(trainBuilderIndex)
+  if trainController then
+    -- delete from structure
+    self:deleteController(trainController)
+
+    -- drop the controller on the ground
+    local droppedItem = trainController.surface.create_entity{
+      name = "item-on-ground",
+      stack = {
+        name = self:getControllerItemName(),
+        count = 1,
+      },
+      position = trainController.position,
+      force = trainController.force,
+      fast_replace = true,
+      spill = false, -- delete excess items (only if fast_replace = true)
+    }
+    droppedItem.to_be_looted = true
+    droppedItem.order_deconstruction(trainController.force)
+    trainController.destroy()
   end
 end

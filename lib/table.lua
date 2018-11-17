@@ -27,12 +27,12 @@ function lib.table.areEqual(t1, t2)
     return t1 == t2
   end
   for k,v in pairs(t1) do
-    if not tablesAreEqual(v, t2[k]) then
+    if not lib.table.areEqual(v, t2[k]) then
       return false
     end
   end
   for k,v in pairs(t2) do
-    if not tablesAreEqual(v, t1[k]) then
+    if not lib.table.areEqual(v, t1[k]) then
       return false
     end
   end
