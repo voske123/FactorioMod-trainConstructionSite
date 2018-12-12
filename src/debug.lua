@@ -57,7 +57,6 @@ function Debug:onPlayerCreated(player_index)
     quickbar.insert("rail")
     quickbar.insert("rail-signal")
     quickbar.insert("trainassembly")
-    quickbar.insert("traincontroller")
   end
 
   if toolInventory and toolInventory.valid then

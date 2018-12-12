@@ -1,6 +1,5 @@
 require "src.debug"
 require "src.trainassembly"
-require "src.traincontroller"
 
 
 script.on_init(function(event)
@@ -13,7 +12,6 @@ script.on_init(function(event)
   end
 
   Trainassembly:onInit()
-  Traincontroller:onInit()
 end)
 
 
@@ -31,7 +29,8 @@ end)
 script.on_event(defines.events.on_built_entity, function(event)
   -- Called when player builds an entity.
   Trainassembly:onPlayerBuildEntity(event.created_entity)
-  Traincontroller:onPlayerBuildEntity(event.created_entity, event.player_index)
+  log(serpent.block(global.TA_data["trainAssemblers"]))
+  log(serpent.block(global.TA_data["trainBuilders"]))
 end)
 
 
@@ -39,6 +38,8 @@ end)
 script.on_event(defines.events.on_player_mined_entity, function(event)
   -- Called when player mines an entity.
   Trainassembly:onRemoveEntity(event.entity)
+  log(serpent.block(global.TA_data["trainAssemblers"]))
+  log(serpent.block(global.TA_data["trainBuilders"]))
 end)
 
 
