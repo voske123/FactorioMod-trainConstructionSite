@@ -60,40 +60,18 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
   -- it will inform the player with the corresponding message and return the
   -- traincontroller to the player. If no player is found, it will drop the
   -- traincontroller on the ground where the traincontroller was placed.
-
-  local entityDirection = createdEntity.direction -- direction to look for a trainbuilder
-  if entityDirection == defines.direction.west then
-    entityDirection = {x=1,y=0}
-  elseif entityDirection == defines.direction.east then
-    entityDirection = {x=-1,y=0}
-  elseif entityDirection == defines.direction.north then
-    entityDirection = {x=0,y=1}
-  elseif entityDirection == defines.direction.south then
-    entityDirection = {x=0,y=-1}
-  else
-    entityDirection = {x=0,y=0} -- invalid direction
+  local entityDirection = {x=0,y=0}
+  if createdEntity.direction == defines.direction.west then
+    entityDirection.x = 1
+  elseif createdEntity.direction == defines.direction.east then
+    entityDirection.x = -1
+  elseif createdEntity.direction == defines.direction.north then
+    entityDirection.y = -1
+  elseif createdEntity.direction == defines.direction.south then
+    entityDirection.y = 1
   end
 
-  local entityPosition = createdEntity.position
-  local entitySurface = createdEntity.surface
-  local entitySurfaceIndex = entitySurface.index
-
-  local builderEntity = entitySurface.find_entities_filtered{
-    name     = Trainassembly:getMachineEntityName(),
-    --type     = createdEntity.type,
-    force    = createdEntity.force,
-    area     = {
-      { entityPosition.x + 3.5*entityDirection.x - 1.5*entityDirection.y , entityPosition.y + 3.5*entityDirection.y + 1.5*entityDirection.x },
-      { entityPosition.x + 5.5*entityDirection.x - 2.5*entityDirection.y , entityPosition.y + 5.5*entityDirection.y + 2.5*entityDirection.x },
-    },
-    limit    = 1,
-  }
-
-  game.print(#builderEntity)
-  game.print(serpent.block{
-    { entityPosition.x + 3.5*entityDirection.x - 1.5*entityDirection.y , entityPosition.y + 3.5*entityDirection.y + 1.5*entityDirection.x },
-    { entityPosition.x + 5.5*entityDirection.x - 2.5*entityDirection.y , entityPosition.y + 5.5*entityDirection.y + 2.5*entityDirection.x },
-  })
+  game.print(serpent.block(createdEntity.position))
 
   return true
 end
