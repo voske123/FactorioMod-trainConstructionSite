@@ -61,46 +61,6 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
   -- traincontroller to the player. If no player is found, it will drop the
   -- traincontroller on the ground where the traincontroller was placed.
 
-  local notValid = function(localised_message)
---[[    if playerIndex then
-      -- inform player and give item back
-      local player = game.players[playerIndex]
-      player.print(localised_message)
-      player.insert(createdEntity.name)
-      createdEntity.destroy()
-    else
-      -- delete and drop the entity
-      local entityName = created_entity.name
-      local entityForce = createdEntity.force
-      local entitySurface = create_entity.surface
-      local entityPosition = create_entity.position
-      createdEntity.destroy()
-      entitySurface.spill_item_stack{
-        position      = entityPosition,
-        items         = {name = entityName, count = 1},
-        enable_looted = true,        -- player will pick up the item automaticaly when walking over it
-        force         = entityForce, -- will mark the item for deconstruction
-      }
-    end
-]]--
-    local droppedItem = createdEntity.surface.create_entity{
-      name = "item-on-ground",
-      stack = {
-        name = createdEntity.prototype.mineable_properties.products[1].name,
-        count = 1,
-      },
-      position = createdEntity.position,
-      force = createdEntity.force,
-      fast_replace = true,
-      spill = false, -- delete excess items (only if fast_replace = true)
-    }
-    droppedItem.to_be_looted = true
-    droppedItem.order_deconstruction(createdEntity.force)
-    createdEntity.destroy()
-    game.print("invalid placed")
-    return false
-  end
-
   local entityDirection = createdEntity.direction -- direction to look for a trainbuilder
   if entityDirection == defines.direction.west then
     entityDirection = {x=1,y=0}
@@ -127,11 +87,13 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
       { entityPosition.x + 5.5*entityDirection.x - 2.5*entityDirection.y , entityPosition.y + 5.5*entityDirection.y + 2.5*entityDirection.x },
     },
     limit    = 1,
-  }[1]
+  }
 
-  if not (builderEntity and builderEntity.valid) then
-    return notValid()
-  end
+  game.print(#builderEntity)
+  game.print(serpent.block{
+    { entityPosition.x + 3.5*entityDirection.x - 1.5*entityDirection.y , entityPosition.y + 3.5*entityDirection.y + 1.5*entityDirection.x },
+    { entityPosition.x + 5.5*entityDirection.x - 2.5*entityDirection.y , entityPosition.y + 5.5*entityDirection.y + 2.5*entityDirection.x },
+  })
 
   return true
 end
