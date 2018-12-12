@@ -29,7 +29,7 @@ trainassembly.selection_box = {{-3, -3}, {3, 3}}
 
 -- collision mask & box
 trainassembly.collision_mask = util.table.deepcopy(data.raw["locomotive"]["trainassembly-placeable"].collision_mask)
-trainassembly.collision_box = {{-2.95, -2.95}, {2.95, 2.95}}
+trainassembly.collision_box = {{-3, -3}, {3, 3}}
 
 -- delete train-layer so it doesn't collide with trains
 for collisionIndex, collisionLayer in pairs(trainassembly.collision_mask) do
@@ -63,7 +63,6 @@ trainassembly.crafting_speed = 0.20
 trainassembly.energy_usage = "500kW"
 trainassembly.module_specification.module_slots = 5
 trainassembly.allowed_effects = {"consumption",}
-trainassembly.scale_entity_info_icon = true
 
 -- 4 way animation
 trainassembly.animation =

@@ -31,7 +31,7 @@ trainassembly.collision_mask =
   "train-layer", "player-layer", -- default layers
   "layer-13", -- curved rails
 }
-trainassembly.collision_box = {{-2.95, -3.3}, {2.95, 3.5}} -- when train is facing north
+trainassembly.collision_box = {{-3, -3.3}, {3, 3.5}} -- when train is facing north
 
 --add collision mask to curved rails
 local defaultRailMask = {"object-layer", "item-layer", "floor-layer", "water-tile"}

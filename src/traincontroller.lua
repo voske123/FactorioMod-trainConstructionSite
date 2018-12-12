@@ -44,9 +44,6 @@ end
 --------------------------------------------------------------------------------
 -- Setter functions to alter data into the data structure
 --------------------------------------------------------------------------------
-function Traincontroller:saveNewStructure(controllerEntity)
-  -- TODO
-end
 
 
 
@@ -66,15 +63,15 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
   -- traincontroller on the ground where the traincontroller was placed.
 
   local notValid = function(localisedMessage)
-    -- Try return the item to the player (or drop it)
-    if playerIndex then -- return if possible
+    if playerIndex then
       local player = game.players[playerIndex]
       player.print(localisedMessage)
       player.insert{
         name = createdEntity.name,
         count = 1,
       }
-    else -- drop it otherwise
+    else
+
       local droppedItem = createdEntity.surface.create_entity{
         name = "item-on-ground",
         stack = {
@@ -89,14 +86,11 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
       droppedItem.to_be_looted = true
       droppedItem.order_deconstruction(createdEntity.force)
     end
-
-    -- Destroy the placed item
     createdEntity.destroy()
+    game.print("invalid placed")
     return false
   end
 
-  -- STEP 1: Look for a trainassembler, if there is no trainassembler found,
-  --         the controller is placed wrong
   local entityDirection = createdEntity.direction -- direction to look for a trainbuilder
   local entitySearchDirection = {x=0,y=0}
 
@@ -128,16 +122,13 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
     return notValid{"trainbuilder-message.noTrainbuilderFound", {[1] = "item-name.trainassembly"}}
   end
 
-  -- STEP 2: Find the trainbuilder that this trainassembler is part of, if there
-  --         is no trainbuilder found, the controller is placed wrong
+
   local builderIndex = Trainassembly:getTrainBuilderIndex(builderEntity)
+
   if not builderIndex then
     return notValid{"trainbuilder-message.invalidTrainbuilderFound", {[1] = "item-name.trainassembly"}}
   end
 
-  -- STEP 3: Make sure the trainbuilder has all recipes set, and at least
-  --         one of the recipes must be a locomotive that is facing it the
-  --         direction the train is supposed to leave.
   local hasValidLocomotive = false
   for _, builderLocation in pairs(Trainassembly:getTrainBuilder(builderIndex)) do
     local machineEntity = Trainassembly:getMachineEntity(builderLocation["surfaceIndex"], builderLocation["position"])
@@ -156,16 +147,14 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
       end
     end
   end
-
   if not hasValidLocomotive then
-    return notValid{"trainbuilder-message.noValidLocomotiveFound",
-      --[[1]]{"item-name.trainassembly"},
-      --[[2]]"__ENTITY__locomotive__",
-      --[[3]]{"item-name.traincontroller", {"item-name.trainassembly"}},
-    }
+    return notValid{"trainbuilder-message.noValidLocomotiveFound", {
+      [1] = "item-name.trainassembly",
+      [2] = "locomotive",
+      [3] = "item-name.traincontroller",
+    }}
   end
 
-  -- STEP 4: If all previous checks succeeded, it means it is validly placed.
   return true
 end
 
@@ -175,7 +164,7 @@ end
 -- Behaviour functions, mostly event handlers
 --------------------------------------------------------------------------------
 -- When a player builds a new entity
-function Traincontroller:onBuildEntity(createdEntity, playerIndex)
+function Traincontroller:onPlayerBuildEntity(createdEntity, playerIndex)
   -- The player created a new entity, the player can only place the controller
   -- If he configured the trainbuilder correctly. Otherwise we delete it again
   -- and inform the player what went wrong.
@@ -183,7 +172,7 @@ function Traincontroller:onBuildEntity(createdEntity, playerIndex)
   -- Player experience: The player activated the trainbuilder if its valid.
   if createdEntity and createdEntity.valid and createdEntity.name == self:getControllerEntityName()
   and self:checkValidPlacement(createdEntity, playerIndex) then
-    -- It is valid, now we have to add the entity to the list
-    self:saveNewStructure(createdEntity)
+    -- TODO
+    game.players[playerIndex].print("validly placed.")
   end
 end
