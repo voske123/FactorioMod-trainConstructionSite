@@ -6,7 +6,7 @@ trainTech.name = "trainassembly-trainTechnology"
 trainTech.effects = {}
 trainTech.localised_name = {"technology-name.trainTech"}
 trainTech.localised_description = {"technology-description.trainTech"}
-trainTech.prerequisites = {"railway", "engine", "logistics-2"}
+trainTech.prerequisites = {"railway",}
 
 for _, trainRecipe in pairs ({
   "locomotive",
@@ -45,25 +45,6 @@ for techName, techPrototype in pairs(data.raw["technology"]) do
   end
 end
 
-if data.raw["technology"]["railway"].prerequisites then
-  for prerequisitesIndex, prerequisite in pairs(data.raw["technology"]["railway"].prerequisites) do
-    if prerequisite == "engine" then
-      data.raw["technology"]["railway"].prerequisites[prerequisitesIndex] = nil
-    else
-      if prerequisite == "logistics-2" then
-        data.raw["technology"]["railway"].prerequisites[prerequisitesIndex] = "logistics"
-      end
-    end
-  end
-end
-
-for _, prerequisitesName in pairs{
-  "automation-2",
-  "steel-processing",
-} do
-  table.insert(data.raw["technology"]["railway"].prerequisites, prerequisitesName)
-end
-
 if data.raw["technology"]["railway"].effects then
   for effectIndex, effect in pairs(data.raw["technology"]["railway"].effects) do
     if effect.type == "unlock-recipe"
@@ -76,25 +57,17 @@ else
   data.raw["technology"]["railway"].effects = {}
 end
 
-for _, recipeName in pairs{
-  "trainassembly",
-  "trainassembly-trainfuel-raw-wood",
-} do
-  table.insert(data.raw["technology"]["railway"].effects,
-  {
-    type = "unlock-recipe",
-    recipe = recipeName,
-  })
-end
+table.insert(data.raw["technology"]["railway"].effects,
+{
+  type = "unlock-recipe",
+  recipe = "trainassembly",
+})
 
-if data.raw["technology"]["braking-force-1"].prerequisites then
-  for brakePrerequisiteIndex, brakePrerequisite in pairs(data.raw["technology"]["braking-force-1"].prerequisites) do
-    if brakePrerequisite == "railway" then
-      data.raw["technology"]["braking-force-1"].prerequisites[brakePrerequisiteIndex] = trainTech.name
-      break
-    end
-  end
-end
+table.insert(data.raw["technology"]["railway"].effects,
+{
+  type = "unlock-recipe",
+  recipe = "trainassembly-trainfuel-raw-wood",
+})
 
 data:extend(
 {
@@ -112,9 +85,10 @@ data:extend(
       },
     },
     prerequisites =
-    {
-      "railway",
-    },
+      {
+        "railway",
+        "trainassembly-trainTechnology",
+      },
     unit =
     {
       count = 75,
@@ -137,10 +111,10 @@ data:extend(
       },
     },
     prerequisites =
-    {
-      "oil-processing",
-      "trainfuel-2",
-    },
+      {
+        "oil-processing",
+        "trainfuel-2",
+      },
     unit =
     {
       count = 100,

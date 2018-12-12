@@ -21,4 +21,3 @@ require "prototypes.entities.trainassembly-machine"
 require "prototypes.entities.traincontroller"
 
 require "prototypes.technology.trainassembly-technology"
-require "prototypes.technology.traincontroller-technology"
