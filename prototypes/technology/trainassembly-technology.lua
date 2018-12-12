@@ -20,7 +20,7 @@ for _, trainRecipe in pairs ({
   table.insert(trainTech.effects,
   {
     type = "unlock-recipe",
-    recipe = trainRecipe .. "-fluid[" .. trainRecipe .. "]",
+    recipe = trainRecipe .. "-fluid",
   })
 end
 
@@ -36,7 +36,7 @@ for techName, techPrototype in pairs(data.raw["technology"]) do
             table.insert(data.raw["technology"][techName].effects, techEffectIndex + 1,
             {
               type = "unlock-recipe",
-              recipe = wagonName .. "-fluid[" .. wagonName .. "]",
+              recipe = wagonName .. "-fluid",
             })
           end
         end

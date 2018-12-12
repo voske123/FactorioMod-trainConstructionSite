@@ -20,7 +20,7 @@ for _, trainType in pairs({
       data:extend({
         {
           type = "recipe",
-          name = itemName .. "-fluid[" .. trainType .. "]",
+          name = itemName .. "-fluid",
           category = "trainassembling",
           expensive = nil,
           normal =
@@ -47,7 +47,7 @@ for _, trainType in pairs({
       -- we will also require fuel to start the engine.
       if trainType == "locomotive" then
         -- This is a locomotive, add another ingredient to the list for fuel
-        table.insert(data.raw["recipe"][itemName .. "-fluid[" .. trainType .. "]"].normal.ingredients, {"trainassembly-recipefuel", 1})
+        table.insert(data.raw["recipe"][itemName .. "-fluid"].normal.ingredients, {"trainassembly-recipefuel", 1})
       end
 
     end

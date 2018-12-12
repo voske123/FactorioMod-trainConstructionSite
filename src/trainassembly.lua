@@ -489,27 +489,6 @@ end
 
 
 
-function Trainassembly:getMachineEntity(machineSurfaceIndex, machinePosition)
-  -- STEP 1: If we don't have a trainBuilder saved on that surface, or not
-  --         on that y position or on that x position, it means that we don't
-  --         have a entity available for that location.
-  if not global.TA_data["trainAssemblers"][machineSurfaceIndex] then
-    return nil
-  end
-  if not global.TA_data["trainAssemblers"][machineSurfaceIndex][machinePosition.y] then
-    return nil
-  end
-  if not global.TA_data["trainAssemblers"][machineSurfaceIndex][machinePosition.y][machinePosition.x] then
-    return nil
-  end
-
-  -- STEP 2: In step 1 we checked for an invalid data structure. So now we
-  --         can return the entity on this location.
-  return global.TA_data["trainAssemblers"][machineSurfaceIndex][machinePosition.y][machinePosition.x]["entity"]
-end
-
-
-
 function Trainassembly:getMachineDirection(machineEntity)
   -- STEP 1: If the machineEntity isn't valid, its position isn't valid either
   if not (machineEntity and machineEntity.valid) then
@@ -534,46 +513,6 @@ function Trainassembly:getMachineDirection(machineEntity)
   -- STEP 3: In step 2 we checked for an invalid data structure. So now we
   --         can return the direction the machine is/was facing.
   return global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["direction"]
-end
-
-
-
-function Trainassembly:getTrainBuilderIndex(machineEntity)
-  -- STEP 1: If the machineEntity isn't valid, its position isn't valid either
-  if not (machineEntity and machineEntity.valid) then
-    return nil
-  end
-
-  -- STEP 2: If we don't have a trainBuilder saved on that surface, or not
-  --         on that y position or on that x position, it means that we don't
-  --         have a trainBuilderIndex available for that machine.
-  local machineSurface = machineEntity.surface
-  if not global.TA_data["trainAssemblers"][machineSurface.index] then
-    return nil
-  end
-  local machinePosition = machineEntity.position
-  if not global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y] then
-    return nil
-  end
-  if not global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] then
-    return nil
-  end
-
-  -- STEP 3: In step 2 we checked for an invalid data structure. So now we
-  --         can return the trainBuilderIndex of the machine.
-  return global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"]
-end
-
-
-
-function Trainassembly:getTrainBuilder(trainBuilderIndex)
-  --step 1: Make sure there is a valid index
-  if not trainBuilderIndex then
-    return nil
-  end
-
-  --step 2: In this step we return the trainBuilders with the trainBuilderIndex.
-  return global.TA_data["trainBuilders"][trainBuilderIndex]
 end
 
 

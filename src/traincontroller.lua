@@ -61,30 +61,41 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
   -- traincontroller to the player. If no player is found, it will drop the
   -- traincontroller on the ground where the traincontroller was placed.
 
-  local notValid = function(localisedMessage)
-    if playerIndex then
+  local notValid = function(localised_message)
+--[[    if playerIndex then
+      -- inform player and give item back
       local player = game.players[playerIndex]
-      player.print(localisedMessage)
-      player.insert{
-        name = createdEntity.name,
-        count = 1,
-      }
+      player.print(localised_message)
+      player.insert(createdEntity.name)
+      createdEntity.destroy()
     else
-
-      local droppedItem = createdEntity.surface.create_entity{
-        name = "item-on-ground",
-        stack = {
-          name = createdEntity.prototype.mineable_properties.products[1].name,
-          count = 1,
-        },
-        position = createdEntity.position,
-        force = createdEntity.force,
-        fast_replace = true,
-        spill = false, -- delete excess items (only if fast_replace = true)
+      -- delete and drop the entity
+      local entityName = created_entity.name
+      local entityForce = createdEntity.force
+      local entitySurface = create_entity.surface
+      local entityPosition = create_entity.position
+      createdEntity.destroy()
+      entitySurface.spill_item_stack{
+        position      = entityPosition,
+        items         = {name = entityName, count = 1},
+        enable_looted = true,        -- player will pick up the item automaticaly when walking over it
+        force         = entityForce, -- will mark the item for deconstruction
       }
-      droppedItem.to_be_looted = true
-      droppedItem.order_deconstruction(createdEntity.force)
     end
+]]--
+    local droppedItem = createdEntity.surface.create_entity{
+      name = "item-on-ground",
+      stack = {
+        name = createdEntity.prototype.mineable_properties.products[1].name,
+        count = 1,
+      },
+      position = createdEntity.position,
+      force = createdEntity.force,
+      fast_replace = true,
+      spill = false, -- delete excess items (only if fast_replace = true)
+    }
+    droppedItem.to_be_looted = true
+    droppedItem.order_deconstruction(createdEntity.force)
     createdEntity.destroy()
     game.print("invalid placed")
     return false
@@ -119,26 +130,7 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
   }[1]
 
   if not (builderEntity and builderEntity.valid) then
-    return notValid{"trainbuilder-message.noTrainbuilderFound", {[1] = "item-name.trainassembly"}}
-  end
-
-
-  local builderIndex = Trainassembly:getTrainBuilderIndex(builderEntity)
-
-  if not builderIndex then
-    return notValid{"trainbuilder-message.invalidTrainbuilderFound", {[1] = "item-name.trainassembly"}}
-  end
-
-  for _, builderLocation in pairs(Trainassembly:getTrainBuilder(builderIndex)) do
-    local machineEntity = Trainassembly:getMachineEntity(builderLocation["surfaceIndex"], builderLocation["position"])
-    if machineEntity and machineEntity.valid then
-      local machineRecipe = machineEntity.get_recipe()
-      if not machineRecipe then
-        return notValid{"trainbuilder-message.noBuilderRecipeFound", {[1] = "item-name.trainassembly"}}
-      end
-      local machineRecipeName = machineRecipe.name
-      game.print(machineRecipeName)
-    end
+    return notValid()
   end
 
   return true
