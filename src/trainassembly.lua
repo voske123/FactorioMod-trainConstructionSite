@@ -195,7 +195,6 @@ function Trainassembly:saveNewStructure(machineEntity)
       --               Only the northwest one was detected, we add it to his
       --               trainbuilder.
       local trainBuiderIndex = global.TA_data["trainAssemblers"][trainAssemblerNW.surface.index][trainAssemblerNW.position.y][trainAssemblerNW.position.x]["trainBuilderIndex"]
-      Traincontroller:onTrainbuilderAltered(trainBuiderIndex)
 
       -- add reference to the trainBuilder in the trainassembly
       global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"] = trainBuiderIndex
@@ -211,7 +210,6 @@ function Trainassembly:saveNewStructure(machineEntity)
       --               Only the southeast one was detected, we add it to his
       --               trainbuilder.
       local trainBuiderIndex = global.TA_data["trainAssemblers"][trainAssemblerSE.surface.index][trainAssemblerSE.position.y][trainAssemblerSE.position.x]["trainBuilderIndex"]
-      Traincontroller:onTrainbuilderAltered(trainBuiderIndex)
 
       -- add reference to the trainBuilder in the trainassembly
       global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"] = trainBuiderIndex
@@ -228,8 +226,6 @@ function Trainassembly:saveNewStructure(machineEntity)
       --              together. Let's merge the SE one inside the NW one
       local trainBuiderIndexNW = global.TA_data["trainAssemblers"][trainAssemblerNW.surface.index][trainAssemblerNW.position.y][trainAssemblerNW.position.x]["trainBuilderIndex"]
       local trainBuiderIndexSE = global.TA_data["trainAssemblers"][trainAssemblerSE.surface.index][trainAssemblerSE.position.y][trainAssemblerSE.position.x]["trainBuilderIndex"]
-      Traincontroller:onTrainbuilderAltered(trainBuiderIndexNW)
-      Traincontroller:onTrainbuilderAltered(trainBuiderIndexSE)
 
       for trainAssemblerIndex, trainAssemblerRef in pairs(global.TA_data["trainBuilders"][trainBuiderIndexSE]) do
         -- Move the reference into the other trainBuilder
@@ -371,19 +367,17 @@ function Trainassembly:deleteBuilding(machineEntity)
   -- STEP 2c: Now that we found the entities, we can start updating the trainBuilder
   if (not trainAssemblerNW) and (not trainAssemblerSE) then
     local trainBuilderIndex = global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"]
-    Traincontroller:onTrainbuilderAltered(trainBuilderIndex)
 
     global.TA_data["trainBuilders"][trainBuilderIndex] = nil
     local lastTrainBuilderIndex = global.TA_data["nextTrainBuilderIndex"] - 1
 
-    if trainBuilderIndex ~= lastTrainBuilderIndex then
+    if not (trainBuilderIndex == lastTrainBuilderIndex) then
       global.TA_data["trainBuilders"][trainBuilderIndex] = util.table.deepcopy(global.TA_data["trainBuilders"][lastTrainBuilderIndex])
 
       -- update all the trainAssemblers
       for _, location in pairs(global.TA_data["trainBuilders"][trainBuilderIndex]) do
         global.TA_data["trainAssemblers"][location["surfaceIndex"]][location["position"].y][location["position"].x]["trainBuilderIndex"] = trainBuilderIndex
       end
-
     end
 
     global.TA_data["nextTrainBuilderIndex"] = lastTrainBuilderIndex
@@ -393,9 +387,8 @@ function Trainassembly:deleteBuilding(machineEntity)
     if (trainAssemblerNW and (not trainAssemblerSE)) or (trainAssemblerSE and (not trainAssemblerNW)) then -- only one neighbour
 
     local trainBuilderIndex = global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"]
-    Traincontroller:onTrainbuilderAltered(trainBuilderIndex)
 
-    -- delete the assembler out of the trainbuilder
+      -- delete the assembler out of the trainbuilder
     for locationIndex, location in pairs(global.TA_data["trainBuilders"][trainBuilderIndex]) do
       if location["surfaceIndex"] == machineSurface.index and location["position"].y == machinePosition.y and location["position"].x == machinePosition.x then
         table.remove(global.TA_data["trainBuilders"][trainBuilderIndex], locationIndex)
@@ -406,7 +399,6 @@ function Trainassembly:deleteBuilding(machineEntity)
     else -- there are two neighbours
 
       local trainBuilderIndex  = global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"]
-      Traincontroller:onTrainbuilderAltered(trainBuilderIndex)
       local newTrainBuilderIndex = global.TA_data["nextTrainBuilderIndex"]
       global.TA_data["trainBuilders"][newTrainBuilderIndex] = {}
 
@@ -480,7 +472,6 @@ function Trainassembly:updateMachineDirection(machineEntity)
   end
 
   global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["direction"] = machineEntity.direction
-
 end
 
 --------------------------------------------------------------------------------
@@ -695,56 +686,43 @@ function Trainassembly:onBuildEntity(createdEntity, playerIndex)
   -- We manualy have to build a machine entity on the same spot.
   --
   -- Player experience: The player thinks he builded an assembling machine on top of rails.
-  if createdEntity and createdEntity.valid then
-    if createdEntity.name == self:getPlaceableEntityName() then
-      -- We know the createdEntity is the placeable entity, meaning the player wants
-      -- to build a trainassembly on this spot
+  if createdEntity and createdEntity.valid and createdEntity.name == self:getPlaceableEntityName() then
+    -- We know the createdEntity is the placeable entity, meaning the player wants
+    -- to build a trainassembly on this spot
 
-      -- STEP 1: check if the assembling machine is validly placed.
-      if self:checkValidPlacement(createdEntity, playerIndex) then
-        local entitySurface = createdEntity.surface
-        local entityPosition = createdEntity.position
-        local entityForce = createdEntity.force
+    -- STEP 1: check if the assembling machine is validly placed.
+    if self:checkValidPlacement(createdEntity, playerIndex) then
+      local entitySurface = createdEntity.surface
+      local entityPosition = createdEntity.position
+      local entityForce = createdEntity.force
 
-        -- STEP 2: place the assembling machine on the same spot
-        local machineEntity = createdEntity.surface.create_entity({
-          name      = self:getMachineEntityName(),
-          position  = entityPosition,
-          direction = lib.directions.orientationTo4WayDirection(createdEntity.orientation),
-          force     = entityForce,
-        })
-
-        -- STEP 3: make the rails underneath unminable
-        for _,railEntity in pairs(entitySurface.find_entities_filtered{
-          name  = "straight-rail",
-          type  = "straight-rail",
-          --force = entityForce,
-          area  = {
-            {entityPosition.x - 3.1, entityPosition.y - 3.1},
-            {entityPosition.x + 3.1, entityPosition.y + 3.1},
-          },
-        }) do
-          railEntity.destructible = false -- entity can't be damaged
-          railEntity.minable      = false -- entity can't be mined
-        end
-
-        -- STEP 4: delete the locomotive that was build.
-        createdEntity.destroy()
-
-        -- STEP 5: Save the newly made trainassembly to our data structure so we can keep track of it
-        self:saveNewStructure(machineEntity)
-      end
-    elseif createdEntity.name == "straight-rail" then
-      if createdEntity.surface.count_entities_filtered{
+      -- STEP 2: place the assembling machine on the same spot
+      local machineEntity = createdEntity.surface.create_entity({
         name      = self:getMachineEntityName(),
-        type      = "assembling-machine",
-        area      = {{x = createdEntity.position.x - .5, y = createdEntity.position.y - .5},
-                     {x = createdEntity.position.x + .5, y = createdEntity.position.y + .5},},
-        limit     = 1,
-      } > 0 then
-        createdEntity.destroy()
-        game.players[playerIndex].insert{name="rail", count=1}
+        position  = entityPosition,
+        direction = lib.directions.orientationTo4WayDirection(createdEntity.orientation),
+        force     = entityForce,
+      })
+
+      -- STEP 3: make the rails underneath unminable
+      for _,railEntity in pairs(entitySurface.find_entities_filtered{
+        name  = "straight-rail",
+        type  = "straight-rail",
+        force = entityForce,
+        area  = {
+          {entityPosition.x - 3.1, entityPosition.y - 3.1},
+          {entityPosition.x + 3.1, entityPosition.y + 3.1},
+        },
+      }) do
+        railEntity.destructible = false -- entity can't be damaged
+        railEntity.minable      = false -- entity can't be mined
       end
+
+      -- STEP 4: delete the locomotive that was build.
+      createdEntity.destroy()
+
+      -- STEP 5: Save the newly made trainassembly to our data structure so we can keep track of it
+      self:saveNewStructure(machineEntity)
     end
   end
 end
@@ -761,7 +739,7 @@ function Trainassembly:onRemoveEntity(removedEntity)
     for _,railEntity in pairs(removedEntity.surface.find_entities_filtered{
       name  = "straight-rail",
       type  = "straight-rail",
-      --force = removedEntity.force,
+      force = removedEntity.force,
       area  = {
         {entityPosition.x - 3.1, entityPosition.y - 3.1},
         {entityPosition.x + 3.1, entityPosition.y + 3.1},

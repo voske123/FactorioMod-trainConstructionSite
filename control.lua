@@ -39,7 +39,6 @@ end)
 script.on_event(defines.events.on_player_mined_entity, function(event)
   -- Called when player mines an entity.
   Trainassembly:onRemoveEntity(event.entity)
-  Traincontroller:onRemoveEntity(event.entity)
 end)
 
 
@@ -47,5 +46,4 @@ end)
 script.on_event(defines.events.on_player_rotated_entity, function(event)
   --Called when player rotates an entity.
   Trainassembly:onPlayerRotatedEntity(event.entity)
-  Traincontroller:onPlayerRotatedEntity(event.entity, event.player_index)
 end)
