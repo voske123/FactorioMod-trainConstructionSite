@@ -22,9 +22,8 @@ function Traincontroller:initGlobalData()
     ["version"] = 1, -- version of the global data
     ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
 
-    ["trainControllers"] = {},       -- keep track of all controllers
-    ["nextTrainControllerIndex"] = 1, -- next free space in the trainControllers table
-    ["nextTrainControllerIterate"] = nil, -- next controller to iterate over
+    ["trainControllers"] = {}, -- keep track of all controllers
+    ["nextTrainControllerIndex"] = 1,
   }
 
   return util.table.deepcopy(TC_data)
@@ -45,57 +44,8 @@ end
 --------------------------------------------------------------------------------
 -- Setter functions to alter data into the data structure
 --------------------------------------------------------------------------------
-function Traincontroller:saveNewStructure(controllerEntity, trainBuiderIndex)
-  -- With this function we save all the data we want about a traincontroller.
-  -- This traincontroller will be used to iterate over all the trainbuilders,
-  -- this means they will be added to a linked list, with other words, each
-  -- entry knows what controller is before or afther itself.
-
-  -- STEP 1: We can already store the wanted data in the structure
-  local thisController = global.TC_data["nextTrainControllerIndex"]
-  global.TC_data["trainControllers"][thisController] = {
-    ["entity"]           = controllerEntity, -- the controller entity
-    ["trainBuiderIndex"] = trainBuiderIndex, -- the trainbuilder it controls
-
-    -- list data
-    ["prevController"]   = nil, -- the previous controller
-    ["nextController"]   = nil, -- the next controller
-  }
-
-  -- STEP 2: We need to add this controller to the chain of the linked list
-  if thisController == 1 then
-    -- STEP 2a: When it is the first one, it is easy to add, since its the first
-    global.TC_data["trainControllers"][thisController]["prevController"] = thisController
-    global.TC_data["trainControllers"][thisController]["nextController"] = thisController
-    global.TC_data["nextTrainControllerIterate"] = thisController
-
-    -- STEP 2b: start on_tick events becose we need to start iterating
-    -- TODO
-  else
-    -- when we've added it to the list, we know there is at least one in front
-    -- of us. This one has a next set. We add it inbetween.
-
-    -- STEP 2a: extract the previous and next index
-    local prevController = thisController - 1
-    local nextController = global.TC_data["trainControllers"][prevController]["nextController"]
-
-    -- STEP 2b: adapt the previous controller
-    global.TC_data["trainControllers"][prevController]["nextController"] = thisController
-    global.TC_data["trainControllers"][thisController]["prevController"] = prevController
-
-    -- STEP 2c: adapt the next controller
-    global.TC_data["trainControllers"][nextController]["prevController"] = thisController
-    global.TC_data["trainControllers"][thisController]["nextController"] = nextController
-
-    -- STEP 2d: make sure the next iteration doesn't skip this new controller
-    if global.TC_data["nextTrainControllerIterate"] == nextController then
-      global.TC_data["nextTrainControllerIterate"] = thisController
-    end
-  end
-
-  -- STEP 3: register this controller on the trainbuilder
+function Traincontroller:saveNewStructure(controllerEntity)
   -- TODO
-
 end
 
 
@@ -142,7 +92,7 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
 
     -- Destroy the placed item
     createdEntity.destroy()
-    return false, -1
+    return false
   end
 
   -- STEP 1: Look for a trainassembler, if there is no trainassembler found,
@@ -175,14 +125,14 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
   }[1]
 
   if not (builderEntity and builderEntity.valid) then
-    return notValid{"traincontroller-message.noTrainbuilderFound", {"item-name.trainassembly"}}
+    return notValid{"trainbuilder-message.noTrainbuilderFound", {[1] = "item-name.trainassembly"}}
   end
 
   -- STEP 2: Find the trainbuilder that this trainassembler is part of, if there
   --         is no trainbuilder found, the controller is placed wrong
   local builderIndex = Trainassembly:getTrainBuilderIndex(builderEntity)
   if not builderIndex then
-    return notValid{"traincontroller-message.invalidTrainbuilderFound", {"item-name.trainassembly"}}
+    return notValid{"trainbuilder-message.invalidTrainbuilderFound", {[1] = "item-name.trainassembly"}}
   end
 
   -- STEP 3: Make sure the trainbuilder has all recipes set, and at least
@@ -194,7 +144,7 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
     if machineEntity and machineEntity.valid and machineEntity.direction == entityDirection then
       local machineRecipe = machineEntity.get_recipe()
       if not machineRecipe then
-        return notValid{"traincontroller-message.noBuilderRecipeFound", {"item-name.trainassembly"}}
+        return notValid{"trainbuilder-message.noBuilderRecipeFound", {[1] = "item-name.trainassembly"}}
       end
 
       local builderType = lib.util.stringSplit(machineRecipe.name, "[")
@@ -208,7 +158,7 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
   end
 
   if not hasValidLocomotive then
-    return notValid{"traincontroller-message.noValidLocomotiveFound",
+    return notValid{"trainbuilder-message.noValidLocomotiveFound",
       --[[1]]{"item-name.trainassembly"},
       --[[2]]"__ENTITY__locomotive__",
       --[[3]]{"item-name.traincontroller", {"item-name.trainassembly"}},
@@ -216,7 +166,7 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
   end
 
   -- STEP 4: If all previous checks succeeded, it means it is validly placed.
-  return true, builderIndex
+  return true
 end
 
 
@@ -231,11 +181,9 @@ function Traincontroller:onBuildEntity(createdEntity, playerIndex)
   -- and inform the player what went wrong.
   --
   -- Player experience: The player activated the trainbuilder if its valid.
-  if createdEntity and createdEntity.valid and createdEntity.name == self:getControllerEntityName() then
-    -- it is the correct entity, now check if its correctly placed
-    local validPlacement, trainBuiderIndex = self:checkValidPlacement(createdEntity, playerIndex)
-    if validPlacement then -- It is valid, now we have to add the entity to the list
-      self:saveNewStructure(createdEntity, trainBuiderIndex)
-    end
+  if createdEntity and createdEntity.valid and createdEntity.name == self:getControllerEntityName()
+  and self:checkValidPlacement(createdEntity, playerIndex) then
+    -- It is valid, now we have to add the entity to the list
+    self:saveNewStructure(createdEntity)
   end
 end

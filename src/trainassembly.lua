@@ -25,8 +25,8 @@ function Trainassembly:initGlobalData()
 
     ["trainAssemblers"] = {}, -- keep track of all assembling machines
 
-    ["trainBuilders"] = {}, -- keep track of all builders that contain one or more trainAssemblers
-    ["nextTrainBuilderIndex"] = 1, -- next free space in the trainBuilders table
+    ["trainBuilders"] = {},    -- keep track of all builders that contain one or more trainAssemblers
+    ["nextTrainBuilderIndex"] = 1,
   }
 
   return util.table.deepcopy(TA_data)
@@ -578,30 +578,11 @@ end
 
 
 
-function Trainassembly:checkValidPlacement(createdEntity, playerIndex)
-  -- Checks the correct placement of the trainassembler, if not validly placed,
-  -- it will inform the player with the corresponding message and return the
-  -- trainassembler to the player. If no player is found, it will drop the
-  -- trainassembler on the ground where the trainassembler was placed.
-
-  local notValid = function(localisedMessage)
-    return false
-  end
-
-  -- TODO: Check placement on a crossing
-  -- TODO: Check placement on rail next to another line
-  -- TODO: Check placement on diagonal rail
-
-  return true
-end
-
-
-
 --------------------------------------------------------------------------------
 -- Behaviour functions, mostly event handlers
 --------------------------------------------------------------------------------
 -- When a player builds a new entity
-function Trainassembly:onBuildEntity(createdEntity, playerIndex)
+function Trainassembly:onPlayerBuildEntity(createdEntity)
   -- The player created a new entity, the player can only place the placeable item.
   -- So we have to check if the player placed this entity, if so, we remove it.
   -- We manualy have to build a machine entity on the same spot.
@@ -611,23 +592,25 @@ function Trainassembly:onBuildEntity(createdEntity, playerIndex)
     -- We know the createdEntity is the placeable entity, meaning the player wants
     -- to build a trainassembly on this spot
 
-    -- STEP 1: check if the assembling machine is validly placed.
-    if self:checkValidPlacement(createdEntity, playerIndex) then
+    -- STEP 1: temporary store where the locomotive was placed and by who (the force)
+    local entitySurface  = createdEntity.surface   -- surface it was build on
+    local entityPosition = createdEntity.position  -- position it was placed
+    local entityDirecton = lib.directions.orientationTo4WayDirection(createdEntity.orientation) -- the orientation it was placed in
+    local entityForce    = createdEntity.force
 
-      -- STEP 2: place the assembling machine on the same spot (saved in step 1)
-      local machineEntity = createdEntity.surface.create_entity({
-        name      = self:getMachineEntityName(),
-        position  = createdEntity.position,
-        direction = lib.directions.orientationTo4WayDirection(createdEntity.orientation),
-        force     = createdEntity.force,
-      })
+    -- STEP 2: delete the locomotive we've build since we're gonna replace it.
+    createdEntity.destroy()
 
-      -- STEP 3: delete the locomotive that was build.
-      createdEntity.destroy()
+    -- STEP 3: place the assembling machine on the same spot (saved in step 1)
+    local machineEntity = entitySurface.create_entity({
+      name      = self:getMachineEntityName(),
+      position  = entityPosition,
+      direction = entityDirecton,
+      force     = entityForce,
+    })
 
-      -- STEP 4: Save the newly made trainassembly to our data structure so we can keep track of it
-      self:saveNewStructure(machineEntity)
-    end
+    -- STEP 4: Save the newly made trainassembly to our data structure so we can keep track of it
+    self:saveNewStructure(machineEntity)
   end
 end
 
@@ -638,7 +621,9 @@ function Trainassembly:onRemoveEntity(removedEntity)
   --
   -- Player experience: Everything with the trainAssembler gets removed
   if removedEntity and removedEntity.valid and removedEntity.name == self:getMachineEntityName() then
-    -- STEP 1: Update the data structure
+    -- STEP 1: all the stuff that needs deletion
+
+    -- STEP 4: Update the data structure
     self:deleteBuilding(removedEntity)
   end
 end
@@ -646,18 +631,16 @@ end
 
 -- When a player rotates an entity
 function Trainassembly:onPlayerRotatedEntity(rotatedEntity)
-  -- The player rotated the machine entity +/-90 degrees, the building can only be
+  -- The player rotated the machine entity 90 degrees, the building can only be
   -- rotated on 180 degree angles. So we have to manualy rotate it another 90 degree.
   --
   -- Player experience: The player thinks he rotated the entity 180 degree
   if rotatedEntity and rotatedEntity.valid and rotatedEntity.name == self:getMachineEntityName() then
-    -- STEP 1: get the new direction from the old saved direction
     local newDirection = lib.directions.oposite(self:getMachineDirection(rotatedEntity))
 
-    -- STEP 2: set the new rotated direction
     rotatedEntity.direction = newDirection
 
-    -- STEP 3: save the state to the data structure
     self:updateMachineDirection(rotatedEntity)
+
   end
 end

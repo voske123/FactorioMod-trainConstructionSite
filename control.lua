@@ -30,7 +30,7 @@ end)
 
 script.on_event(defines.events.on_built_entity, function(event)
   -- Called when player builds an entity.
-  Trainassembly:onBuildEntity(event.created_entity, event.player_index)
+  Trainassembly:onPlayerBuildEntity(event.created_entity)
   Traincontroller:onBuildEntity(event.created_entity, event.player_index)
 end)
 
