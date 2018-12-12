@@ -103,12 +103,6 @@ end
 --------------------------------------------------------------------------------
 -- Getter functions to extract data from the data structure
 --------------------------------------------------------------------------------
-function Traincontroller:getControllerItemName()
-  return global.TC_data.prototypeData.trainControllerName
-end
-
-
-
 function Traincontroller:getControllerEntityName()
   return global.TC_data.prototypeData.trainControllerName
 end
@@ -127,14 +121,14 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
       local player = game.players[playerIndex]
       player.print(localisedMessage)
       player.insert{
-        name = self:getControllerItemName(),
+        name = createdEntity.name,
         count = 1,
       }
     else -- drop it otherwise
       local droppedItem = createdEntity.surface.create_entity{
         name = "item-on-ground",
         stack = {
-          name = self:getControllerItemName(),
+          name = createdEntity.prototype.mineable_properties.products[1].name,
           count = 1,
         },
         position = createdEntity.position,
