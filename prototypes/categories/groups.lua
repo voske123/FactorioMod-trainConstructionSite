@@ -37,9 +37,9 @@ data.raw["item-subgroup"]["transport"].group = transportRailway.group
 data.raw["item-subgroup"]["transport"].order = "c"
 
 
-data:extend{
+data:extend({
   transportLogistics,
   transportRailway,
   trainassemblerFuel,
   trainpartsFluid,
-}
+})

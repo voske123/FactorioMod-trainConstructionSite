@@ -20,6 +20,6 @@ trainassembly.stack_size = 10
 
 
 
-data:extend{
+data:extend({
   trainassembly,
-}
+})

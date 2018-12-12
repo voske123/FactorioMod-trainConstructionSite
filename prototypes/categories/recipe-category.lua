@@ -6,7 +6,7 @@ local trainRecipeGroup = util.table.deepcopy(data.raw["recipe-category"]["chemis
 trainRecipeGroup.name = "trainassembling"
 
 
-data:extend{
+data:extend({
   trainRecipeGroup,
 
-}
+})
