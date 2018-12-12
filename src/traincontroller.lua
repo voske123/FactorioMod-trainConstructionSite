@@ -1,5 +1,4 @@
 require 'util'
-require 'lib.util'
 
 -- Create class
 Traincontroller = {}
@@ -92,17 +91,18 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
   end
 
   local entityDirection = createdEntity.direction -- direction to look for a trainbuilder
-  local entitySearchDirection = {x=0,y=0}
-
   if entityDirection == defines.direction.west then
-    entitySearchDirection.x = 1
+    entityDirection = {x=1,y=0}
   elseif entityDirection == defines.direction.east then
-    entitySearchDirection.x = -1
+    entityDirection = {x=-1,y=0}
   elseif entityDirection == defines.direction.north then
-    entitySearchDirection.y = 1
+    entityDirection = {x=0,y=1}
   elseif entityDirection == defines.direction.south then
-    entitySearchDirection.y = -1
+    entityDirection = {x=0,y=-1}
+  else
+    entityDirection = {x=0,y=0} -- invalid direction
   end
+
   local entityPosition = createdEntity.position
   local entitySurface = createdEntity.surface
   local entitySurfaceIndex = entitySurface.index
@@ -112,8 +112,8 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
     --type     = createdEntity.type,
     force    = createdEntity.force,
     area     = {
-      { entityPosition.x + 3.5*entitySearchDirection.x - 1.5*entitySearchDirection.y , entityPosition.y + 3.5*entitySearchDirection.y + 1.5*entitySearchDirection.x },
-      { entityPosition.x + 5.5*entitySearchDirection.x - 2.5*entitySearchDirection.y , entityPosition.y + 5.5*entitySearchDirection.y + 2.5*entitySearchDirection.x },
+      { entityPosition.x + 3.5*entityDirection.x - 1.5*entityDirection.y , entityPosition.y + 3.5*entityDirection.y + 1.5*entityDirection.x },
+      { entityPosition.x + 5.5*entityDirection.x - 2.5*entityDirection.y , entityPosition.y + 5.5*entityDirection.y + 2.5*entityDirection.x },
     },
     limit    = 1,
   }[1]
@@ -129,30 +129,16 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
     return notValid{"trainbuilder-message.invalidTrainbuilderFound", {[1] = "item-name.trainassembly"}}
   end
 
-  local hasValidLocomotive = false
   for _, builderLocation in pairs(Trainassembly:getTrainBuilder(builderIndex)) do
     local machineEntity = Trainassembly:getMachineEntity(builderLocation["surfaceIndex"], builderLocation["position"])
-    if machineEntity and machineEntity.valid and machineEntity.direction == entityDirection then
+    if machineEntity and machineEntity.valid then
       local machineRecipe = machineEntity.get_recipe()
       if not machineRecipe then
         return notValid{"trainbuilder-message.noBuilderRecipeFound", {[1] = "item-name.trainassembly"}}
       end
-
-      local builderType = lib.util.stringSplit(machineRecipe.name, "[")
-      builderType = builderType[#builderType]
-      builderType = builderType:sub(1, builderType:len()-1)
-      if builderType == "locomotive" then
-        hasValidLocomotive = true
-        break
-      end
+      local machineRecipeName = machineRecipe.name
+      game.print(machineRecipeName)
     end
-  end
-  if not hasValidLocomotive then
-    return notValid{"trainbuilder-message.noValidLocomotiveFound", {
-      [1] = "item-name.trainassembly",
-      [2] = "locomotive",
-      [3] = "item-name.traincontroller",
-    }}
   end
 
   return true
