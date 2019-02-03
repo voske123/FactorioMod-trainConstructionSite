@@ -114,7 +114,7 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuiderIndex)
     end
   end
 
-  game.print(serpent.block(global.TC_data["trainControllers"]))
+  --game.print(serpent.block(global.TC_data["trainControllers"]))
 end
 
 
@@ -167,7 +167,7 @@ function Traincontroller:deleteController(controllerEntity)
     global.TC_data["trainControllers"][controllerSurface.index] = nil
   end
 
-  game.print(serpent.block(global.TC_data["trainControllers"]))
+  --game.print(serpent.block(global.TC_data["trainControllers"]))
 
 end
 
@@ -354,6 +354,7 @@ function Traincontroller:onRemoveEntity(removedEntity)
   if removedEntity and removedEntity.valid and removedEntity.name == self:getControllerEntityName() then
     -- STEP 1: Update the data structure
     self:deleteController(removedEntity)
+    -- TODO
   end
 end
 
@@ -362,9 +363,47 @@ function Traincontroller:onPlayerRotatedEntity(rotatedEntity, playerIndex)
   -- The player rotated the machine entity, we need to make sure the controller
   -- is still valid.
   if rotatedEntity and rotatedEntity.valid and rotatedEntity.name == Trainassembly:getMachineEntityName() then
-    local trainController = self:getTrainController(Trainassembly:getTrainBuilderIndex(rotatedEntity))
+    local trainBuilderIndex = Trainassembly:getTrainBuilderIndex(rotatedEntity)
+    local trainController = self:getTrainController(trainBuilderIndex)
     if trainController then
-      self:checkValidPlacement(trainController, playerIndex)
+
+      -- We know it is already validly placed, so we can check the trainbuilder
+      -- and only have to check if it still has a locomotive facing the correct
+      -- direction
+      local hasValidLocomotive = false
+      for _, builderLocation in pairs(Trainassembly:getTrainBuilder(trainBuilderIndex)) do
+        local machineEntity = Trainassembly:getMachineEntity(builderLocation["surfaceIndex"], builderLocation["position"])
+        if machineEntity and machineEntity.valid and machineEntity.direction == trainController.direction then
+          local builderType = lib.util.stringSplit(machineEntity.get_recipe().name, "[")
+          builderType = builderType[#builderType]
+          builderType = builderType:sub(1, builderType:len()-1)
+          if builderType == "locomotive" then
+            hasValidLocomotive = true
+            break
+          end
+        end
+      end
+
+      if not hasValidLocomotive then
+        -- The controller has become invalid, now we return it back to the player
+        local player = game.players[playerIndex]
+        player.print{"traincontroller-message.noValidLocomotiveFound",
+          --[[1]]{"item-name.trainassembly"},
+          --[[2]]"__ENTITY__locomotive__",
+          --[[3]]{"item-name.traincontroller", {"item-name.trainassembly"}},
+        }
+        player.insert{
+          name = self:getControllerItemName(),
+          count = 1,
+        }
+
+        -- And we have to delete the controller from the structure
+        self:deleteController(trainController)
+
+        -- And delete it from the world
+        trainController.destroy()
+      end
+
     end
   end
 end
