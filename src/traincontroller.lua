@@ -4,6 +4,7 @@ require 'lib.table'
 
 -- Create class
 Traincontroller = {}
+require 'src.traincontroller-builder'
 
 --------------------------------------------------------------------------------
 -- Initiation of the class
@@ -13,6 +14,14 @@ function Traincontroller:onInit()
   if not global.TC_data then
     global.TC_data = self:initGlobalData()
   end
+  self.Builder:onInit()
+end
+
+
+
+function Traincontroller:onLoad()
+  -- Sync global state on multiplayer, make sure event handlers are set correctly
+  self.Builder:onLoad()
 end
 
 
@@ -91,7 +100,7 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuiderIndex)
     global.TC_data["trainControllers"][thisController["surfaceIndex"]][thisController["position"].y][thisController["position"].x]["nextController"] = util.table.deepcopy(thisController)
 
     -- STEP 2b: start on_tick events becose we need to start iterating
-    -- TODO
+    Traincontroller.Builder:activateOnTick()
   else
     -- when we've added it to the list, we know there is at least one in front
     -- of us. This one has a prev set. We add it inbetween.
@@ -151,7 +160,8 @@ function Traincontroller:deleteController(controllerEntity)
     -- Make sure the next controller isn't this controller, then there are no controllers.
     if lib.table.areEqual(thisController, nextController) then
       global.TC_data["nextTrainControllerIterate"] = nil
-      -- TODO: stop on_tick
+      -- this is the last one, no need to keep iterating on_tick
+      Traincontroller.Builder:deactivateOnTick()
     else
       global.TC_data["nextTrainControllerIterate"] = util.table.deepcopy(nextController)
     end
@@ -243,7 +253,7 @@ function Traincontroller:checkValidAftherChanges(alteredEntity, playerIndex)
 
         -- Delete it from the data structure
         self:deleteController(trainController)
-        
+
         -- Destroy the placed item
         trainController.destroy()
         return false
