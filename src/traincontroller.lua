@@ -29,10 +29,10 @@ end
 -- Initiation of the global data
 function Traincontroller:initGlobalData()
   local TC_data = {
-    ["version"] = 1, -- version of the global data
+    ["version"]       = 1, -- version of the global data
     ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
 
-    ["trainControllers"] = {},       -- keep track of all controllers
+    ["trainControllers"]           = {},  -- keep track of all controllers
     ["nextTrainControllerIterate"] = nil, -- next controller to iterate over
   }
 
@@ -81,6 +81,7 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuiderIndex)
   {
     ["entity"]           = controllerEntity, -- the controller entity
     ["trainBuiderIndex"] = trainBuiderIndex, -- the trainbuilder it controls
+    ["controllerStatus"] = global.TC_data.Builder["builderStates"]["idle"], -- status
 
     -- list data
     ["prevController"]   = nil, -- the previous controller

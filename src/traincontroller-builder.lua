@@ -35,6 +35,9 @@ function Traincontroller.Builder:initGlobalData()
     ["onTickDelay"] = 5,
 
     ["builderStates"] = { -- states in the builder process
+      ["idle"] = 1,       -- waiting till previous train clears the train block
+      ["building"] = 1,   -- waiting on resources, building each componennt
+      ["connecting"] = 1, -- assembling the train and let it drive off
     },
   }
 
@@ -44,10 +47,30 @@ end
 
 
 --------------------------------------------------------------------------------
--- Behaviour functions, mostly event handlers
+-- Behaviour functions
+--------------------------------------------------------------------------------
+function Traincontroller.Builder:updateController(surfaceIndex, position)
+  -- This function will check the update for a single controller
+  --game.print("Updating controller @ ["..surfaceIndex..", "..position.x..", "..position.y.."]")
+end
+
+
+--------------------------------------------------------------------------------
+-- Event interface
 --------------------------------------------------------------------------------
 function Traincontroller.Builder:onTick(event)
-  game.print(event.tick)
+  -- Extract the controller that needs to be updated
+  local controller = global.TC_data["nextTrainControllerIterate"]
+  local surfaceIndex = controller.surfaceIndex
+  local position     = controller.position
+
+  -- Update the controller
+  self:updateController(surfaceIndex, position)
+
+  -- Increment the nextController
+  global.TC_data["nextTrainControllerIterate"] = util.table.deepcopy(
+    global.TC_data["trainControllers"][surfaceIndex][position.y][position.x]["nextController"]
+  )
 end
 
 
