@@ -45,6 +45,9 @@ end
 
 
 function Debug:onPlayerCreated(player_index)
+  -- research all technologies
+  game.players[player_index].force.research_all_technologies()
+
   local mainInventory = game.players[player_index].get_main_inventory()
   local quickbar      = game.players[player_index].get_quickbar()
   local toolInventory = game.players[player_index].get_inventory(defines.inventory.player_tools)
@@ -64,5 +67,4 @@ function Debug:onPlayerCreated(player_index)
     toolInventory.insert("steel-axe")
   end
 
-  log(game.players[player_index].force.name)
 end

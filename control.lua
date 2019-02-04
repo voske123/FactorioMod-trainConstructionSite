@@ -49,3 +49,10 @@ script.on_event(defines.events.on_player_rotated_entity, function(event)
   Trainassembly:onPlayerRotatedEntity(event.entity)
   Traincontroller:onPlayerRotatedEntity(event.entity, event.player_index)
 end)
+
+
+
+script.on_event(defines.events.on_entity_settings_pasted, function(event)
+  --Called when player rotates an entity.
+  Traincontroller:onPlayerChangedRecipe(event.destination, event.player_index)
+end)

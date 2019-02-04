@@ -168,7 +168,6 @@ function Traincontroller:deleteController(controllerEntity)
   end
 
   --game.print(serpent.block(global.TC_data["trainControllers"]))
-
 end
 
 
@@ -205,6 +204,97 @@ function Traincontroller:getTrainController(trainBuilderIndex)
   return nil
 end
 
+
+
+function Traincontroller:checkValidAftherChanges(alteredEntity, playerIndex)
+  -- A valid trainbuilder got altered. This happens when a building gets rotated
+  -- or when a recipe got changed. We have to check if all recipes are set and
+  -- if the builder has a validly placed locomotive still.
+
+  if alteredEntity and alteredEntity.valid and alteredEntity.name == Trainassembly:getMachineEntityName() then
+    local trainBuilderIndex = Trainassembly:getTrainBuilderIndex(alteredEntity)
+    local trainController = self:getTrainController(trainBuilderIndex)
+    if trainController then
+
+      local notValid = function(localisedMessage)
+        -- Try return the item to the player (or drop it)
+        if playerIndex then -- return if possible
+          local player = game.players[playerIndex]
+          player.print(localisedMessage)
+          player.insert{
+            name = self:getControllerItemName(),
+            count = 1,
+          }
+        else -- drop it otherwise
+          local droppedItem = trainController.surface.create_entity{
+            name = "item-on-ground",
+            stack = {
+              name = self:getControllerItemName(),
+              count = 1,
+            },
+            position = trainController.position,
+            force = trainController.force,
+            fast_replace = true,
+            spill = false, -- delete excess items (only if fast_replace = true)
+          }
+          droppedItem.to_be_looted = true
+          droppedItem.order_deconstruction(trainController.force)
+        end
+
+        -- Delete it from the data structure
+        self:deleteController(trainController)
+        
+        -- Destroy the placed item
+        trainController.destroy()
+        return false
+      end
+
+      -- We know it is already validly placed, so we can check the trainbuilder
+      -- and only have to check if it still has a locomotive facing the correct
+      -- direction
+      local hasValidLocomotive = false
+      local hasAllRecipesSet = true
+      for _, builderLocation in pairs(Trainassembly:getTrainBuilder(trainBuilderIndex)) do
+        local machineEntity = Trainassembly:getMachineEntity(builderLocation["surfaceIndex"], builderLocation["position"])
+        if machineEntity and machineEntity.valid and machineEntity.direction == trainController.direction then
+
+          -- Step 1: Check if the recipe is set for each building, if not, this
+          --         controller has become invalid, we don't have to look further
+          local machineRecipe = machineEntity.get_recipe()
+          if not machineRecipe then
+            return notValid{"traincontroller-message.noBuilderRecipeFound", {"item-name.trainassembly"}}
+          end
+
+          -- Step 2: If this controller doesn't have a valid locomotive yet, we
+          --         still have to check if this one might be a valid locomotive
+          if not hasValidLocomotive then
+            local builderType = lib.util.stringSplit(machineRecipe.name, "[")
+            builderType = builderType[#builderType]
+            builderType = builderType:sub(1, builderType:len()-1)
+            if builderType == "locomotive" then
+              hasValidLocomotive = true
+            end
+          end
+
+        end
+      end
+
+      if not hasValidLocomotive then
+        return notValid{"traincontroller-message.noValidLocomotiveFound",
+          --[[1]]{"item-name.trainassembly"},
+          --[[2]]"__ENTITY__locomotive__",
+          --[[3]]{"item-name.traincontroller", {"item-name.trainassembly"}},
+        }
+      end
+
+      return true
+    end
+
+    return false -- return false if no traincontroller found
+  end
+
+  return true -- return true if alteredEntity is not valid
+end
 
 
 function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
@@ -345,6 +435,8 @@ function Traincontroller:onBuildEntity(createdEntity, playerIndex)
   end
 end
 
+
+
 -- When a player/robot removes the building
 function Traincontroller:onRemoveEntity(removedEntity)
   -- In some way the building got removed. This results in that the builder is
@@ -358,58 +450,31 @@ function Traincontroller:onRemoveEntity(removedEntity)
   end
 end
 
+
+
 -- When a player rotates an entity
 function Traincontroller:onPlayerRotatedEntity(rotatedEntity, playerIndex)
   -- The player rotated the machine entity, we need to make sure the controller
   -- is still valid.
   if rotatedEntity and rotatedEntity.valid and rotatedEntity.name == Trainassembly:getMachineEntityName() then
-    local trainBuilderIndex = Trainassembly:getTrainBuilderIndex(rotatedEntity)
-    local trainController = self:getTrainController(trainBuilderIndex)
-    if trainController then
-
-      -- We know it is already validly placed, so we can check the trainbuilder
-      -- and only have to check if it still has a locomotive facing the correct
-      -- direction
-      local hasValidLocomotive = false
-      for _, builderLocation in pairs(Trainassembly:getTrainBuilder(trainBuilderIndex)) do
-        local machineEntity = Trainassembly:getMachineEntity(builderLocation["surfaceIndex"], builderLocation["position"])
-        if machineEntity and machineEntity.valid and machineEntity.direction == trainController.direction then
-          local builderType = lib.util.stringSplit(machineEntity.get_recipe().name, "[")
-          builderType = builderType[#builderType]
-          builderType = builderType:sub(1, builderType:len()-1)
-          if builderType == "locomotive" then
-            hasValidLocomotive = true
-            break
-          end
-        end
-      end
-
-      if not hasValidLocomotive then
-        -- The controller has become invalid, now we return it back to the player
-        local player = game.players[playerIndex]
-        player.print{"traincontroller-message.noValidLocomotiveFound",
-          --[[1]]{"item-name.trainassembly"},
-          --[[2]]"__ENTITY__locomotive__",
-          --[[3]]{"item-name.traincontroller", {"item-name.trainassembly"}},
-        }
-        player.insert{
-          name = self:getControllerItemName(),
-          count = 1,
-        }
-
-        -- And we have to delete the controller from the structure
-        self:deleteController(trainController)
-
-        -- And delete it from the world
-        trainController.destroy()
-      end
-
-    end
+    Traincontroller:checkValidAftherChanges(rotatedEntity, playerIndex)
   end
 end
 
 
--- when a trainbuilder gets altered
+
+-- When a player copy pastes a recipe
+function Traincontroller:onPlayerChangedRecipe(pastedEntity, playerIndex)
+  -- The player pasted a recipe in a machine entity, we need to make sure the
+  -- controller is still valid.
+  if pastedEntity and pastedEntity.valid and pastedEntity.name == Trainassembly:getMachineEntityName() then
+    Traincontroller:checkValidAftherChanges(pastedEntity, playerIndex)
+  end
+end
+
+
+
+-- when a trainbuilder gets altered (buildings added/deleted buildings)
 function Traincontroller:onTrainbuilderAltered(trainBuilderIndex)
   -- if there is a traincontroller, we drop it on the floor
   local trainController = self:getTrainController(trainBuilderIndex)
