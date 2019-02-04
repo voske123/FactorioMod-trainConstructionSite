@@ -27,12 +27,39 @@ end
 
 
 
+-- called when a mod setting changed
+function Traincontroller.Builder:onSettingChanged(event)
+  -- check if the tickrate has changed
+  if event.setting_type == "runtime-global" and event.setting == "trainController-tickRate" then
+    -- we need to update the on_nth_tick event (step 2), but we fist need to
+    -- disable the old one if it was active (step 1), and if it was active,
+    -- we have to reactivate it afther updating the settings (step 3)
+    local onTickWasActive = global.TC_data.Builder["onTickActive"]
+
+    -- STEP 1: disable the old active on_tick
+    if onTickWasActive then
+      self:deactivateOnTick()
+    end
+
+    -- STEP 2: update the settings
+    global.TC_data.Builder["onTickDelay"] = settings.global[event.setting].value
+
+    -- STEP 3: reactivate the on_tick with new settings
+    if onTickWasActive then
+      self:activateOnTick()
+    end
+    
+  end
+end
+
+
+
 -- Initiation of the global data
 function Traincontroller.Builder:initGlobalData()
   local Builder = {
     ["version"] = 1, -- version of the global data
     ["onTickActive"] = false, -- if the on_tick event is active or not
-    ["onTickDelay"] = 5,
+    ["onTickDelay"] = settings.global["trainController-tickRate"].value,
 
     ["builderStates"] = { -- states in the builder process
       ["idle"] = 1,       -- waiting till previous train clears the train block
@@ -59,6 +86,8 @@ end
 -- Event interface
 --------------------------------------------------------------------------------
 function Traincontroller.Builder:onTick(event)
+  game.print(game.tick)
+
   -- Extract the controller that needs to be updated
   local controller = global.TC_data["nextTrainControllerIterate"]
   local surfaceIndex = controller.surfaceIndex

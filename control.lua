@@ -18,6 +18,19 @@ end)
 
 
 
+script.on_load(function()
+  Traincontroller:onLoad()
+end)
+
+
+
+-- called when a mod setting changed
+script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
+  Traincontroller:onSettingChanged(event)
+end)
+
+
+
 script.on_event(defines.events.on_player_created, function(event)
   -- Called after the new player was created.
   if Debug.enabled then

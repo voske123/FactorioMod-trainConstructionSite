@@ -26,6 +26,13 @@ end
 
 
 
+function Traincontroller:onSettingChanged(event)
+  -- called when a mod setting changed
+  self.Builder:onSettingChanged(event)
+end
+
+
+
 -- Initiation of the global data
 function Traincontroller:initGlobalData()
   local TC_data = {
