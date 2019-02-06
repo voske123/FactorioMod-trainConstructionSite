@@ -20,6 +20,7 @@ require "prototypes.recipe.traincontroller"
 require "prototypes.entities.trainassembly-placeable"
 require "prototypes.entities.trainassembly-machine"
 require "prototypes.entities.traincontroller"
+require "prototypes.entities.traindepo"
 
 require "prototypes.technology.trainassembly-technology"
 require "prototypes.technology.traincontroller-technology"
