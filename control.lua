@@ -41,16 +41,19 @@ end)
 
 
 
-script.on_event(defines.events.on_built_entity, function(event)
-  -- Called when player builds an entity.
+script.on_event({defines.events.on_built_entity      ,
+                 defines.events.on_robot_built_entity}, function(event)
+  -- Called when an entity gets placed.
   Trainassembly:onBuildEntity(event.created_entity, event.player_index)
   Traincontroller:onBuildEntity(event.created_entity, event.player_index)
 end)
 
 
 
-script.on_event(defines.events.on_player_mined_entity, function(event)
-  -- Called when player mines an entity.
+script.on_event({defines.events.on_player_mined_entity,
+                 defines.events.on_robot_mined_entity ,
+                 defines.events.on_entity_died        }, function(event)
+  -- Called when an entity gets removed.
   Trainassembly:onRemoveEntity(event.entity)
   Traincontroller:onRemoveEntity(event.entity)
 end)

@@ -84,6 +84,7 @@ function Trainassembly:saveNewStructure(machineEntity)
   {
     ["entity"]            = machineEntity,           -- the entity
     ["direction"]         = machineEntity.direction, -- the direction its facing
+    ["createdEntity"]     = nil,                     -- the created train entity from this building
     ["trainBuilderIndex"] = nil,                     -- the trainBuilder it belongs to (see further down)
   }
 
@@ -483,6 +484,30 @@ function Trainassembly:updateMachineDirection(machineEntity)
 
 end
 
+
+
+function Trainassembly:setCreatedEntity(machineSurfaceIndex, machinePosition, createdEntity)
+  -- STEP 1: If we don't have a trainBuilder saved on that surface, or not
+  --         on that y position or on that x position, it means that we don't
+  --         have a entity available for that location.
+  if not global.TA_data["trainAssemblers"][machineSurfaceIndex] then
+    return false
+  end
+  if not global.TA_data["trainAssemblers"][machineSurfaceIndex][machinePosition.y] then
+    return false
+  end
+  if not global.TA_data["trainAssemblers"][machineSurfaceIndex][machinePosition.y][machinePosition.x] then
+    return false
+  end
+
+  -- STEP 2: In step 1 we checked for an invalid data structure. So now we
+  --         can return the entity on this location.
+  global.TA_data["trainAssemblers"][machineSurfaceIndex][machinePosition.y][machinePosition.x]["createdEntity"] = createdEntity
+  return true
+end
+
+
+
 --------------------------------------------------------------------------------
 -- Getter functions to extract data from the data structure
 --------------------------------------------------------------------------------
@@ -549,6 +574,27 @@ function Trainassembly:getMachineDirection(machineEntity)
   -- STEP 3: In step 2 we checked for an invalid data structure. So now we
   --         can return the direction the machine is/was facing.
   return global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["direction"]
+end
+
+
+
+function Trainassembly:getCreatedEntity(machineSurfaceIndex, machinePosition)
+  -- STEP 1: If we don't have a trainBuilder saved on that surface, or not
+  --         on that y position or on that x position, it means that we don't
+  --         have a entity available for that location.
+  if not global.TA_data["trainAssemblers"][machineSurfaceIndex] then
+    return nil
+  end
+  if not global.TA_data["trainAssemblers"][machineSurfaceIndex][machinePosition.y] then
+    return nil
+  end
+  if not global.TA_data["trainAssemblers"][machineSurfaceIndex][machinePosition.y][machinePosition.x] then
+    return nil
+  end
+
+  -- STEP 2: In step 1 we checked for an invalid data structure. So now we
+  --         can return the entity on this location.
+  return global.TA_data["trainAssemblers"][machineSurfaceIndex][machinePosition.y][machinePosition.x]["createdEntity"]
 end
 
 

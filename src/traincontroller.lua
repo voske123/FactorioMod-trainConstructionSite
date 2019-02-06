@@ -404,19 +404,24 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
   local hasValidLocomotive = false
   for _, builderLocation in pairs(Trainassembly:getTrainBuilder(builderIndex)) do
     local machineEntity = Trainassembly:getMachineEntity(builderLocation["surfaceIndex"], builderLocation["position"])
-    if machineEntity and machineEntity.valid and machineEntity.direction == entityDirection then
+    if machineEntity and machineEntity.valid then
+      -- check the recipe of each machineEntity
       local machineRecipe = machineEntity.get_recipe()
       if not machineRecipe then
         return notValid{"traincontroller-message.noBuilderRecipeFound", {"item-name.trainassembly"}}
       end
 
-      local builderType = lib.util.stringSplit(machineRecipe.name, "[")
-      builderType = builderType[#builderType]
-      builderType = builderType:sub(1, builderType:len()-1)
-      if builderType == "locomotive" then
-        hasValidLocomotive = true
-        break
+      if (not hasValidLocomotive) and (machineEntity.direction == entityDirection) then
+        -- check the direction of the locomotive
+        local builderType = lib.util.stringSplit(machineRecipe.name, "[")
+        builderType = builderType[#builderType]
+        builderType = builderType:sub(1, builderType:len()-1)
+        if builderType == "locomotive" then
+          hasValidLocomotive = true
+        end
       end
+    else
+      return notValid("ERROR: Invalid building! Report this please.")
     end
   end
 

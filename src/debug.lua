@@ -53,7 +53,9 @@ function Debug:onPlayerCreated(player_index)
   local toolInventory = game.players[player_index].get_inventory(defines.inventory.player_tools)
 
   if mainInventory and mainInventory.valid then
-    -- nothing to insert yet
+    mainInventory.insert("solar-panel")
+    mainInventory.insert("accumulator")
+    mainInventory.insert("substation")
   end
 
   if quickbar and quickbar.valid then
@@ -61,6 +63,10 @@ function Debug:onPlayerCreated(player_index)
     quickbar.insert("rail-signal")
     quickbar.insert("trainassembly")
     quickbar.insert("traincontroller")
+
+    quickbar.insert("locomotive")
+    quickbar.insert("trainassembly-recipefuel")
+
   end
 
   if toolInventory and toolInventory.valid then
