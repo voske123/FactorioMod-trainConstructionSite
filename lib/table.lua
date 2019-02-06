@@ -32,7 +32,7 @@ function lib.table.areEqual(t1, t2)
     end
   end
   for k,v in pairs(t2) do
-    if not lib.table.areEqual(v, t1[k]) then
+    if not (t1[k] ~= nil) then
       return false
     end
   end

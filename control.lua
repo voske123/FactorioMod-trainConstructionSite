@@ -1,4 +1,5 @@
 require "src.debug"
+require "src.traindepo"
 require "src.trainassembly"
 require "src.traincontroller"
 
@@ -12,6 +13,7 @@ script.on_init(function(event)
     Debug:onMapCreated()
   end
 
+  Traindepo:onInit()
   Trainassembly:onInit()
   Traincontroller:onInit()
 end)
@@ -44,6 +46,7 @@ end)
 script.on_event({defines.events.on_built_entity      ,
                  defines.events.on_robot_built_entity}, function(event)
   -- Called when an entity gets placed.
+  Traindepo:onBuildEntity(event.created_entity)
   Trainassembly:onBuildEntity(event.created_entity, event.player_index)
   Traincontroller:onBuildEntity(event.created_entity, event.player_index)
 end)
@@ -54,6 +57,7 @@ script.on_event({defines.events.on_player_mined_entity,
                  defines.events.on_robot_mined_entity ,
                  defines.events.on_entity_died        }, function(event)
   -- Called when an entity gets removed.
+  Traindepo:onRemoveEntity(event.entity)
   Trainassembly:onRemoveEntity(event.entity)
   Traincontroller:onRemoveEntity(event.entity)
 end)
