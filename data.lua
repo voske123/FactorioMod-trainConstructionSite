@@ -8,6 +8,7 @@ require "prototypes.item.trainassembly-fuel"
 require "prototypes.item.trainassembly-resultItem"
 require "prototypes.item.trainassembly-subgroups"
 require "prototypes.item.traincontroller"
+require "prototypes.item.traindepo"
 
 require "prototypes.fluid.trainassembly-resultFluid"
 
