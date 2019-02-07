@@ -15,27 +15,6 @@ traindepo.icons = util.table.deepcopy(data.raw["item"][traindepo.minable.result]
 
 
 
-local traindepoConstruction = util.table.deepcopy(traindepo)
-traindepoConstruction.name = traindepoConstruction.name .. "-construction"
-
-traindepoConstruction.collision_mask = nil
-
-for _,flag in pairs{
-  "placeable-neutral",
-  "player-creation",
-} do
-  for flagIndex,flagName in pairs(traindepoConstruction.flags) do
-    if flag == flagName then
-      table.remove(traindepoConstruction.flags, flagIndex)
-      break
-    end
-  end
-end
-table.insert(traindepoConstruction.flags, "not-blueprintable")
-
-
-
 data:extend{
   traindepo,
-  traindepoConstruction,
 }

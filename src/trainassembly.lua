@@ -741,56 +741,55 @@ function Trainassembly:onBuildEntity(createdEntity, playerIndex)
   -- We manualy have to build a machine entity on the same spot.
   --
   -- Player experience: The player thinks he builded an assembling machine on top of rails.
-  if createdEntity and createdEntity.valid then
-    if createdEntity.name == self:getPlaceableEntityName() then
-      -- We know the createdEntity is the placeable entity, meaning the player wants
-      -- to build a trainassembly on this spot
+  if createdEntity.name == self:getPlaceableEntityName() then
+    -- We know the createdEntity is the placeable entity, meaning the player wants
+    -- to build a trainassembly on this spot
 
-      -- STEP 1: check if the assembling machine is validly placed.
-      if self:checkValidPlacement(createdEntity, playerIndex) then
-        local entitySurface = createdEntity.surface
-        local entityPosition = createdEntity.position
-        local entityForce = createdEntity.force
+    -- STEP 1: check if the assembling machine is validly placed.
+    if self:checkValidPlacement(createdEntity, playerIndex) then
+      local entitySurface = createdEntity.surface
+      local entityPosition = createdEntity.position
+      local entityForce = createdEntity.force
 
-        -- STEP 2: place the assembling machine on the same spot
-        local machineEntity = createdEntity.surface.create_entity({
-          name      = self:getMachineEntityName(),
-          position  = entityPosition,
-          direction = lib.directions.orientationTo4WayDirection(createdEntity.orientation),
-          force     = entityForce,
-        })
-
-        -- STEP 3: make the rails underneath unminable
-        for _,railEntity in pairs(entitySurface.find_entities_filtered{
-          name  = "straight-rail",
-          type  = "straight-rail",
-          --force = entityForce,
-          area  = {
-            {entityPosition.x - 3.1, entityPosition.y - 3.1},
-            {entityPosition.x + 3.1, entityPosition.y + 3.1},
-          },
-        }) do
-          railEntity.destructible = false -- entity can't be damaged
-          railEntity.minable      = false -- entity can't be mined
-        end
-
-        -- STEP 4: delete the locomotive that was build.
-        createdEntity.destroy()
-
-        -- STEP 5: Save the newly made trainassembly to our data structure so we can keep track of it
-        self:saveNewStructure(machineEntity)
-      end
-    elseif createdEntity.name == "straight-rail" then
-      if createdEntity.surface.count_entities_filtered{
+      -- STEP 2: place the assembling machine on the same spot
+      local machineEntity = createdEntity.surface.create_entity({
         name      = self:getMachineEntityName(),
-        type      = "assembling-machine",
-        area      = {{x = createdEntity.position.x - .5, y = createdEntity.position.y - .5},
-                     {x = createdEntity.position.x + .5, y = createdEntity.position.y + .5},},
-        limit     = 1,
-      } > 0 then
-        createdEntity.destroy()
-        game.players[playerIndex].insert{name="rail", count=1}
+        position  = entityPosition,
+        direction = lib.directions.orientationTo4WayDirection(createdEntity.orientation),
+        force     = entityForce,
+      })
+
+      -- STEP 3: make the rails underneath unminable
+      for _,railEntity in pairs(entitySurface.find_entities_filtered{
+        name  = "straight-rail",
+        type  = "straight-rail",
+        --force = entityForce,
+        area  = {
+          {entityPosition.x - 3.1, entityPosition.y - 3.1},
+          {entityPosition.x + 3.1, entityPosition.y + 3.1},
+        },
+      }) do
+        railEntity.destructible = false -- entity can't be damaged
+        railEntity.minable      = false -- entity can't be mined
       end
+
+      -- STEP 4: delete the locomotive that was build.
+      createdEntity.destroy()
+
+      -- STEP 5: Save the newly made trainassembly to our data structure so we can keep track of it
+      self:saveNewStructure(machineEntity)
+    end
+
+  elseif createdEntity.name == "straight-rail" then
+    if createdEntity.surface.count_entities_filtered{
+      name      = self:getMachineEntityName(),
+      type      = "assembling-machine",
+      area      = {{x = createdEntity.position.x - .5, y = createdEntity.position.y - .5},
+                   {x = createdEntity.position.x + .5, y = createdEntity.position.y + .5},},
+      limit     = 1,
+    } > 0 then
+      createdEntity.destroy()
+      game.players[playerIndex].insert{name="rail", count=1}
     end
   end
 end
@@ -801,7 +800,7 @@ function Trainassembly:onRemoveEntity(removedEntity)
   -- removed. This also means we have to delete the train that was in this spot.
   --
   -- Player experience: Everything with the trainAssembler gets removed
-  if removedEntity and removedEntity.valid and removedEntity.name == self:getMachineEntityName() then
+  if removedEntity.name == self:getMachineEntityName() then
     -- STEP 1: make the rails underneath minable again
     local entityPosition = removedEntity.position
     for _,railEntity in pairs(removedEntity.surface.find_entities_filtered{
@@ -829,7 +828,7 @@ function Trainassembly:onPlayerRotatedEntity(rotatedEntity)
   -- rotated on 180 degree angles. So we have to manualy rotate it another 90 degree.
   --
   -- Player experience: The player thinks he rotated the entity 180 degree
-  if rotatedEntity and rotatedEntity.valid and rotatedEntity.name == self:getMachineEntityName() then
+  if rotatedEntity.name == self:getMachineEntityName() then
     -- STEP 1: get the new direction from the old saved direction
     local newDirection = lib.directions.oposite(self:getMachineDirection(rotatedEntity))
 

@@ -46,9 +46,14 @@ end)
 script.on_event({defines.events.on_built_entity      ,
                  defines.events.on_robot_built_entity}, function(event)
   -- Called when an entity gets placed.
-  Traindepo:onBuildEntity(event.created_entity)
-  Trainassembly:onBuildEntity(event.created_entity, event.player_index)
-  Traincontroller:onBuildEntity(event.created_entity, event.player_index)
+  local createdEntity = event.created_entity
+  if createdEntity and createdEntity.valid then
+    local playerIndex = event.player_index
+
+    Traindepo:onBuildEntity(createdEntity)
+    Trainassembly:onBuildEntity(createdEntity, playerIndex)
+    Traincontroller:onBuildEntity(createdEntity, playerIndex)
+  end
 end)
 
 
@@ -57,17 +62,23 @@ script.on_event({defines.events.on_player_mined_entity,
                  defines.events.on_robot_mined_entity ,
                  defines.events.on_entity_died        }, function(event)
   -- Called when an entity gets removed.
-  Traindepo:onRemoveEntity(event.entity)
-  Trainassembly:onRemoveEntity(event.entity)
-  Traincontroller:onRemoveEntity(event.entity)
+  local removedEntity = event.entity
+  if removedEntity and removedEntity.valid then
+    Traindepo:onRemoveEntity(removedEntity)
+    Trainassembly:onRemoveEntity(removedEntity)
+    Traincontroller:onRemoveEntity(removedEntity)
+  end
 end)
 
 
 
 script.on_event(defines.events.on_player_rotated_entity, function(event)
   --Called when player rotates an entity.
-  Trainassembly:onPlayerRotatedEntity(event.entity)
-  Traincontroller:onPlayerRotatedEntity(event.entity, event.player_index)
+  local rotatedEntity = event.entity
+  if rotatedEntity and rotatedEntity.valid then
+    Trainassembly:onPlayerRotatedEntity(rotatedEntity)
+    Traincontroller:onPlayerRotatedEntity(rotatedEntity, event.player_index)
+  end
 end)
 
 
