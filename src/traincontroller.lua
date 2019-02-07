@@ -14,6 +14,7 @@ function Traincontroller:onInit()
   if not global.TC_data then
     global.TC_data = self:initGlobalData()
   end
+  self:createControllerForces()
   self.Builder:onInit()
 end
 
@@ -39,6 +40,8 @@ function Traincontroller:initGlobalData()
     ["version"]       = 1, -- version of the global data
     ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
 
+    ["trainControllerForces"] = {}, -- keep track of the created forces
+
     ["trainControllers"]           = {},  -- keep track of all controllers
     ["nextTrainControllerIterate"] = nil, -- next controller to iterate over
   }
@@ -53,7 +56,33 @@ function Traincontroller:initPrototypeData()
   return
   {
     ["trainControllerName"] = "traincontroller", -- item and entity have same name
+    ["trainControllerForce"] = "-trainControllerForce", -- force for the traincontrollers
   }
+end
+
+
+
+-- Create force for traincontrollers
+function Traincontroller:createControllerForces()
+  local forcesToCreate = {}
+
+   -- get a list for all the forces to create
+  for forceName,_ in pairs(game.forces) do
+    if forceName ~= "enemy" and forceName ~= "neutral" then
+      table.insert(forcesToCreate, forceName)
+    end
+  end
+
+   -- create all the forces
+  for _,forceName in pairs(forcesToCreate) do
+    -- create the force and set it friendly
+    local friendlyForceName = forceName..self:getControllerForceName()
+    game.create_force(friendlyForceName)
+        .set_friend(forceName, true)
+
+    -- save the created force in the data structure
+    global.TC_data["trainControllerForces"][friendlyForceName] = forceName
+  end
 end
 
 
@@ -131,6 +160,10 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuiderIndex)
     end
   end
 
+  -- STEP 3: The controller needs to be on another (friendly) force. This way
+  --         the trains won't path to this stop.
+  controllerEntity.force = controllerEntity.force.name .. self:getControllerForceName()
+
   --game.print(serpent.block(global.TC_data["trainControllers"]))
 end
 
@@ -205,6 +238,12 @@ end
 
 
 
+function Traincontroller:getControllerForceName()
+  return global.TC_data.prototypeData.trainControllerForce
+end
+
+
+
 function Traincontroller:getTrainController(trainBuilderIndex)
   for surfaceIndex,_ in pairs(global.TC_data["trainControllers"]) do
     for positionY,_ in pairs(global.TC_data["trainControllers"][surfaceIndex]) do
@@ -251,7 +290,7 @@ function Traincontroller:checkValidAftherChanges(alteredEntity, playerIndex)
               count = 1,
             },
             position = trainController.position,
-            force = trainController.force,
+            force = global.TC_data["trainControllerForces"][trainController.force] or trainController.force,
             fast_replace = true,
             spill = false, -- delete excess items (only if fast_replace = true)
           }
@@ -338,7 +377,7 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
           count = 1,
         },
         position = createdEntity.position,
-        force = createdEntity.force,
+        force = global.TC_data["trainControllerForces"][createdEntity.force] or createdEntity.force,
         fast_replace = true,
         spill = false, -- delete excess items (only if fast_replace = true)
       }
@@ -449,7 +488,7 @@ function Traincontroller:onBuildEntity(createdEntity, playerIndex)
   -- and inform the player what went wrong.
   --
   -- Player experience: The player activated the trainbuilder if its valid.
-  if createdEntity.name == self:getControllerEntityName() then
+  if createdEntity.valid and createdEntity.name == self:getControllerEntityName() then
     -- it is the correct entity, now check if its correctly placed
     local validPlacement, trainBuiderIndex = self:checkValidPlacement(createdEntity, playerIndex)
     if validPlacement then -- It is valid, now we have to add the entity to the list
@@ -513,7 +552,7 @@ function Traincontroller:onTrainbuilderAltered(trainBuilderIndex)
         count = 1,
       },
       position = trainController.position,
-      force = trainController.force,
+      force = global.TC_data["trainControllerForces"][trainController.force] or trainController.force,
       fast_replace = true,
       spill = false, -- delete excess items (only if fast_replace = true)
     }
