@@ -87,3 +87,10 @@ script.on_event(defines.events.on_entity_settings_pasted, function(event)
   --Called when player rotates an entity.
   Traincontroller:onPlayerChangedRecipe(event.destination, event.player_index)
 end)
+
+
+
+script.on_event(defines.events.on_entity_renamed, function(event)
+  --Called after an entity has been renamed either by the player or through script.
+  Traindepo:onRenameEntity(event.entity, event.old_name)
+end)

@@ -92,6 +92,33 @@ function Traindepo:deleteBuilding(depoEntity)
 end
 
 
+
+function Traindepo:renameBuilding(depoEntity, oldName)
+  local stationName = depoEntity.backer_name
+  if oldName ~= stationName then -- checking to make sure it is actualy changed
+
+    local depoForceName = depoEntity.force.name
+    local depoSurfaceIndex = depoEntity.surface.index
+
+    -- remove the old one
+    local stationAmount = global.TD_data["depoNames"][depoForceName][depoSurfaceIndex][oldName]
+    if stationAmount then
+      if stationAmount > 1 then
+        global.TD_data["depoNames"][depoForceName][depoSurfaceIndex][oldName] = stationAmount - 1
+      else
+        global.TD_data["depoNames"][depoForceName][depoSurfaceIndex][oldName] = nil
+        -- no need to delete empty tables, since we'll be adding one to it again
+      end
+    end
+
+    -- add the new one
+    stationAmount = global.TD_data["depoNames"][depoForceName][depoSurfaceIndex][stationName] or 0
+    global.TD_data["depoNames"][depoForceName][depoSurfaceIndex][stationName] = stationAmount + 1
+  end
+end
+
+
+
 --------------------------------------------------------------------------------
 -- Getter functions to extract data from the data structure
 --------------------------------------------------------------------------------
@@ -116,5 +143,13 @@ end
 function Traindepo:onRemoveEntity(removedEntity)
   if removedEntity.name == self:getDepoEntityName() then
     self:deleteBuilding(removedEntity)
+  end
+end
+
+
+
+function Traindepo:onRenameEntity(renamedEntity, oldName)
+  if renamedEntity.name == self:getDepoEntityName() then
+    self:renameBuilding(renamedEntity, oldName)
   end
 end
