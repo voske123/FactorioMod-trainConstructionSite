@@ -449,7 +449,7 @@ function Traincontroller:onBuildEntity(createdEntity, playerIndex)
   -- and inform the player what went wrong.
   --
   -- Player experience: The player activated the trainbuilder if its valid.
-  if createdEntity and createdEntity.valid and createdEntity.name == self:getControllerEntityName() then
+  if createdEntity.name == self:getControllerEntityName() then
     -- it is the correct entity, now check if its correctly placed
     local validPlacement, trainBuiderIndex = self:checkValidPlacement(createdEntity, playerIndex)
     if validPlacement then -- It is valid, now we have to add the entity to the list
@@ -466,7 +466,7 @@ function Traincontroller:onRemoveEntity(removedEntity)
   -- removed. This also means we have to delete the train that was in this spot.
   --
   -- Player experience: Everything with the trainAssembler gets removed
-  if removedEntity and removedEntity.valid and removedEntity.name == self:getControllerEntityName() then
+  if removedEntity.name == self:getControllerEntityName() then
     -- STEP 1: Update the data structure
     self:deleteController(removedEntity)
     -- TODO
@@ -479,7 +479,7 @@ end
 function Traincontroller:onPlayerRotatedEntity(rotatedEntity, playerIndex)
   -- The player rotated the machine entity, we need to make sure the controller
   -- is still valid.
-  if rotatedEntity and rotatedEntity.valid and rotatedEntity.name == Trainassembly:getMachineEntityName() then
+  if rotatedEntity.name == Trainassembly:getMachineEntityName() then
     Traincontroller:checkValidAftherChanges(rotatedEntity, playerIndex)
   end
 end

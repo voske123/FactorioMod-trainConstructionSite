@@ -4,9 +4,7 @@ local traincontroller = util.table.deepcopy(data.raw["train-stop"]["train-stop"]
 
 traincontroller.name = "traincontroller"
 
-
 traincontroller.minable.result = "traincontroller"
-
 
 traincontroller.localised_name = util.table.deepcopy(data.raw["item"][traincontroller.minable.result].localised_name)
 traincontroller.localised_description = util.table.deepcopy(data.raw["item"][traincontroller.minable.result].localised_description)

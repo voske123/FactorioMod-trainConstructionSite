@@ -63,6 +63,7 @@ function Debug:onPlayerCreated(player_index)
     quickbar.insert("rail-signal")
     quickbar.insert("trainassembly")
     quickbar.insert("traincontroller")
+    quickbar.insert("traindepo")
 
     quickbar.insert("locomotive")
     quickbar.insert("trainassembly-recipefuel")
