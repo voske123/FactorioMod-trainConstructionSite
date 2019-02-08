@@ -55,8 +55,10 @@ end
 function Traincontroller:initPrototypeData()
   return
   {
-    ["trainControllerName"] = "traincontroller", -- item and entity have same name
-    ["trainControllerForce"] = "-trainControllerForce", -- force for the traincontrollers
+    ["trainControllerName"]       = "traincontroller",        -- item and entity have same name
+    ["trainControllerSignalName"] = "traincontroller-signal", -- hidden signals
+
+    ["trainControllerForce"]      = "-trainControllerForce",  -- force for the traincontrollers
   }
 end
 
@@ -116,6 +118,8 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuilderIndex)
   global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y][controllerPosition.x] =
   {
     ["entity"]           = controllerEntity, -- the controller entity
+    ["entity-hidden"]    = {}, -- the hidden entities
+
     ["trainBuilderIndex"] = trainBuilderIndex, -- the trainbuilder it controls
     ["controllerStatus"] = global.TC_data.Builder["builderStates"]["idle"], -- status
 
@@ -161,13 +165,26 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuilderIndex)
   end
 
   -- STEP 3: Configure the controller
-  -- STEP 3a:The controller needs to be on another (friendly) force. This way
-  --         the controller wont show up on the train menu.
-  controllerEntity.force = controllerEntity.force.name .. self:getControllerForceName()
+  -- STEP 3a:Create hidden entities (2 rail signals)
+  local hiddenEntities = global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y][controllerPosition.x]["entity-hidden"]
+  for hiddenEntityIndex,hiddenEntityData in pairs(self:getHiddenEntityData(controllerPosition, controllerEntity.direction)) do
+    hiddenEntities[hiddenEntityIndex] = controllerSurface.create_entity{
+      name      = hiddenEntityData.name,
+      position  = hiddenEntityData.position,
+      direction = hiddenEntityData.direction,
+      force     = controllerEntity.force
+    }
+  end
 
-  -- STEP 3b:The controller needs to be disabled. This way the trains won't path
-  --         to this stop.
-  -- TODO
+  -- STEP 3b:The controller needs to be on another (friendly) force. This way
+  --         the controller wont show up on the train menu.
+  --controllerEntity.force = controllerEntity.force.name .. self:getControllerForceName()
+
+  -- STEP 3c:The controller needs to be disabled. This way the trains won't path
+  --         to this stop. To get this behaviour, we connect it to the logistics
+  --         network and make sure it has a disabled condition
+  self:setTrainstopControlBehaviour(controllerEntity)
+
   --game.print(serpent.block(global.TC_data["trainControllers"]))
 end
 
@@ -227,6 +244,40 @@ end
 
 
 
+function Traincontroller:setTrainstopControlBehaviour(trainStopEntity)
+  local stationBehaviour = trainStopEntity.get_or_create_control_behavior()
+  -- https://lua-api.factorio.com/latest/LuaControlBehavior.html#LuaTrainStopControlBehavior
+  stationBehaviour.send_to_train               = false -- sending signals to the train
+  stationBehaviour.read_from_train             = false -- reading train content from the train
+  stationBehaviour.read_stopped_train          = false -- read train id from the train
+  stationBehaviour.enable_disable              = false -- open/close train station with circuit network
+  stationBehaviour.connect_to_logistic_network = true  -- open/close train station with logistic network
+
+  -- enable/disable condition for circuit network
+  stationBehaviour.circuit_condition = {
+    -- https://lua-api.factorio.com/latest/LuaControlBehavior.html#LuaGenericOnOffControlBehavior.circuit_condition
+    condition = {
+      comparator    = "<",
+      first_signal  = nil, -- blank, no condition set
+      second_signal = nil, -- if not set, it will compare to constant
+      constant      = nil, -- if not set, will default to 0
+    }
+  }
+
+  -- make sure it is disconnected from the logistics network
+  stationBehaviour.logistic_condition = {
+    -- https://lua-api.factorio.com/latest/LuaControlBehavior.html#LuaGenericOnOffControlBehavior.logistic_condition
+    condition = {
+      comparator    = "<",
+      first_signal  = nil, -- blank, no condition set
+      second_signal = nil, -- if not set, it will compare to constant
+      constant      = nil, -- if not set, will default to 0
+    }
+  }
+end
+
+
+
 --------------------------------------------------------------------------------
 -- Getter functions to extract data from the data structure
 --------------------------------------------------------------------------------
@@ -238,6 +289,12 @@ end
 
 function Traincontroller:getControllerEntityName()
   return global.TC_data.prototypeData.trainControllerName
+end
+
+
+
+function Traincontroller:getControllerSignalEntityName()
+  return global.TC_data.prototypeData.trainControllerSignalName
 end
 
 
@@ -263,6 +320,50 @@ function Traincontroller:getTrainController(trainBuilderIndex)
   end
 
   return nil
+end
+
+
+
+function Traincontroller:getHiddenEntityData(position, direction)
+  -- create a list for all hidden entities that needs to be created
+
+  -- STEP 1: Get the orientation offset depending on the orientation
+  local offsetX = 0
+  local offsetY = 0
+
+  if direction == defines.direction.north then
+    offsetX = -1
+    --offsetY = 0
+  elseif direction == defines.direction.east then
+    --offsetX = 0
+    offsetY = -1
+  elseif direction == defines.direction.south then
+    offsetX = 1
+    --offsetY = 0
+  elseif direction == defines.direction.west then
+    --offsetX = 0
+    offsetY = 1
+  end
+
+  -- STEP 2: Return the list with hidden entities
+  return {
+    { -- signal on the same side of the track
+      name     = self:getControllerSignalEntityName(),
+      position = {
+        x = position.x + offsetX * 1,
+        y = position.y + offsetY * 1,
+      },
+      direction = lib.directions.oposite(direction)
+    },
+    { -- signal on the other side of the track
+      name     = self:getControllerSignalEntityName(),
+      position = {
+        x = position.x + offsetX * 3,
+        y = position.y + offsetY * 3,
+      },
+      direction = direction
+    },
+  }
 end
 
 
@@ -543,11 +644,15 @@ end
 
 
 -- When a player copy pastes a recipe
-function Traincontroller:onPlayerChangedRecipe(pastedEntity, playerIndex)
+function Traincontroller:onPlayerChangedSettings(pastedEntity, playerIndex)
   -- The player pasted a recipe in a machine entity, we need to make sure the
   -- controller is still valid.
-  if pastedEntity and pastedEntity.valid and pastedEntity.name == Trainassembly:getMachineEntityName() then
-    Traincontroller:checkValidAftherChanges(pastedEntity, playerIndex)
+  if pastedEntity and pastedEntity.valid then
+    if pastedEntity.name == Trainassembly:getMachineEntityName() then
+      self:checkValidAftherChanges(pastedEntity, playerIndex)
+    elseif pastedEntity.name == self:getControllerEntityName() then
+      self:setTrainstopControlBehaviour(pastedEntity)
+    end
   end
 end
 

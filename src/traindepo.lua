@@ -152,6 +152,7 @@ end
 
 
 
+-- When a player/robot removes the building
 function Traindepo:onRemoveEntity(removedEntity)
   if removedEntity.name == self:getDepoEntityName() then
     self:deleteBuilding(removedEntity)

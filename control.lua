@@ -73,7 +73,7 @@ end)
 
 
 script.on_event(defines.events.on_player_rotated_entity, function(event)
-  --Called when player rotates an entity.
+  -- Called when player rotates an entity.
   local rotatedEntity = event.entity
   if rotatedEntity and rotatedEntity.valid then
     Trainassembly:onPlayerRotatedEntity(rotatedEntity)
@@ -84,8 +84,8 @@ end)
 
 
 script.on_event(defines.events.on_entity_settings_pasted, function(event)
-  --Called when player rotates an entity.
-  Traincontroller:onPlayerChangedRecipe(event.destination, event.player_index)
+  -- Called after entity copy-paste is done.
+  Traincontroller:onPlayerChangedSettings(event.destination, event.player_index)
 end)
 
 
