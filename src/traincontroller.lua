@@ -90,7 +90,7 @@ end
 --------------------------------------------------------------------------------
 -- Setter functions to alter data into the data structure
 --------------------------------------------------------------------------------
-function Traincontroller:saveNewStructure(controllerEntity, trainBuiderIndex)
+function Traincontroller:saveNewStructure(controllerEntity, trainBuilderIndex)
   -- With this function we save all the data we want about a traincontroller.
   -- This traincontroller will be used to iterate over all the trainbuilders,
   -- this means they will be added to a linked list, with other words, each
@@ -116,7 +116,7 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuiderIndex)
   global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y][controllerPosition.x] =
   {
     ["entity"]           = controllerEntity, -- the controller entity
-    ["trainBuiderIndex"] = trainBuiderIndex, -- the trainbuilder it controls
+    ["trainBuilderIndex"] = trainBuilderIndex, -- the trainbuilder it controls
     ["controllerStatus"] = global.TC_data.Builder["builderStates"]["idle"], -- status
 
     -- list data
@@ -160,10 +160,14 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuiderIndex)
     end
   end
 
-  -- STEP 3: The controller needs to be on another (friendly) force. This way
-  --         the trains won't path to this stop.
+  -- STEP 3: Configure the controller
+  -- STEP 3a:The controller needs to be on another (friendly) force. This way
+  --         the controller wont show up on the train menu.
   controllerEntity.force = controllerEntity.force.name .. self:getControllerForceName()
 
+  -- STEP 3b:The controller needs to be disabled. This way the trains won't path
+  --         to this stop.
+  -- TODO
   --game.print(serpent.block(global.TC_data["trainControllers"]))
 end
 
@@ -250,7 +254,7 @@ function Traincontroller:getTrainController(trainBuilderIndex)
       for positionX,_ in pairs(global.TC_data["trainControllers"][surfaceIndex][positionY]) do
         local trainController = global.TC_data["trainControllers"][surfaceIndex][positionY][positionX]
 
-        if trainController["trainBuiderIndex"] == trainBuilderIndex then
+        if trainController["trainBuilderIndex"] == trainBuilderIndex then
           return trainController["entity"]
         end
 
@@ -502,9 +506,10 @@ function Traincontroller:onBuildEntity(createdEntity, playerIndex)
   -- Player experience: The player activated the trainbuilder if its valid.
   if createdEntity.valid and createdEntity.name == self:getControllerEntityName() then
     -- it is the correct entity, now check if its correctly placed
-    local validPlacement, trainBuiderIndex = self:checkValidPlacement(createdEntity, playerIndex)
+    local validPlacement, trainBuilderIndex = self:checkValidPlacement(createdEntity, playerIndex)
     if validPlacement then -- It is valid, now we have to add the entity to the list
-      self:saveNewStructure(createdEntity, trainBuiderIndex)
+      self:saveNewStructure(createdEntity, trainBuilderIndex)
+      --TODO: name the stop
     end
   end
 end
@@ -520,7 +525,7 @@ function Traincontroller:onRemoveEntity(removedEntity)
   if removedEntity.name == self:getControllerEntityName() then
     -- STEP 1: Update the data structure
     self:deleteController(removedEntity)
-    -- TODO
+    -- TODO: behaviour: delete current train
   end
 end
 

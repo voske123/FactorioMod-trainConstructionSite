@@ -75,6 +75,40 @@ end
 
 
 --------------------------------------------------------------------------------
+-- Getter functions to extract data from the data structure
+--------------------------------------------------------------------------------
+function Traincontroller.Builder:getBuildTrain(trainBuilderIndex)
+  -- this function returns the build train, or nil if none found
+  local trainBuilder = Trainassembly:getTrainBuilder(trainBuilderIndex)
+  if not trainBuilder then return nil end
+
+  -- STEP 1: Connect all the wagons together
+  --         The whole train is already connected, so no need to do this manual
+
+  -- STEP 2: Find one entity that is part of this train
+  local machineLocation = trainBuilder[1] -- we know this one is always used (train with length 1)
+  if not machineLocation then return nil end
+
+  local trainEntity = Trainassembly:getCreatedEntity(machineLocation.surfaceIndex, machineLocation.position)
+  if not (trainEntity and trainEntity.valid) then return nil end
+
+  -- STEP 3: Find the train this trainEntity is part of
+  local train = trainEntity.train
+  if not (train and train.valid) then return nil end
+
+  -- STEP 4: Before returning this train, make sure this is the whole train! (becose of step 1)
+  if not (#train.carriages == #trainBuilder) then
+    game.print("ERROR: The build train is not the fully build train, please report this to the mod author!")
+    return nil
+  end
+
+  -- STEP 5: Now we can return this train
+  return train
+end
+
+
+
+--------------------------------------------------------------------------------
 -- Behaviour functions
 --------------------------------------------------------------------------------
 function Traincontroller.Builder:updateController(surfaceIndex, position)
@@ -83,7 +117,7 @@ function Traincontroller.Builder:updateController(surfaceIndex, position)
   local controllerData    = global.TC_data["trainControllers"][surfaceIndex][position.y][position.x]
   local controllerStates  = global.TC_data.Builder["builderStates"]
   local controllerStatus  = controllerData["controllerStatus"]
-  local trainBuilderIndex = controllerData["trainBuiderIndex"]
+  local trainBuilderIndex = controllerData["trainBuilderIndex"]
 
 
   if controllerStatus == controllerStates["idle"] then
@@ -108,7 +142,7 @@ function Traincontroller.Builder:updateController(surfaceIndex, position)
 
   if controllerStatus == controllerStates["connecting"] then
     -- assembling the train components together and let the train drive off
-    if  self:assembleNextTrain(trainBuilderIndex) then
+    if self:assembleNextTrain(trainBuilderIndex, controllerData["entity"].backer_name) then
       game.print("Leaving train of length: "..#Trainassembly:getTrainBuilder(trainBuilderIndex))
       controllerStatus = controllerStates["idle"]
     end
@@ -173,17 +207,7 @@ function Traincontroller.Builder:buildNextTrain(trainBuilderIndex)
 
       -- get the maybe already existing entity
       local createdEntity = Trainassembly:getCreatedEntity(builderLocation["surfaceIndex"], builderLocation["position"])
-      local machineDirection = Trainassembly:getMachineDirection(machineEntity)
-      if createdEntity and createdEntity.valid then
-        -- there is already an entity, make sure its still correct, otherwise, update it
-
-        if not lib.directions.orientationTo4WayDirection(createdEntity.orientation) == machineDirection then
-          -- it is oriented wrong, let's make sure it has the correct orientation
-          createdEntity.rotate() -- only 2 rotations possible, so rotating it will fix it
-        end
-
-        -- TODO : check if the entity is the correct entity
-      else
+      if createdEntity and (not createdEntity.valid) then
         createdEntity = nil -- if not valid
       end
 
@@ -193,6 +217,8 @@ function Traincontroller.Builder:buildNextTrain(trainBuilderIndex)
         -- first we need to check if the recipe has made a result
         local machineOutput = machineEntity.fluidbox[1]
         if machineOutput and machineOutput.amount >= 1 then
+          local machineDirection = Trainassembly:getMachineDirection(machineEntity)
+
           -- the recipe made a result, now we can place it
           createdEntity = game.surfaces[builderLocation["surfaceIndex"]].create_entity{
             name             = buildEntityName,
@@ -254,11 +280,65 @@ end
 
 
 
-function Traincontroller.Builder:assembleNextTrain(trainBuilderIndex)
+function Traincontroller.Builder:assembleNextTrain(trainBuilderIndex, depoName)
+  -- The whole train is assembled, so now we can send it away
 
+  -- STEP 1: Get the train that is created (not the individual carriages)
+  local train = self:getBuildTrain(trainBuilderIndex)
+  if not train then return false end
 
-  
-  return false
+  -- STEP 2: Set the schedule for this train
+  -- STEP 2a:Create the schedule
+  local trainSchedule = { -- the train schedule
+    -- https://lua-api.factorio.com/latest/Concepts.html#TrainSchedule
+    current = 1, -- record the train is traveling too
+    records = {
+      -- the train schedule recods
+      -- https://lua-api.factorio.com/latest/Concepts.html#TrainScheduleRecord
+
+      -- First record: depo stop --
+      {
+        station         = depoName, -- name of the depo station
+        wait_conditions = {
+          -- wait conditions at this station
+          -- https://lua-api.factorio.com/latest/Concepts.html#WaitCondition
+
+          -- first wait condition
+          {
+            type         = "circuit",
+            compare_type = "and", -- tells how this condition is to be compared with the preceding conditions
+            ticks        = nil,   -- number of ticks to wait or of inactivity
+            condition    = {
+              -- condition when type is "item_count" or "circuit"
+              -- https://lua-api.factorio.com/latest/Concepts.html#CircuitCondition
+              comparator    = "<",
+              first_signal  = nil, -- blank, no condition set
+              second_signal = nil, -- if not set, it will compare to constant
+              constant      = nil, -- if not set, will default to 0
+            },
+          }, -- end of first wait condition
+
+        },
+      }, -- end of first record
+
+    },
+  } -- end of trainSchedule
+
+  -- STEP 2b:Add the schedule to the train
+  train.schedule = util.table.deepcopy(trainSchedule)
+
+  -- STEP 3: Send the train away
+  -- STEP 3a:Set it in automatic mode
+  train.manual_mode = false
+
+  -- STEP 3b:Check if the train has a path, if it has, it will drive away
+  if not train.recalculate_path() then
+    return false -- no pathing
+  end
+
+  -- STEP 4: Clear the train buildings to start making a new one
+
+  return false--true
 end
 
 
@@ -285,23 +365,17 @@ end
 
 
 function Traincontroller.Builder:activateOnTick()
-  -- only need to activate it if its deactivated
-  if not global.TC_data.Builder["onTickActive"] then
-    --game.print("on_tick activated")
-    script.on_nth_tick(global.TC_data.Builder["onTickDelay"], function(event)
-      self:onTick(event)
-    end)
-    global.TC_data.Builder["onTickActive"] = true
-  end
+  --game.print("on_tick activated")
+  script.on_nth_tick(global.TC_data.Builder["onTickDelay"], function(event)
+    self:onTick(event)
+  end)
+  global.TC_data.Builder["onTickActive"] = true
 end
 
 
 
 function Traincontroller.Builder:deactivateOnTick()
-  -- only need to deactivate it if its not active
-  if global.TC_data.Builder["onTickActive"] then
-    --game.print("on_tick deactivated")
-    script.on_nth_tick(global.TC_data.Builder["onTickDelay"], nil)
-    global.TC_data.Builder["onTickActive"] = false
-  end
+  --game.print("on_tick deactivated")
+  script.on_nth_tick(global.TC_data.Builder["onTickDelay"], nil)
+  global.TC_data.Builder["onTickActive"] = false
 end
