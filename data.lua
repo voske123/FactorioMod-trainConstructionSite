@@ -16,6 +16,7 @@ require "prototypes.recipe.trainassembly-fuel"
 require "prototypes.recipe.trainassembly-trainPlacing"
 require "prototypes.recipe.trainassembly-placeable"
 require "prototypes.recipe.traincontroller"
+require "prototypes.recipe.traindepo"
 
 require "prototypes.entities.trainassembly-placeable"
 require "prototypes.entities.trainassembly-machine"
@@ -24,3 +25,4 @@ require "prototypes.entities.traindepo"
 
 require "prototypes.technology.trainassembly"
 require "prototypes.technology.traincontroller"
+require "prototypes.technology.traindepo"
