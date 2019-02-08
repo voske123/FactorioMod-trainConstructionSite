@@ -26,7 +26,7 @@ for fuelOrder, fuelIngredient in pairs ({
         {
           util.table.deepcopy(fuelIngredient),
         },
-        result = "trainassembly-trainfuel",
+        result = "trainassembly-recipefuel",
       },
 
       -- We have to add a order string to the recipe becose we have multiple

@@ -45,12 +45,17 @@ end
 
 
 function Debug:onPlayerCreated(player_index)
+  -- research all technologies
+  game.players[player_index].force.research_all_technologies()
+
   local mainInventory = game.players[player_index].get_main_inventory()
   local quickbar      = game.players[player_index].get_quickbar()
   local toolInventory = game.players[player_index].get_inventory(defines.inventory.player_tools)
 
   if mainInventory and mainInventory.valid then
-    -- nothing to insert yet
+    mainInventory.insert("solar-panel")
+    mainInventory.insert("accumulator")
+    mainInventory.insert("substation")
   end
 
   if quickbar and quickbar.valid then
@@ -58,11 +63,15 @@ function Debug:onPlayerCreated(player_index)
     quickbar.insert("rail-signal")
     quickbar.insert("trainassembly")
     quickbar.insert("traincontroller")
+    quickbar.insert("traindepo")
+
+    quickbar.insert("locomotive")
+    quickbar.insert("trainassembly-recipefuel")
+
   end
 
   if toolInventory and toolInventory.valid then
     toolInventory.insert("steel-axe")
   end
 
-  log(game.players[player_index].force.name)
 end
