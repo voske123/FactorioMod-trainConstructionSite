@@ -122,6 +122,18 @@ end
 --------------------------------------------------------------------------------
 -- Getter functions to extract data from the data structure
 --------------------------------------------------------------------------------
+function Traindepo:hasDepoEntities(depoForceName, depoSurfaceIndex)
+  -- returns true if at least one depo has been build on the force on that surface
+  if global.TD_data["depoNames"][depoForceName] then
+    if global.TD_data["depoNames"][depoForceName][depoSurfaceIndex] then
+      return not lib.table.isEmpty(global.TD_data["depoNames"][depoForceName][depoSurfaceIndex])
+    end
+  end
+  return false
+end
+
+
+
 function Traindepo:getDepoEntityName()
   return global.TD_data["prototypeData"]["traindepoName"]
 end

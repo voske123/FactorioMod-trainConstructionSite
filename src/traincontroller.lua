@@ -290,7 +290,7 @@ function Traincontroller:checkValidAftherChanges(alteredEntity, playerIndex)
               count = 1,
             },
             position = trainController.position,
-            force = global.TC_data["trainControllerForces"][trainController.force] or trainController.force,
+            force = global.TC_data["trainControllerForces"][createdEntity.force.name] or createdEntity.force,
             fast_replace = true,
             spill = false, -- delete excess items (only if fast_replace = true)
           }
@@ -360,6 +360,9 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
   -- traincontroller to the player. If no player is found, it will drop the
   -- traincontroller on the ground where the traincontroller was placed.
 
+  -- this is the actual force of the player, not the friendly force
+  local createdEntityForceName = global.TC_data["trainControllerForces"][createdEntity.force.name] or createdEntity.force.name
+
   local notValid = function(localisedMessage)
     -- Try return the item to the player (or drop it)
     if playerIndex then -- return if possible
@@ -377,7 +380,7 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
           count = 1,
         },
         position = createdEntity.position,
-        force = global.TC_data["trainControllerForces"][createdEntity.force] or createdEntity.force,
+        force = createdEntityForceName,
         fast_replace = true,
         spill = false, -- delete excess items (only if fast_replace = true)
       }
@@ -390,7 +393,16 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
     return false, -1
   end
 
-  -- STEP 1: Look for a trainassembler, if there is no trainassembler found,
+  -- STEP 1: Check if at least one train depo has been placed, if not, the
+  --         trainbuilder can't let trains drive off.
+  if not Traindepo:hasDepoEntities(createdEntityForceName, createdEntity.surface.index) then
+    return notValid{"traincontroller-message.noTraindepoFound",
+      --[[1]]{"item-name.traincontroller", {"item-name.trainassembly"}},
+      --[[2]]{"item-name.traindepo"},
+    }
+  end
+
+  -- STEP 2: Look for a trainassembler, if there is no trainassembler found,
   --         the controller is placed wrong
   local entityDirection = createdEntity.direction -- direction to look for a trainbuilder
   local entitySearchDirection = {x=0,y=0}
@@ -411,7 +423,7 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
   local builderEntity = entitySurface.find_entities_filtered{
     name     = Trainassembly:getMachineEntityName(),
     --type     = createdEntity.type,
-    force    = createdEntity.force,
+    force    = createdEntityForceName,
     area     = {
       { entityPosition.x + 3.5*entitySearchDirection.x - 1.5*entitySearchDirection.y , entityPosition.y + 3.5*entitySearchDirection.y + 1.5*entitySearchDirection.x },
       { entityPosition.x + 5.5*entitySearchDirection.x - 2.5*entitySearchDirection.y , entityPosition.y + 5.5*entitySearchDirection.y + 2.5*entitySearchDirection.x },
@@ -423,13 +435,13 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
     return notValid{"traincontroller-message.noTrainbuilderFound", {"item-name.trainassembly"}}
   end
 
-  -- STEP 2: Find the trainbuilder that this trainassembler is part of
+  -- STEP 3: Find the trainbuilder that this trainassembler is part of
   local builderIndex = Trainassembly:getTrainBuilderIndex(builderEntity)
-  -- STEP 2a: If there is no trainbuilder found, the controller is placed wrong.
+  -- STEP 3a: If there is no trainbuilder found, the controller is placed wrong.
   if not builderIndex then
     return notValid{"traincontroller-message.invalidTrainbuilderFound", {"item-name.trainassembly"}}
   end
-  -- STEP 2b: If there is one, we need to make sure it isn't controlled yet.
+  -- STEP 3b: If there is one, we need to make sure it isn't controlled yet.
   if self:getTrainController(builderIndex) then
     return notValid{"traincontroller-message.isAlreadyControlled",
       --[[1]]{"item-name.trainassembly"},
@@ -437,7 +449,7 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
     }
   end
 
-  -- STEP 3: Make sure the trainbuilder has all recipes set, and at least
+  -- STEP 4: Make sure the trainbuilder has all recipes set, and at least
   --         one of the recipes must be a locomotive that is facing it the
   --         direction the train is supposed to leave.
   local hasValidLocomotive = false
@@ -472,7 +484,7 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
     }
   end
 
-  -- STEP 4: If all previous checks succeeded, it means it is validly placed.
+  -- STEP 5: If all previous checks succeeded, it means it is validly placed.
   return true, builderIndex
 end
 
@@ -552,7 +564,7 @@ function Traincontroller:onTrainbuilderAltered(trainBuilderIndex)
         count = 1,
       },
       position = trainController.position,
-      force = global.TC_data["trainControllerForces"][trainController.force] or trainController.force,
+      force = global.TC_data["trainControllerForces"][trainController.force.name] or trainController.force,
       fast_replace = true,
       spill = false, -- delete excess items (only if fast_replace = true)
     }
