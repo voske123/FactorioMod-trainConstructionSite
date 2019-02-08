@@ -122,9 +122,9 @@ function Traincontroller.Builder:updateController(surfaceIndex, position)
 
   if controllerStatus == controllerStates["idle"] then
     -- controller is waiting till previous train clears the train block
-    if self:canBuildNextTrain(trainBuilderIndex) then
+    if self:canBuildNextTrain(trainBuilderIndex, controllerData["entity"]) then
       -- if we can build a new train, we move on to the next step
-      game.print("Start building a train of length: "..#Trainassembly:getTrainBuilder(trainBuilderIndex))
+      --game.print("Start building a train of length: "..#Trainassembly:getTrainBuilder(trainBuilderIndex))
       controllerStatus = controllerStates["building"]
     end
   end
@@ -134,7 +134,7 @@ function Traincontroller.Builder:updateController(surfaceIndex, position)
     -- controller is waiting on resources, building each component
     if self:buildNextTrain(trainBuilderIndex) then
       -- if the whole train is build, we can send it away
-      game.print("Finished building a train of length: "..#Trainassembly:getTrainBuilder(trainBuilderIndex))
+      --game.print("Finished building a train of length: "..#Trainassembly:getTrainBuilder(trainBuilderIndex))
       controllerStatus = controllerStates["connecting"]
     end
   end
@@ -143,7 +143,7 @@ function Traincontroller.Builder:updateController(surfaceIndex, position)
   if controllerStatus == controllerStates["connecting"] then
     -- assembling the train components together and let the train drive off
     if self:assembleNextTrain(trainBuilderIndex, controllerData["entity"].backer_name) then
-      game.print("Leaving train of length: "..#Trainassembly:getTrainBuilder(trainBuilderIndex))
+      --game.print("Leaving train of length: "..#Trainassembly:getTrainBuilder(trainBuilderIndex))
       controllerStatus = controllerStates["idle"]
     end
   end
@@ -155,12 +155,19 @@ end
 
 
 
-function Traincontroller.Builder:canBuildNextTrain(trainBuilderIndex)
+function Traincontroller.Builder:canBuildNextTrain(trainBuilderIndex, trainBuilderController)
   -- We need to check for each builder if it can place a train there
   local trainBuilder = Trainassembly:getTrainBuilder(trainBuilderIndex)
   if not trainBuilder then return false end
   --game.print("checking if it can build a train with length: "..#trainBuilder)
 
+  -- STEP 1: Check if the train block is emtpy with the rail signal
+  --         index 2: rail signal on other side of the track
+  local signalEntity = Traincontroller:getTrainHiddenEntity(trainBuilderController, 2)
+  if signalEntity.signal_state ~= defines.signal_state.open then return false end
+  --game.print("signal was green!")
+
+  -- STEP 2: Check if each building can place the train
   for _, builderLocation in pairs(trainBuilder) do
     local machineEntity = Trainassembly:getMachineEntity(builderLocation["surfaceIndex"], builderLocation["position"])
     if machineEntity and machineEntity.valid then

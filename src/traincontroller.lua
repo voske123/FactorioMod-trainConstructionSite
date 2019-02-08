@@ -178,7 +178,7 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuilderIndex)
 
   -- STEP 3b:The controller needs to be on another (friendly) force. This way
   --         the controller wont show up on the train menu.
-  --controllerEntity.force = controllerEntity.force.name .. self:getControllerForceName()
+  controllerEntity.force = controllerEntity.force.name .. self:getControllerForceName()
 
   -- STEP 3c:The controller needs to be disabled. This way the trains won't path
   --         to this stop. To get this behaviour, we connect it to the logistics
@@ -320,6 +320,12 @@ function Traincontroller:getTrainController(trainBuilderIndex)
   end
 
   return nil
+end
+
+
+
+function Traincontroller:getTrainHiddenEntity(controllerEntity, hiddenEntityIndex)
+  return global.TC_data["trainControllers"][controllerEntity.surface.index][controllerEntity.position.y][controllerEntity.position.x]["entity-hidden"][hiddenEntityIndex]
 end
 
 
