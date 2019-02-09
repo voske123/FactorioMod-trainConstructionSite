@@ -801,9 +801,17 @@ function Trainassembly:onRemoveEntity(removedEntity)
   --
   -- Player experience: Everything with the trainAssembler gets removed
   if removedEntity.name == self:getMachineEntityName() then
-    -- STEP 1: make the rails underneath minable again
     local entityPosition = removedEntity.position
-    for _,railEntity in pairs(removedEntity.surface.find_entities_filtered{
+    local entitySurface  = removedEntity.surface
+
+    -- STEP 1: If the building created a train already, we need to delete it as well
+    local createdTrainEntity = self:getCreatedEntity(entitySurface.index, entityPosition)
+    if createdTrainEntity and createdTrainEntity.valid then
+      createdTrainEntity.destroy()
+    end
+
+    -- STEP 2: make the rails underneath minable again
+    for _,railEntity in pairs(entitySurface.find_entities_filtered{
       name  = "straight-rail",
       type  = "straight-rail",
       --force = removedEntity.force,
@@ -816,7 +824,7 @@ function Trainassembly:onRemoveEntity(removedEntity)
       railEntity.minable      = true -- entity can be mined
     end
 
-    -- STEP 2: Update the data structure
+    -- STEP 3: Update the data structure
     self:deleteBuilding(removedEntity)
   end
 end
@@ -838,10 +846,10 @@ function Trainassembly:onPlayerRotatedEntity(rotatedEntity)
     -- STEP 3: save the state to the data structure
     self:updateMachineDirection(rotatedEntity)
 
-    -- STEP 4: If the building created a train, we need to rorate it as well
-    local createdEntity = self:getCreatedEntity(rotatedEntity.surface.index, rotatedEntity.position)
-    if createdEntity and createdEntity.valid then
-      createdEntity.rotate()
+    -- STEP 4: If the building created a train already, we need to rorate it as well
+    local createdTrainEntity = self:getCreatedEntity(rotatedEntity.surface.index, rotatedEntity.position)
+    if createdTrainEntity and createdTrainEntity.valid then
+      createdTrainEntity.rotate()
     end
   end
 end
