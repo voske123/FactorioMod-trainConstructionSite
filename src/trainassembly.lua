@@ -837,5 +837,11 @@ function Trainassembly:onPlayerRotatedEntity(rotatedEntity)
 
     -- STEP 3: save the state to the data structure
     self:updateMachineDirection(rotatedEntity)
+
+    -- STEP 4: If the building created a train, we need to rorate it as well
+    local createdEntity = self:getCreatedEntity(rotatedEntity.surface.index, rotatedEntity.position)
+    if createdEntity and createdEntity.valid then
+      createdEntity.rotate()
+    end
   end
 end
