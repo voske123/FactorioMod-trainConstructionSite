@@ -439,6 +439,9 @@ function Traincontroller:checkValidAftherChanges(alteredEntity, playerIndex)
           droppedItem.order_deconstruction(trainController.force)
         end
 
+        -- remove the created train
+        self:deleteBuildTrain(trainBuilderIndex)
+
         -- Delete it from the data structure
         self:deleteController(trainController)
 
