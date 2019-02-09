@@ -344,8 +344,11 @@ function Traincontroller.Builder:assembleNextTrain(trainBuilderIndex, depoName)
   end
 
   -- STEP 4: Clear the train buildings to start making a new one
+  for _, builderLocation in pairs(Trainassembly:getTrainBuilder(trainBuilderIndex)) do
+    Trainassembly:setCreatedEntity(builderLocation["surfaceIndex"], builderLocation["position"], nil)
+  end
 
-  return false--true
+  return true
 end
 
 
