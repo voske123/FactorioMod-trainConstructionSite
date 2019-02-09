@@ -278,6 +278,15 @@ end
 
 
 
+function Traincontroller:deleteBuildTrain(builderIndex)
+  -- delete the whole created train from a builder
+  for _, builderLocation in pairs(Trainassembly:getTrainBuilder(builderIndex)) do
+    Trainassembly:deleteCreatedTrainEntity(builderLocation["surfaceIndex"], builderLocation["position"])
+  end
+end
+
+
+
 --------------------------------------------------------------------------------
 -- Getter functions to extract data from the data structure
 --------------------------------------------------------------------------------
@@ -320,6 +329,27 @@ function Traincontroller:getTrainController(trainBuilderIndex)
   end
 
   return nil
+end
+
+
+
+function Traincontroller:getTrainBuilderIndex(trainController)
+  local surfaceIndex = trainController.surface.index
+  local position     = trainController.position
+
+  -- STEP 1: make sure we can index the datastructure
+  if not global.TC_data["trainControllers"][surfaceIndex] then
+    return nil
+  end
+  if not global.TC_data["trainControllers"][surfaceIndex][position.y] then
+    return nil
+  end
+  if not global.TC_data["trainControllers"][surfaceIndex][position.y][position.x] then
+    return nil
+  end
+
+  -- STEP 2: return the tainBuilderIndex
+  return global.TC_data["trainControllers"][surfaceIndex][position.y][position.x]["trainBuilderIndex"]
 end
 
 
@@ -630,9 +660,14 @@ function Traincontroller:onRemoveEntity(removedEntity)
   --
   -- Player experience: Everything with the trainAssembler gets removed
   if removedEntity.name == self:getControllerEntityName() then
-    -- STEP 1: Update the data structure
+    -- STEP 1: remove the created train
+    local trainBuilderIndex = self:getTrainBuilderIndex(removedEntity)
+    if trainBuilderIndex then
+      self:deleteBuildTrain(trainBuilderIndex)
+    end
+
+    -- STEP 2: Update the data structure
     self:deleteController(removedEntity)
-    -- TODO: behaviour: delete current train
   end
 end
 
@@ -669,6 +704,9 @@ function Traincontroller:onTrainbuilderAltered(trainBuilderIndex)
   -- if there is a traincontroller, we drop it on the floor
   local trainController = self:getTrainController(trainBuilderIndex)
   if trainController then
+    -- remove the created train
+    self:deleteBuildTrain(trainBuilderIndex)
+
     -- delete from structure
     self:deleteController(trainController)
 

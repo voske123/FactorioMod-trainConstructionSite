@@ -508,6 +508,17 @@ end
 
 
 
+function Trainassembly:deleteCreatedTrainEntity(machineSurfaceIndex, machinePosition)
+  -- delete the createdEntity from a trainBuilder
+  local createdTrainEntity = self:getCreatedEntity(machineSurfaceIndex, machinePosition)
+  if createdTrainEntity and createdTrainEntity.valid then
+    createdTrainEntity.destroy()
+    self:setCreatedEntity(machineSurfaceIndex, machinePosition, nil)
+  end
+end
+
+
+
 --------------------------------------------------------------------------------
 -- Getter functions to extract data from the data structure
 --------------------------------------------------------------------------------
@@ -805,10 +816,7 @@ function Trainassembly:onRemoveEntity(removedEntity)
     local entitySurface  = removedEntity.surface
 
     -- STEP 1: If the building created a train already, we need to delete it as well
-    local createdTrainEntity = self:getCreatedEntity(entitySurface.index, entityPosition)
-    if createdTrainEntity and createdTrainEntity.valid then
-      createdTrainEntity.destroy()
-    end
+    self:deleteCreatedTrainEntity(entitySurface.index, entityPosition)
 
     -- STEP 2: make the rails underneath minable again
     for _,railEntity in pairs(entitySurface.find_entities_filtered{
