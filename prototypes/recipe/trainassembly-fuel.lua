@@ -9,8 +9,6 @@ local function createRecipeIcons(itemPrototypeName)
         { -- single layer
           ["icon"] = itemIcon,
           ["icon_size"] = data.raw["item"][itemPrototypeName].icon_size,
-          ["scale"] = layerScale,
-          ["shift"] = layerShift,
         }
       }
     else
@@ -20,11 +18,14 @@ local function createRecipeIcons(itemPrototypeName)
       local itemIcons = {}
       for iconLayerIndex, iconLayer in pairs(data.raw["item"][itemPrototypeName].icons) do
         itemIcons[iconLayerIndex] = {
-          ["icon"] = iconLayer.icon,
-          -- itemIconSize if not icon_size specified in layer
-          ["icon_size"] = iconLayer.icon_size or itemIconSize,
-          ["scale"] = layerScale,
-          ["shift"] = layerShift,
+          ["icon"     ] = iconLayer.icon,
+          ["icon_size"] = iconLayer.icon_size or itemIconSize, -- itemIconSize if not icon_size specified in layer
+          ["tint"     ] = iconLayer.tint,
+          ["scale"    ] = layerScale * (iconLayer.scale or 1),
+          ["shift"    ] = {
+            (iconLayer.shift or {0, 0})[1] * layerShift[1],
+            (iconLayer.shift or {0, 0})[2] * layerShift[2],
+          },
         }
       end
       return itemIcons
