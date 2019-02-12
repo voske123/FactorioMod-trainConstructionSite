@@ -7,8 +7,10 @@ local function createRecipeIcons(itemPrototypeName)
     if itemIcon then
       return { -- icons table
         { -- single layer
-          ["icon"] = itemIcon,
+          ["icon"     ] = itemIcon,
           ["icon_size"] = data.raw["item"][itemPrototypeName].icon_size,
+          ["scale"    ] = layerScale,
+          ["shift"    ] = layerShift,
         }
       }
     else
@@ -21,7 +23,7 @@ local function createRecipeIcons(itemPrototypeName)
           ["icon"     ] = iconLayer.icon,
           ["icon_size"] = iconLayer.icon_size or itemIconSize, -- itemIconSize if not icon_size specified in layer
           ["tint"     ] = iconLayer.tint,
-          ["scale"    ] = layerScale * (iconLayer.scale or 1),
+          ["scale"    ] = (iconLayer.scale or 1) * layerScale,
           ["shift"    ] = {
             (iconLayer.shift or {0, 0})[1] * layerShift[1],
             (iconLayer.shift or {0, 0})[2] * layerShift[2],
@@ -45,9 +47,9 @@ end
 -- We want to create different fuel recipes to create the fuel to initialy fuel the train.
 -- We make a fuel for each of the next items:
 for fuelOrder, fuelIngredient in pairs ({
-  {"raw-wood", 100},
-  {"coal", 50},
-  {"solid-fuel", 50},
+  {"raw-wood", 100  },
+  {"coal", 50       },
+  {"solid-fuel", 50 },
   {"rocket-fuel", 10},
   {"nuclear-fuel", 1},
 }) do
