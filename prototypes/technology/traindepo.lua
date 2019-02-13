@@ -1,7 +1,7 @@
 
 
 
-table.insert(data.raw["technology"]["railway"].effects,
+table.insert(data.raw["technology"]["automated-rail-transportation"].effects,
 {
   type = "unlock-recipe",
   recipe = "traindepo",
