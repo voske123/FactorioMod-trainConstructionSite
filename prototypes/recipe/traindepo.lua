@@ -1,4 +1,4 @@
-data:extend({
+data:extend{
   {
     type = "recipe",
     name = "traindepo",
@@ -23,4 +23,4 @@ data:extend({
       },
     },
   }
-})
+}

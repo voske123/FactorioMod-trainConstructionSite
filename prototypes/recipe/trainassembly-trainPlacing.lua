@@ -17,7 +17,7 @@ for _, trainType in pairs({
       local itemName = trainEntity.minable.result
 
       -- now that we have the itemname we can create the fluid recipe.
-      data:extend({
+      data:extend{
         {
           type = "recipe",
           name = itemName .. "-fluid[" .. trainType .. "]",
@@ -41,7 +41,7 @@ for _, trainType in pairs({
             },
           },
         }
-      })
+      }
 
       -- Now we created recipes only requiring the item. If this is a locomotive
       -- we will also require fuel to start the engine.

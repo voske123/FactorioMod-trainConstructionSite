@@ -6,12 +6,12 @@
 -- For each train type like item we want to change the place_result
 -- To accuire all the itemnames, we have to iterate over the entities
 -- becose those have different types as the items are all type = "item".
-for _, trainType in pairs({
+for _, trainType in pairs{
   "locomotive",
   "cargo-wagon",
   "fluid-wagon",
   "artillery-wagon",
-}) do
+} do
   -- For each type, we get all the different entities (ex: locomotive mk1, mk2, ...)
   for _, trainEntity in pairs(data.raw[trainType]) do
     -- For each entity, we get the item name. The item name is stored in minable.result

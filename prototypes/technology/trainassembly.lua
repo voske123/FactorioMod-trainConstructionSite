@@ -96,8 +96,7 @@ if data.raw["technology"]["braking-force-1"].prerequisites then
   end
 end
 
-data:extend(
-{
+data:extend{ -- add fuel recipe to tech tree
   {
     type = "technology",
     name = "trainfuel-2",
@@ -194,8 +193,8 @@ data:extend(
     },
     order = "c-g-a-e",
   },
-})
+}
 
-data:extend({
+data:extend{ -- add train technology to tech tree
   trainTech,
-})
+}

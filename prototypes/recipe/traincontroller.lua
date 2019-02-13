@@ -1,4 +1,4 @@
-data:extend({
+data:extend{
   {
     type = "recipe",
     name = "traincontroller",
@@ -24,4 +24,4 @@ data:extend({
       },
     },
   }
-})
+}

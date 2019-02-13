@@ -1,4 +1,4 @@
-data:extend({
+data:extend{
   {
     type = "recipe",
     name = "trainassembly",
@@ -25,4 +25,4 @@ data:extend({
       },
     },
   }
-})
+}
