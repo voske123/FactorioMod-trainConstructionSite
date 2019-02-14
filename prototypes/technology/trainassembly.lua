@@ -2,11 +2,15 @@ require "util"
 
 local trainTech = util.table.deepcopy(data.raw["technology"]["railway"])
 
-trainTech.name = "trainassembly-trainTechnology"
+trainTech.name = "trainassembly-automated-train-assembling"
 trainTech.effects = {}
 trainTech.localised_name = {"technology-name.trainTech"}
 trainTech.localised_description = {"technology-description.trainTech"}
 trainTech.prerequisites = {"railway", "engine", "logistics-2"}
+
+data:extend{ -- add train technology to tech tree
+  trainTech,
+}
 
 for _, trainRecipe in pairs ({
   "locomotive",
@@ -78,15 +82,9 @@ end
 for _, recipeName in pairs{
   "trainassembly",
 } do
-  table.insert(data.raw["technology"]["railway"].effects,
+  table.insert(data.raw["technology"]["trainassembly-automated-train-assembling"].effects,
   {
     type = "unlock-recipe",
     recipe = recipeName,
   })
 end
-
-
-
-data:extend{ -- add train technology to tech tree
-  trainTech,
-}

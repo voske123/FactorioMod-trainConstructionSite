@@ -5,7 +5,7 @@ require "util"
 for _, recipeName in pairs{
   "trainassembly-trainfuel-raw-wood",
 } do
-  table.insert(data.raw["technology"]["railway"].effects,
+  table.insert(data.raw["technology"]["trainassembly-automated-train-assembling"].effects,
   {
     type = "unlock-recipe",
     recipe = recipeName,
