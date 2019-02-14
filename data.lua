@@ -24,5 +24,6 @@ require "prototypes.entities.traincontroller"
 require "prototypes.entities.traindepo"
 
 require "prototypes.technology.trainassembly"
+require "prototypes.technology.trainassembly-trainfuel"
 require "prototypes.technology.traincontroller"
 require "prototypes.technology.traindepo"
