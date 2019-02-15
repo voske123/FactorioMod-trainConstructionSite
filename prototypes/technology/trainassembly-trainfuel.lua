@@ -30,7 +30,7 @@ data:extend{ -- add fuel recipe to tech tree
     },
     prerequisites =
     {
-      "railway",
+      "trainassembly-automated-train-assembling",
     },
     unit =
     {
@@ -55,8 +55,8 @@ data:extend{ -- add fuel recipe to tech tree
     },
     prerequisites =
     {
-      "oil-processing",
       "trainfuel-2",
+      "oil-processing",
     },
     unit =
     {
@@ -79,7 +79,11 @@ data:extend{ -- add fuel recipe to tech tree
         recipe = "trainassembly-trainfuel-rocket-fuel",
       },
     },
-    prerequisites = {"trainfuel-3", "rocket-silo"},
+    prerequisites =
+    {
+      "trainfuel-3",
+      "rocket-silo",
+    },
     unit =
     {
       count = 75,
@@ -102,7 +106,11 @@ data:extend{ -- add fuel recipe to tech tree
         recipe = "trainassembly-trainfuel-nuclear-fuel",
       },
     },
-    prerequisites = {"trainfuel-4", "kovarex-enrichment-process"},
+    prerequisites =
+    {
+      "trainfuel-4",
+      "kovarex-enrichment-process",
+    },
     unit =
     {
       count = 500,

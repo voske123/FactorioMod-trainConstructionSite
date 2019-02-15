@@ -10,9 +10,6 @@ trainTechCargo.localised_name = {"technology-name.trainassembly-cargo-wagon"}
 trainTechCargo.localised_description = {"technology-description.trainassembly-cargo-wagon"}
 trainTechCargo.prerequisites = {"trainassembly-automated-train-assembling"}
 
-data:extend{ -- add train technology to tech tree
-  trainTechCargo,
-}
 
 
 
@@ -65,3 +62,29 @@ for techName, techPrototype in pairs(data.raw["technology"]) do
     end
   end
 end
+
+
+
+if data.raw["technology"]["railway"].effects then
+  for effectIndex, effect in pairs(data.raw["technology"]["railway"].effects) do
+    if effect.type == "unlock-recipe" and effect.recipe == "cargo-wagon" then
+      data.raw["technology"]["railway"].effects[effectIndex] = nil -- this removes that single unlock
+    end
+  end
+end
+
+
+
+--if data.raw["technology"]["fluid-wagon"].prerequisites then
+--  for prerequisitesIndex, prerequisite in pairs(data.raw["technology"]["fluid-wagon"].prerequisites) do
+--    if prerequisite == "railway" then
+--      data.raw["technology"]["railway"].prerequisites[prerequisitesIndex] = "trainassembly-cargo-wagon"
+--    end
+--  end
+--end
+
+
+
+data:extend{ -- add train technology to tech tree
+  trainTechCargo,
+}
