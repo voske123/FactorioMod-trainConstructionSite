@@ -2,7 +2,9 @@ require "util"
 
 
 
-local trainTechCargo = util.table.deepcopy(data.raw["technology"]["railway"])
+--making the cargo wagon technology and unlocking the wagon parts and fluid
+
+local trainTechCargo = util.table.deepcopy(data.raw["technology"]["fluid-wagon"])
 
 trainTechCargo.name = "trainassembly-cargo-wagon"
 trainTechCargo.effects = {}
@@ -30,6 +32,37 @@ end
 
 
 
+--making the artillery wagon technology and unlocking the wagon parts and fluid
+
+local trainTechArty = util.table.deepcopy(data.raw["technology"]["fluid-wagon"])
+
+trainTechArty.name = "trainassembly-artillery-wagon"
+trainTechArty.effects = {}
+trainTechArty.localised_name = {"technology-name.trainassembly-artillery-wagon"}
+trainTechArty.localised_description = {"technology-description.trainassembly-artillery-wagon"}
+trainTechArty.prerequisites = {"trainassembly-cargo-wagon", "artillery"}
+
+
+
+for _, trainRecipe in pairs ({
+  "artillery-wagon",
+}) do
+  table.insert(trainTechArty.effects,
+  {
+    type = "unlock-recipe",
+    recipe = trainRecipe,
+  })
+  table.insert(trainTechArty.effects,
+  {
+    type = "unlock-recipe",
+    recipe = trainRecipe .. "-fluid[" .. trainRecipe .. "]",
+  })
+end
+
+
+
+--making the locomotive fuel tech
+
 for _, trainRecipe in pairs ({
   "locomotive",
 }) do
@@ -42,13 +75,14 @@ end
 
 
 
+--making the fluid tech for fluid wagon
+
 for techName, techPrototype in pairs(data.raw["technology"]) do
   if techPrototype.effects then
     for techEffectIndex, techEffect in pairs(techPrototype.effects) do
       if techEffect.type == "unlock-recipe" then
         for _, wagonName in pairs({
           "fluid-wagon",
-          "artillery-wagon",
         }) do
           if techEffect.recipe == wagonName then
             table.insert(data.raw["technology"][techName].effects, techEffectIndex + 1,
@@ -75,16 +109,27 @@ end
 
 
 
---if data.raw["technology"]["fluid-wagon"].prerequisites then
---  for prerequisitesIndex, prerequisite in pairs(data.raw["technology"]["fluid-wagon"].prerequisites) do
---    if prerequisite == "railway" then
---      data.raw["technology"]["railway"].prerequisites[prerequisitesIndex] = "trainassembly-cargo-wagon"
---    end
---  end
---end
+if data.raw["technology"]["artillery"].effects then
+  for effectIndex, effect in pairs(data.raw["technology"]["artillery"].effects) do
+    if effect.type == "unlock-recipe" and effect.recipe == "artillery-wagon" then
+      data.raw["technology"]["artillery"].effects[effectIndex] = nil -- this removes that single unlock
+    end
+  end
+end
+
+
+
+if data.raw["technology"]["fluid-wagon"].prerequisites then
+  for prerequisitesIndex, prerequisite in pairs(data.raw["technology"]["fluid-wagon"].prerequisites) do
+    if prerequisite == "railway" then
+      data.raw["technology"]["fluid-wagon"].prerequisites[prerequisitesIndex] = "trainassembly-cargo-wagon"
+    end
+  end
+end
 
 
 
 data:extend{ -- add train technology to tech tree
   trainTechCargo,
+  trainTechArty,
 }
