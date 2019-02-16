@@ -10,7 +10,7 @@ traindepo.icon = "__trainConstructionSite__/graphics/placeholders/icon.png"
 traindepo.icons = nil
 traindepo.icon_size = 32
 
-traindepo.order = traindepo.order .. "-b"
+traindepo.order = traindepo.order .. "-tb[trainbuilding]-a"
 
 traindepo.place_result = traindepo.name
 

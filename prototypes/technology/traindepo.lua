@@ -8,4 +8,4 @@ table.insert(data.raw["technology"]["automated-rail-transportation"].effects,
 })
 
 
---table.insert(data.raw["technology"]["railway"].prerequisites, "circuit-network")
+table.insert(data.raw["technology"]["automated-rail-transportation"].prerequisites, "circuit-network")

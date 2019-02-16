@@ -1,7 +1,7 @@
 require 'util'
 
 -- the placeable entity is linked to this item
-local trainassembly = util.table.deepcopy(data.raw["item"]["rail-signal"])
+local trainassembly = util.table.deepcopy(data.raw["item"]["rail-chain-signal"])
 
 trainassembly.name  = "trainassembly"
 trainassembly.localised_name = {"item-name.trainassembly"}
@@ -12,7 +12,7 @@ trainassembly.icons = nil
 trainassembly.icon_size = 32
 
 trainassembly.subgroup = "transport-railway"
-trainassembly.order = "a-b"
+trainassembly.order = trainassembly.order .. "-tb[trainbuilding]-a"
 
 trainassembly.place_result = "trainassembly-placeable" -- the name of the placable entity
 

@@ -7,14 +7,22 @@ require "util"
 local trainTechCargo = util.table.deepcopy(data.raw["technology"]["fluid-wagon"])
 
 trainTechCargo.name = "trainassembly-cargo-wagon"
-trainTechCargo.effects = {}
 trainTechCargo.localised_name = {"technology-name.trainassembly-cargo-wagon"}
 trainTechCargo.localised_description = {"technology-description.trainassembly-cargo-wagon"}
-trainTechCargo.prerequisites = {"trainassembly-automated-train-assembling"}
 
+trainTechCargo.icon = "__trainConstructionSite__/graphics/technology/cargo-wagon.png"
+trainTechCargo.icon_size = 128
 
+trainTechCargo.prerequisites = {"trainassembly-automated-train-assembling", "logistics-2"}
+if data.raw["technology"]["railway"].prerequisites then -- replace logistics-2 from railway in logistics-1
+  for prerequisitesIndex, prerequisite in pairs(data.raw["technology"]["railway"].prerequisites) do
+    if prerequisite == "logistics-2" then
+      data.raw["technology"]["railway"].prerequisites[prerequisitesIndex] = "logistics"
+    end
+  end
+end
 
-
+trainTechCargo.effects = {}
 for _, trainRecipe in pairs ({
   "cargo-wagon",
 }) do
@@ -34,16 +42,15 @@ end
 
 --making the artillery wagon technology and unlocking the wagon parts and fluid
 
-local trainTechArty = util.table.deepcopy(data.raw["technology"]["fluid-wagon"])
+local trainTechArty = util.table.deepcopy(data.raw["technology"]["artillery"])
 
 trainTechArty.name = "trainassembly-artillery-wagon"
-trainTechArty.effects = {}
 trainTechArty.localised_name = {"technology-name.trainassembly-artillery-wagon"}
 trainTechArty.localised_description = {"technology-description.trainassembly-artillery-wagon"}
+
 trainTechArty.prerequisites = {"trainassembly-cargo-wagon", "artillery"}
 
-
-
+trainTechArty.effects = {}
 for _, trainRecipe in pairs ({
   "artillery-wagon",
 }) do

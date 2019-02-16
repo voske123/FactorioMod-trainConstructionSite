@@ -8,4 +8,4 @@ table.insert(data.raw["technology"]["trainassembly-automated-train-assembling"].
 })
 
 
-table.insert(data.raw["technology"]["trainassembly-automated-train-assembling"].prerequisites, "circuit-network")
+--table.insert(data.raw["technology"]["trainassembly-automated-train-assembling"].prerequisites, "circuit-network")
