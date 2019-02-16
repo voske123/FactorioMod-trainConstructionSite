@@ -41,20 +41,20 @@ local trainpartsFluid = util.table.deepcopy(transportRailway)
   trainpartsFluid.order = "e"
 
 
-  data.raw["item-subgroup"]["transport"].group = transportRailway.group
-  data.raw["item-subgroup"]["transport"].order = "d"
+data.raw["item-subgroup"]["transport"].group = transportRailway.group
+data.raw["item-subgroup"]["transport"].order = "d"
 
 
---  for _, vehicleName in pairs{
---    "car",
---    "tank",
---  } do
+for _, vehicleName in pairs{
+  "car",
+  "tank",
+} do
 
---    if data.raw["item-with-entity-data"][vehicleName] then
---      data.raw["item-with-entity-data"][vehicleName].subgroup = "manual-buildable-vehicles"
---      data.raw["item-with-entity-data"][vehicleName].order = "b"
---    end
---  end
+  if data.raw["item-with-entity-data"][vehicleName] then
+    data.raw["item-with-entity-data"][vehicleName].subgroup = "manual-buildable-vehicles"
+    data.raw["item-with-entity-data"][vehicleName].order = "b"
+  end
+end
 
 
 
