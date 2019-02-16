@@ -4,6 +4,7 @@ require 'lib.table'
 
 -- Create class
 Traincontroller = {}
+require 'src.traincontroller-builder'
 
 --------------------------------------------------------------------------------
 -- Initiation of the class
@@ -13,6 +14,22 @@ function Traincontroller:onInit()
   if not global.TC_data then
     global.TC_data = self:initGlobalData()
   end
+  self:createControllerForces()
+  self.Builder:onInit()
+end
+
+
+
+function Traincontroller:onLoad()
+  -- Sync global state on multiplayer, make sure event handlers are set correctly
+  self.Builder:onLoad()
+end
+
+
+
+function Traincontroller:onSettingChanged(event)
+  -- called when a mod setting changed
+  self.Builder:onSettingChanged(event)
 end
 
 
@@ -20,10 +37,12 @@ end
 -- Initiation of the global data
 function Traincontroller:initGlobalData()
   local TC_data = {
-    ["version"] = 1, -- version of the global data
+    ["version"]       = 1, -- version of the global data
     ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
 
-    ["trainControllers"] = {},       -- keep track of all controllers
+    ["trainControllerForces"] = {}, -- keep track of the created forces
+
+    ["trainControllers"]           = {},  -- keep track of all controllers
     ["nextTrainControllerIterate"] = nil, -- next controller to iterate over
   }
 
@@ -36,8 +55,36 @@ end
 function Traincontroller:initPrototypeData()
   return
   {
-    ["trainControllerName"] = "traincontroller", -- item and entity have same name
+    ["trainControllerName"]       = "traincontroller",        -- item and entity have same name
+    ["trainControllerSignalName"] = "traincontroller-signal", -- hidden signals
+
+    ["trainControllerForce"]      = "-trainControllerForce",  -- force for the traincontrollers
   }
+end
+
+
+
+-- Create force for traincontrollers
+function Traincontroller:createControllerForces()
+  local forcesToCreate = {}
+
+   -- get a list for all the forces to create
+  for forceName,_ in pairs(game.forces) do
+    if forceName ~= "enemy" and forceName ~= "neutral" then
+      table.insert(forcesToCreate, forceName)
+    end
+  end
+
+   -- create all the forces
+  for _,forceName in pairs(forcesToCreate) do
+    -- create the force and set it friendly
+    local friendlyForceName = forceName..self:getControllerForceName()
+    game.create_force(friendlyForceName)
+        .set_friend(forceName, true)
+
+    -- save the created force in the data structure
+    global.TC_data["trainControllerForces"][friendlyForceName] = forceName
+  end
 end
 
 
@@ -45,7 +92,7 @@ end
 --------------------------------------------------------------------------------
 -- Setter functions to alter data into the data structure
 --------------------------------------------------------------------------------
-function Traincontroller:saveNewStructure(controllerEntity, trainBuiderIndex)
+function Traincontroller:saveNewStructure(controllerEntity, trainBuilderIndex)
   -- With this function we save all the data we want about a traincontroller.
   -- This traincontroller will be used to iterate over all the trainbuilders,
   -- this means they will be added to a linked list, with other words, each
@@ -71,7 +118,10 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuiderIndex)
   global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y][controllerPosition.x] =
   {
     ["entity"]           = controllerEntity, -- the controller entity
-    ["trainBuiderIndex"] = trainBuiderIndex, -- the trainbuilder it controls
+    ["entity-hidden"]    = {}, -- the hidden entities
+
+    ["trainBuilderIndex"] = trainBuilderIndex, -- the trainbuilder it controls
+    ["controllerStatus"] = global.TC_data.Builder["builderStates"]["idle"], -- status
 
     -- list data
     ["prevController"]   = nil, -- the previous controller
@@ -91,7 +141,7 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuiderIndex)
     global.TC_data["trainControllers"][thisController["surfaceIndex"]][thisController["position"].y][thisController["position"].x]["nextController"] = util.table.deepcopy(thisController)
 
     -- STEP 2b: start on_tick events becose we need to start iterating
-    -- TODO
+    Traincontroller.Builder:activateOnTick()
   else
     -- when we've added it to the list, we know there is at least one in front
     -- of us. This one has a prev set. We add it inbetween.
@@ -113,6 +163,27 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuiderIndex)
       global.TC_data["nextTrainControllerIterate"] = util.table.deepcopy(thisController)
     end
   end
+
+  -- STEP 3: Configure the controller
+  -- STEP 3a:Create hidden entities (2 rail signals)
+  local hiddenEntities = global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y][controllerPosition.x]["entity-hidden"]
+  for hiddenEntityIndex,hiddenEntityData in pairs(self:getHiddenEntityData(controllerPosition, controllerEntity.direction)) do
+    hiddenEntities[hiddenEntityIndex] = controllerSurface.create_entity{
+      name      = hiddenEntityData.name,
+      position  = hiddenEntityData.position,
+      direction = hiddenEntityData.direction,
+      force     = controllerEntity.force
+    }
+  end
+
+  -- STEP 3b:The controller needs to be on another (friendly) force. This way
+  --         the controller wont show up on the train menu.
+  controllerEntity.force = controllerEntity.force.name .. self:getControllerForceName()
+
+  -- STEP 3c:The controller needs to be disabled. This way the trains won't path
+  --         to this stop. To get this behaviour, we connect it to the logistics
+  --         network and make sure it has a disabled condition
+  self:setTrainstopControlBehaviour(controllerEntity)
 
   --game.print(serpent.block(global.TC_data["trainControllers"]))
 end
@@ -151,7 +222,8 @@ function Traincontroller:deleteController(controllerEntity)
     -- Make sure the next controller isn't this controller, then there are no controllers.
     if lib.table.areEqual(thisController, nextController) then
       global.TC_data["nextTrainControllerIterate"] = nil
-      -- TODO: stop on_tick
+      -- this is the last one, no need to keep iterating on_tick
+      Traincontroller.Builder:deactivateOnTick()
     else
       global.TC_data["nextTrainControllerIterate"] = util.table.deepcopy(nextController)
     end
@@ -168,7 +240,49 @@ function Traincontroller:deleteController(controllerEntity)
   end
 
   --game.print(serpent.block(global.TC_data["trainControllers"]))
+end
 
+
+
+function Traincontroller:setTrainstopControlBehaviour(trainStopEntity)
+  local stationBehaviour = trainStopEntity.get_or_create_control_behavior()
+  -- https://lua-api.factorio.com/latest/LuaControlBehavior.html#LuaTrainStopControlBehavior
+  stationBehaviour.send_to_train               = false -- sending signals to the train
+  stationBehaviour.read_from_train             = false -- reading train content from the train
+  stationBehaviour.read_stopped_train          = false -- read train id from the train
+  stationBehaviour.enable_disable              = false -- open/close train station with circuit network
+  stationBehaviour.connect_to_logistic_network = true  -- open/close train station with logistic network
+
+  -- enable/disable condition for circuit network
+  stationBehaviour.circuit_condition = {
+    -- https://lua-api.factorio.com/latest/LuaControlBehavior.html#LuaGenericOnOffControlBehavior.circuit_condition
+    condition = {
+      comparator    = "<",
+      first_signal  = nil, -- blank, no condition set
+      second_signal = nil, -- if not set, it will compare to constant
+      constant      = nil, -- if not set, will default to 0
+    }
+  }
+
+  -- make sure it is disconnected from the logistics network
+  stationBehaviour.logistic_condition = {
+    -- https://lua-api.factorio.com/latest/LuaControlBehavior.html#LuaGenericOnOffControlBehavior.logistic_condition
+    condition = {
+      comparator    = "<",
+      first_signal  = nil, -- blank, no condition set
+      second_signal = nil, -- if not set, it will compare to constant
+      constant      = nil, -- if not set, will default to 0
+    }
+  }
+end
+
+
+
+function Traincontroller:deleteBuildTrain(builderIndex)
+  -- delete the whole created train from a builder
+  for _, builderLocation in pairs(Trainassembly:getTrainBuilder(builderIndex)) do
+    Trainassembly:deleteCreatedTrainEntity(builderLocation["surfaceIndex"], builderLocation["position"])
+  end
 end
 
 
@@ -188,13 +302,25 @@ end
 
 
 
+function Traincontroller:getControllerSignalEntityName()
+  return global.TC_data.prototypeData.trainControllerSignalName
+end
+
+
+
+function Traincontroller:getControllerForceName()
+  return global.TC_data.prototypeData.trainControllerForce
+end
+
+
+
 function Traincontroller:getTrainController(trainBuilderIndex)
   for surfaceIndex,_ in pairs(global.TC_data["trainControllers"]) do
     for positionY,_ in pairs(global.TC_data["trainControllers"][surfaceIndex]) do
       for positionX,_ in pairs(global.TC_data["trainControllers"][surfaceIndex][positionY]) do
         local trainController = global.TC_data["trainControllers"][surfaceIndex][positionY][positionX]
 
-        if trainController["trainBuiderIndex"] == trainBuilderIndex then
+        if trainController["trainBuilderIndex"] == trainBuilderIndex then
           return trainController["entity"]
         end
 
@@ -207,11 +333,179 @@ end
 
 
 
+function Traincontroller:getTrainBuilderIndex(trainController)
+  local surfaceIndex = trainController.surface.index
+  local position     = trainController.position
+
+  -- STEP 1: make sure we can index the datastructure
+  if not global.TC_data["trainControllers"][surfaceIndex] then
+    return nil
+  end
+  if not global.TC_data["trainControllers"][surfaceIndex][position.y] then
+    return nil
+  end
+  if not global.TC_data["trainControllers"][surfaceIndex][position.y][position.x] then
+    return nil
+  end
+
+  -- STEP 2: return the tainBuilderIndex
+  return global.TC_data["trainControllers"][surfaceIndex][position.y][position.x]["trainBuilderIndex"]
+end
+
+
+
+function Traincontroller:getTrainHiddenEntity(controllerEntity, hiddenEntityIndex)
+  return global.TC_data["trainControllers"][controllerEntity.surface.index][controllerEntity.position.y][controllerEntity.position.x]["entity-hidden"][hiddenEntityIndex]
+end
+
+
+
+function Traincontroller:getHiddenEntityData(position, direction)
+  -- create a list for all hidden entities that needs to be created
+
+  -- STEP 1: Get the orientation offset depending on the orientation
+  local offsetX = 0
+  local offsetY = 0
+
+  if direction == defines.direction.north then
+    offsetX = -1
+    --offsetY = 0
+  elseif direction == defines.direction.east then
+    --offsetX = 0
+    offsetY = -1
+  elseif direction == defines.direction.south then
+    offsetX = 1
+    --offsetY = 0
+  elseif direction == defines.direction.west then
+    --offsetX = 0
+    offsetY = 1
+  end
+
+  -- STEP 2: Return the list with hidden entities
+  return {
+    { -- signal on the same side of the track
+      name     = self:getControllerSignalEntityName(),
+      position = {
+        x = position.x + offsetX * 1,
+        y = position.y + offsetY * 1,
+      },
+      direction = lib.directions.oposite(direction)
+    },
+    { -- signal on the other side of the track
+      name     = self:getControllerSignalEntityName(),
+      position = {
+        x = position.x + offsetX * 3,
+        y = position.y + offsetY * 3,
+      },
+      direction = direction
+    },
+  }
+end
+
+
+
+function Traincontroller:checkValidAftherChanges(alteredEntity, playerIndex)
+  -- A valid trainbuilder got altered. This happens when a building gets rotated
+  -- or when a recipe got changed. We have to check if all recipes are set and
+  -- if the builder has a validly placed locomotive still.
+
+  if alteredEntity and alteredEntity.valid and alteredEntity.name == Trainassembly:getMachineEntityName() then
+    local trainBuilderIndex = Trainassembly:getTrainBuilderIndex(alteredEntity)
+    local trainController = self:getTrainController(trainBuilderIndex)
+    if trainController then
+
+      local notValid = function(localisedMessage)
+        -- Try return the item to the player (or drop it)
+        if playerIndex then -- return if possible
+          local player = game.players[playerIndex]
+          player.print(localisedMessage)
+          player.insert{
+            name = self:getControllerItemName(),
+            count = 1,
+          }
+        else -- drop it otherwise
+          local droppedItem = trainController.surface.create_entity{
+            name = "item-on-ground",
+            stack = {
+              name = self:getControllerItemName(),
+              count = 1,
+            },
+            position = trainController.position,
+            force = global.TC_data["trainControllerForces"][createdEntity.force.name] or createdEntity.force,
+            fast_replace = true,
+            spill = false, -- delete excess items (only if fast_replace = true)
+          }
+          droppedItem.to_be_looted = true
+          droppedItem.order_deconstruction(trainController.force)
+        end
+
+        -- remove the created train
+        self:deleteBuildTrain(trainBuilderIndex)
+
+        -- Delete it from the data structure
+        self:deleteController(trainController)
+
+        -- Destroy the placed item
+        trainController.destroy()
+        return false
+      end
+
+      -- We know it is already validly placed, so we can check the trainbuilder
+      -- and only have to check if it still has a locomotive facing the correct
+      -- direction
+      local hasValidLocomotive = false
+      local hasAllRecipesSet = true
+      for _, builderLocation in pairs(Trainassembly:getTrainBuilder(trainBuilderIndex)) do
+        local machineEntity = Trainassembly:getMachineEntity(builderLocation["surfaceIndex"], builderLocation["position"])
+        if machineEntity and machineEntity.valid and machineEntity.direction == trainController.direction then
+
+          -- Step 1: Check if the recipe is set for each building, if not, this
+          --         controller has become invalid, we don't have to look further
+          local machineRecipe = machineEntity.get_recipe()
+          if not machineRecipe then
+            return notValid{"traincontroller-message.noBuilderRecipeFound", {"item-name.trainassembly"}}
+          end
+
+          -- Step 2: If this controller doesn't have a valid locomotive yet, we
+          --         still have to check if this one might be a valid locomotive
+          if not hasValidLocomotive then
+            local builderType = lib.util.stringSplit(machineRecipe.name, "[")
+            builderType = builderType[#builderType]
+            builderType = builderType:sub(1, builderType:len()-1)
+            if builderType == "locomotive" then
+              hasValidLocomotive = true
+            end
+          end
+
+        end
+      end
+
+      if not hasValidLocomotive then
+        return notValid{"traincontroller-message.noValidLocomotiveFound",
+          --[[1]]{"item-name.trainassembly"},
+          --[[2]]"__ENTITY__locomotive__",
+          --[[3]]{"item-name.traincontroller", {"item-name.trainassembly"}},
+        }
+      end
+
+      return true
+    end
+
+    return false -- return false if no traincontroller found
+  end
+
+  return true -- return true if alteredEntity is not valid
+end
+
+
 function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
   -- Checks the correct placement of the traincontroller, if not validly placed,
   -- it will inform the player with the corresponding message and return the
   -- traincontroller to the player. If no player is found, it will drop the
   -- traincontroller on the ground where the traincontroller was placed.
+
+  -- this is the actual force of the player, not the friendly force
+  local createdEntityForceName = global.TC_data["trainControllerForces"][createdEntity.force.name] or createdEntity.force.name
 
   local notValid = function(localisedMessage)
     -- Try return the item to the player (or drop it)
@@ -230,7 +524,7 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
           count = 1,
         },
         position = createdEntity.position,
-        force = createdEntity.force,
+        force = createdEntityForceName,
         fast_replace = true,
         spill = false, -- delete excess items (only if fast_replace = true)
       }
@@ -243,7 +537,16 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
     return false, -1
   end
 
-  -- STEP 1: Look for a trainassembler, if there is no trainassembler found,
+  -- STEP 1: Check if at least one train depo has been placed, if not, the
+  --         trainbuilder can't let trains drive off.
+  if not Traindepo:hasDepoEntities(createdEntityForceName, createdEntity.surface.index) then
+    return notValid{"traincontroller-message.noTraindepoFound",
+      --[[1]]{"item-name.traincontroller", {"item-name.trainassembly"}},
+      --[[2]]{"item-name.traindepo"},
+    }
+  end
+
+  -- STEP 2: Look for a trainassembler, if there is no trainassembler found,
   --         the controller is placed wrong
   local entityDirection = createdEntity.direction -- direction to look for a trainbuilder
   local entitySearchDirection = {x=0,y=0}
@@ -264,7 +567,7 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
   local builderEntity = entitySurface.find_entities_filtered{
     name     = Trainassembly:getMachineEntityName(),
     --type     = createdEntity.type,
-    force    = createdEntity.force,
+    force    = createdEntityForceName,
     area     = {
       { entityPosition.x + 3.5*entitySearchDirection.x - 1.5*entitySearchDirection.y , entityPosition.y + 3.5*entitySearchDirection.y + 1.5*entitySearchDirection.x },
       { entityPosition.x + 5.5*entitySearchDirection.x - 2.5*entitySearchDirection.y , entityPosition.y + 5.5*entitySearchDirection.y + 2.5*entitySearchDirection.x },
@@ -276,13 +579,13 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
     return notValid{"traincontroller-message.noTrainbuilderFound", {"item-name.trainassembly"}}
   end
 
-  -- STEP 2: Find the trainbuilder that this trainassembler is part of
+  -- STEP 3: Find the trainbuilder that this trainassembler is part of
   local builderIndex = Trainassembly:getTrainBuilderIndex(builderEntity)
-  -- STEP 2a: If there is no trainbuilder found, the controller is placed wrong.
+  -- STEP 3a: If there is no trainbuilder found, the controller is placed wrong.
   if not builderIndex then
     return notValid{"traincontroller-message.invalidTrainbuilderFound", {"item-name.trainassembly"}}
   end
-  -- STEP 2b: If there is one, we need to make sure it isn't controlled yet.
+  -- STEP 3b: If there is one, we need to make sure it isn't controlled yet.
   if self:getTrainController(builderIndex) then
     return notValid{"traincontroller-message.isAlreadyControlled",
       --[[1]]{"item-name.trainassembly"},
@@ -290,25 +593,30 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
     }
   end
 
-  -- STEP 3: Make sure the trainbuilder has all recipes set, and at least
+  -- STEP 4: Make sure the trainbuilder has all recipes set, and at least
   --         one of the recipes must be a locomotive that is facing it the
   --         direction the train is supposed to leave.
   local hasValidLocomotive = false
   for _, builderLocation in pairs(Trainassembly:getTrainBuilder(builderIndex)) do
     local machineEntity = Trainassembly:getMachineEntity(builderLocation["surfaceIndex"], builderLocation["position"])
-    if machineEntity and machineEntity.valid and machineEntity.direction == entityDirection then
+    if machineEntity and machineEntity.valid then
+      -- check the recipe of each machineEntity
       local machineRecipe = machineEntity.get_recipe()
       if not machineRecipe then
         return notValid{"traincontroller-message.noBuilderRecipeFound", {"item-name.trainassembly"}}
       end
 
-      local builderType = lib.util.stringSplit(machineRecipe.name, "[")
-      builderType = builderType[#builderType]
-      builderType = builderType:sub(1, builderType:len()-1)
-      if builderType == "locomotive" then
-        hasValidLocomotive = true
-        break
+      if (not hasValidLocomotive) and (machineEntity.direction == entityDirection) then
+        -- check the direction of the locomotive
+        local builderType = lib.util.stringSplit(machineRecipe.name, "[")
+        builderType = builderType[#builderType]
+        builderType = builderType:sub(1, builderType:len()-1)
+        if builderType == "locomotive" then
+          hasValidLocomotive = true
+        end
       end
+    else
+      return notValid("ERROR: Invalid building! Report this please.")
     end
   end
 
@@ -320,7 +628,7 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
     }
   end
 
-  -- STEP 4: If all previous checks succeeded, it means it is validly placed.
+  -- STEP 5: If all previous checks succeeded, it means it is validly placed.
   return true, builderIndex
 end
 
@@ -336,14 +644,17 @@ function Traincontroller:onBuildEntity(createdEntity, playerIndex)
   -- and inform the player what went wrong.
   --
   -- Player experience: The player activated the trainbuilder if its valid.
-  if createdEntity and createdEntity.valid and createdEntity.name == self:getControllerEntityName() then
+  if createdEntity.valid and createdEntity.name == self:getControllerEntityName() then
     -- it is the correct entity, now check if its correctly placed
-    local validPlacement, trainBuiderIndex = self:checkValidPlacement(createdEntity, playerIndex)
+    local validPlacement, trainBuilderIndex = self:checkValidPlacement(createdEntity, playerIndex)
     if validPlacement then -- It is valid, now we have to add the entity to the list
-      self:saveNewStructure(createdEntity, trainBuiderIndex)
+      self:saveNewStructure(createdEntity, trainBuilderIndex)
+      --TODO: name the stop
     end
   end
 end
+
+
 
 -- When a player/robot removes the building
 function Traincontroller:onRemoveEntity(removedEntity)
@@ -351,69 +662,54 @@ function Traincontroller:onRemoveEntity(removedEntity)
   -- removed. This also means we have to delete the train that was in this spot.
   --
   -- Player experience: Everything with the trainAssembler gets removed
-  if removedEntity and removedEntity.valid and removedEntity.name == self:getControllerEntityName() then
-    -- STEP 1: Update the data structure
+  if removedEntity.name == self:getControllerEntityName() then
+    -- STEP 1: remove the created train
+    local trainBuilderIndex = self:getTrainBuilderIndex(removedEntity)
+    if trainBuilderIndex then
+      self:deleteBuildTrain(trainBuilderIndex)
+    end
+
+    -- STEP 2: Update the data structure
     self:deleteController(removedEntity)
-    -- TODO
   end
 end
+
+
 
 -- When a player rotates an entity
 function Traincontroller:onPlayerRotatedEntity(rotatedEntity, playerIndex)
   -- The player rotated the machine entity, we need to make sure the controller
   -- is still valid.
-  if rotatedEntity and rotatedEntity.valid and rotatedEntity.name == Trainassembly:getMachineEntityName() then
-    local trainBuilderIndex = Trainassembly:getTrainBuilderIndex(rotatedEntity)
-    local trainController = self:getTrainController(trainBuilderIndex)
-    if trainController then
+  if rotatedEntity.name == Trainassembly:getMachineEntityName() then
+    Traincontroller:checkValidAftherChanges(rotatedEntity, playerIndex)
+  end
+end
 
-      -- We know it is already validly placed, so we can check the trainbuilder
-      -- and only have to check if it still has a locomotive facing the correct
-      -- direction
-      local hasValidLocomotive = false
-      for _, builderLocation in pairs(Trainassembly:getTrainBuilder(trainBuilderIndex)) do
-        local machineEntity = Trainassembly:getMachineEntity(builderLocation["surfaceIndex"], builderLocation["position"])
-        if machineEntity and machineEntity.valid and machineEntity.direction == trainController.direction then
-          local builderType = lib.util.stringSplit(machineEntity.get_recipe().name, "[")
-          builderType = builderType[#builderType]
-          builderType = builderType:sub(1, builderType:len()-1)
-          if builderType == "locomotive" then
-            hasValidLocomotive = true
-            break
-          end
-        end
-      end
 
-      if not hasValidLocomotive then
-        -- The controller has become invalid, now we return it back to the player
-        local player = game.players[playerIndex]
-        player.print{"traincontroller-message.noValidLocomotiveFound",
-          --[[1]]{"item-name.trainassembly"},
-          --[[2]]"__ENTITY__locomotive__",
-          --[[3]]{"item-name.traincontroller", {"item-name.trainassembly"}},
-        }
-        player.insert{
-          name = self:getControllerItemName(),
-          count = 1,
-        }
 
-        -- And we have to delete the controller from the structure
-        self:deleteController(trainController)
-
-        -- And delete it from the world
-        trainController.destroy()
-      end
-
+-- When a player copy pastes a recipe
+function Traincontroller:onPlayerChangedSettings(pastedEntity, playerIndex)
+  -- The player pasted a recipe in a machine entity, we need to make sure the
+  -- controller is still valid.
+  if pastedEntity and pastedEntity.valid then
+    if pastedEntity.name == Trainassembly:getMachineEntityName() then
+      self:checkValidAftherChanges(pastedEntity, playerIndex)
+    elseif pastedEntity.name == self:getControllerEntityName() then
+      self:setTrainstopControlBehaviour(pastedEntity)
     end
   end
 end
 
 
--- when a trainbuilder gets altered
+
+-- when a trainbuilder gets altered (buildings added/deleted buildings)
 function Traincontroller:onTrainbuilderAltered(trainBuilderIndex)
   -- if there is a traincontroller, we drop it on the floor
   local trainController = self:getTrainController(trainBuilderIndex)
   if trainController then
+    -- remove the created train
+    self:deleteBuildTrain(trainBuilderIndex)
+
     -- delete from structure
     self:deleteController(trainController)
 
@@ -425,7 +721,7 @@ function Traincontroller:onTrainbuilderAltered(trainBuilderIndex)
         count = 1,
       },
       position = trainController.position,
-      force = trainController.force,
+      force = global.TC_data["trainControllerForces"][trainController.force.name] or trainController.force,
       fast_replace = true,
       spill = false, -- delete excess items (only if fast_replace = true)
     }

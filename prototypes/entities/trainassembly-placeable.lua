@@ -23,7 +23,7 @@ end
 
 -- selection box
 trainassembly.selection_box = {{-3, -3}, {3, 3}} -- when train is facing north
-trainassembly.vertical_selection_shift = -.5 -- correction for vertical tracks
+trainassembly.vertical_selection_shift = 0 -- correction for vertical tracks
 
 -- collision masks
 trainassembly.collision_mask =
@@ -31,7 +31,7 @@ trainassembly.collision_mask =
   "train-layer", "player-layer", -- default layers
   "layer-13", -- curved rails
 }
-trainassembly.collision_box = {{-2.95, -3.3}, {2.95, 3.5}} -- when train is facing north
+trainassembly.collision_box = {{-2.95, -3.9}, {2.95, 3.9}} -- when train is facing north
 
 --add collision mask to curved rails
 local defaultRailMask = {"object-layer", "item-layer", "floor-layer", "water-tile"}
@@ -96,7 +96,7 @@ trainassembly.pictures =
       width = 256,
       height = 256,
       direction_count = 4,
-      allow_low_quality_rotation = true,
+      --allow_low_quality_rotation = true,
       frame_count = 1,
       line_length = 4,
       lines_per_file = 1,
@@ -116,7 +116,7 @@ trainassembly.pictures =
       width = 82,
       height = 82,
       direction_count = 4,
-      allow_low_quality_rotation = true,
+      --allow_low_quality_rotation = true,
       frame_count = 1,
       line_length = 4,
       lines_per_file = 1,

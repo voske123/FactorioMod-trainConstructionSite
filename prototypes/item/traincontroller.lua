@@ -1,6 +1,6 @@
 require 'util'
 
-local traincontroller = util.table.deepcopy(data.raw["item"]["train-stop"])
+local traincontroller = util.table.deepcopy(data.raw["item"]["rail-chain-signal"])
 
 traincontroller.name                  = "traincontroller"
 traincontroller.localised_name        = {"item-name.traincontroller", {[1] = "item-name.trainassembly"}}
@@ -10,7 +10,7 @@ traincontroller.icon = "__trainConstructionSite__/graphics/placeholders/icon.png
 traincontroller.icons = nil
 traincontroller.icon_size = 32
 
-traincontroller.order = traincontroller.order .. "-a"
+traincontroller.order = traincontroller.order .. "-tb[trainbuilding]-b"
 
 traincontroller.place_result = traincontroller.name
 

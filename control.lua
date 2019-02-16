@@ -1,4 +1,5 @@
 require "src.debug"
+require "src.traindepo"
 require "src.trainassembly"
 require "src.traincontroller"
 
@@ -12,8 +13,22 @@ script.on_init(function(event)
     Debug:onMapCreated()
   end
 
+  Traindepo:onInit()
   Trainassembly:onInit()
   Traincontroller:onInit()
+end)
+
+
+
+script.on_load(function()
+  Traincontroller:onLoad()
+end)
+
+
+
+-- called when a mod setting changed
+script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
+  Traincontroller:onSettingChanged(event)
 end)
 
 
@@ -28,24 +43,54 @@ end)
 
 
 
-script.on_event(defines.events.on_built_entity, function(event)
-  -- Called when player builds an entity.
-  Trainassembly:onBuildEntity(event.created_entity, event.player_index)
-  Traincontroller:onBuildEntity(event.created_entity, event.player_index)
+script.on_event({defines.events.on_built_entity      ,
+                 defines.events.on_robot_built_entity}, function(event)
+  -- Called when an entity gets placed.
+  local createdEntity = event.created_entity
+  if createdEntity and createdEntity.valid then
+    local playerIndex = event.player_index
+
+    Traindepo:onBuildEntity(createdEntity)
+    Trainassembly:onBuildEntity(createdEntity, playerIndex)
+    Traincontroller:onBuildEntity(createdEntity, playerIndex)
+  end
 end)
 
 
 
-script.on_event(defines.events.on_player_mined_entity, function(event)
-  -- Called when player mines an entity.
-  Trainassembly:onRemoveEntity(event.entity)
-  Traincontroller:onRemoveEntity(event.entity)
+script.on_event({defines.events.on_player_mined_entity,
+                 defines.events.on_robot_mined_entity ,
+                 defines.events.on_entity_died        }, function(event)
+  -- Called when an entity gets removed.
+  local removedEntity = event.entity
+  if removedEntity and removedEntity.valid then
+    Traindepo:onRemoveEntity(removedEntity)
+    Trainassembly:onRemoveEntity(removedEntity)
+    Traincontroller:onRemoveEntity(removedEntity)
+  end
 end)
 
 
 
 script.on_event(defines.events.on_player_rotated_entity, function(event)
-  --Called when player rotates an entity.
-  Trainassembly:onPlayerRotatedEntity(event.entity)
-  Traincontroller:onPlayerRotatedEntity(event.entity, event.player_index)
+  -- Called when player rotates an entity.
+  local rotatedEntity = event.entity
+  if rotatedEntity and rotatedEntity.valid then
+    Trainassembly:onPlayerRotatedEntity(rotatedEntity)
+    Traincontroller:onPlayerRotatedEntity(rotatedEntity, event.player_index)
+  end
+end)
+
+
+
+script.on_event(defines.events.on_entity_settings_pasted, function(event)
+  -- Called after entity copy-paste is done.
+  Traincontroller:onPlayerChangedSettings(event.destination, event.player_index)
+end)
+
+
+
+script.on_event(defines.events.on_entity_renamed, function(event)
+  --Called after an entity has been renamed either by the player or through script.
+  Traindepo:onRenameEntity(event.entity, event.old_name)
 end)
