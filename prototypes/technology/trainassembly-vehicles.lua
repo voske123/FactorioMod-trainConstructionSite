@@ -74,6 +74,19 @@ for _, trainRecipe in pairs ({
 end
 
 
+--Unlocking locomotive manual build in the railway techtree
+
+for _, trainRecipe in pairs ({
+  "locomotive-manual-build",
+}) do
+  table.insert(data.raw["technology"]["railway"].effects,
+  {
+    type = "unlock-recipe",
+    recipe = trainRecipe,
+  })
+end
+
+
 
 --making the fluid tech for fluid wagon
 

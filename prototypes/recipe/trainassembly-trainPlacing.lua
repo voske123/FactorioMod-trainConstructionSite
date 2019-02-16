@@ -53,3 +53,24 @@ for _, trainType in pairs({
     end
   end
 end
+
+
+if data.raw["item-with-entity-data"]["locomotive-manual-build"] then
+  data:extend{
+    {
+      type = "recipe",
+      name = "locomotive-manual-build",
+      expensive = nil,
+      normal =
+      {
+        enabled = false,
+        energy_required = 5,
+        ingredients =
+        {
+          {"locomotive", 1},
+        },
+        result = "locomotive-manual-build",
+      },
+    },
+  }
+end
