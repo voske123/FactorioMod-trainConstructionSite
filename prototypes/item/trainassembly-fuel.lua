@@ -34,5 +34,4 @@ trainassemblyRecipefuel.fuel_emission_multiplier      = nil
 data:extend{
   trainassemblyTrainfuel,
   trainassemblyRecipefuel,
-
 }

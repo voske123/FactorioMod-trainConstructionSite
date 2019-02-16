@@ -1,24 +1,23 @@
 data:extend{
   {
     type = "recipe",
-    name = "traincontroller",
+    name = "traindepo",
     normal =
     {
       enabled = false,
       energy_required = 1,
       ingredients =
       {
-        {"rail-signal", 1},
-        {"decider-combinator", 3},
-        {"arithmetic-combinator", 1},
-        {"programmable-speaker", 2},
+        {"train-stop", 1},
+        {"small-lamp", 3},
+        {"programmable-speaker", 1},
       },
       expensive = nil,
       results =
       {
         {
           type    = "item",
-          name    = "traincontroller",
+          name    = "traindepo",
           amount  = 1,
         },
       },
