@@ -1,3 +1,13 @@
+require "util"
+
+
+
+local locomotiveManualBuild = util.table.deepcopy(data.raw["item-with-entity-data"]["locomotive"])
+
+locomotiveManualBuild.name = "locomotive-manual-build"
+locomotiveManualBuild.subgroup = "manual-buildable-vehicles"
+locomotiveManualBuild.order = "a"
+
 
 -- We have fluids to craft to make the train on a track. With this in mind, we
 -- don't want the player to place down the train manualy. We have to remove the
@@ -33,3 +43,8 @@ for _, trainType in pairs{
     end
   end
 end
+
+
+data:extend{
+  locomotiveManualBuild,
+}
