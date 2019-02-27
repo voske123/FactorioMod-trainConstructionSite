@@ -3,7 +3,7 @@ require "util"
 
 
 for _, recipeName in pairs{
-  "trainassembly-trainfuel-raw-wood",
+  "trainassembly-trainfuel-wood",
 } do
   table.insert(data.raw["technology"]["trainassembly-automated-train-assembling"].effects,
   {

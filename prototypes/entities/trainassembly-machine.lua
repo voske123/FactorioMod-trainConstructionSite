@@ -31,10 +31,10 @@ trainassembly.selection_box = {{-3, -3}, {3, 3}}
 trainassembly.collision_mask = util.table.deepcopy(data.raw["locomotive"]["trainassembly-placeable"].collision_mask)
 trainassembly.collision_box = {{-2.95, -2.95}, {2.95, 2.95}}
 
--- delete train-layer so it doesn't collide with trains
+--delete train-layer so it doesn't collide with trains
 for collisionIndex, collisionLayer in pairs(trainassembly.collision_mask) do
   if collisionLayer == "train-layer" then
-    trainassembly.collision_mask[collisionIndex] = nil
+    table.remove(trainassembly.collision_mask, collisionIndex)
   end
 end
 
@@ -171,7 +171,7 @@ trainassembly.animation =
 }
 
 
-
+log(serpent.block(trainassembly))
 data:extend{
   trainassembly,
 }
