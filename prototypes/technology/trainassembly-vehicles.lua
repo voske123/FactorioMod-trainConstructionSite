@@ -48,6 +48,9 @@ trainTechArty.name = "trainassembly-artillery-wagon"
 trainTechArty.localised_name = {"technology-name.trainassembly-artillery-wagon"}
 trainTechArty.localised_description = {"technology-description.trainassembly-artillery-wagon"}
 
+trainTechArty.icon = "__trainConstructionSite__/graphics/technology/artillery-wagon_-_scaled.png"
+trainTechArty.icon_size = 256
+
 trainTechArty.prerequisites = {"trainassembly-cargo-wagon", "artillery"}
 
 trainTechArty.effects = {}

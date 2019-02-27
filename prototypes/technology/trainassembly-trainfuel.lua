@@ -19,6 +19,7 @@ data:extend{ -- add fuel recipe to tech tree
     type = "technology",
     name = "trainfuel-2",
     localised_name = {"technology-name.trainfuel", "trainassemblyfuel", "coal"},
+    localised_description = {"technology-description.trainfuel", "trainassemblyfuel", "coal"},
     icon_size = 128,
     icon = "__trainConstructionSite__/graphics/placeholders/2x2.png",
     effects =
@@ -44,6 +45,7 @@ data:extend{ -- add fuel recipe to tech tree
     type = "technology",
     name = "trainfuel-3",
     localised_name = {"technology-name.trainfuel", "trainassemblyfuel", "solid-fuel"},
+    localised_description = {"technology-description.trainfuel", "trainassemblyfuel", "solid-fuel"},
     icon_size = 128,
     icon = "__trainConstructionSite__/graphics/placeholders/2x2.png",
     effects =
@@ -70,6 +72,7 @@ data:extend{ -- add fuel recipe to tech tree
     type = "technology",
     name = "trainfuel-4",
     localised_name = {"technology-name.trainfuel", "trainassemblyfuel", "rocket-fuel"},
+    localised_description = {"technology-description.trainfuel", "trainassemblyfuel", "rocket-fuel"},
     icon_size = 128,
     icon = "__trainConstructionSite__/graphics/placeholders/2x2.png",
     effects =
@@ -97,6 +100,7 @@ data:extend{ -- add fuel recipe to tech tree
     type = "technology",
     name = "trainfuel-5",
     localised_name = {"technology-name.trainfuel", "trainassemblyfuel", "nuclear-fuel"},
+    localised_description = {"technology-description.trainfuel", "trainassemblyfuel", "nuclear-fuel"},
     icon_size = 128,
     icon = "__trainConstructionSite__/graphics/placeholders/2x2.png",
     effects =

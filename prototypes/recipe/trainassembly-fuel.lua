@@ -61,7 +61,6 @@ for fuelOrder, fuelIngredient in pairs{
       type = "recipe",
       name = "trainassembly-trainfuel-" .. fuelIngredient[1],
       localised_name = {"recipe-name.trainfuel", "trainassemblyfuel", fuelIngredient[1]},
-
       icons     = createRecipeIcons(fuelIngredient[1]), -- create recipe icons with different layers
       icon      = nil, -- becose icons is present, no icon      required
       icon_size = nil, -- becose icons is present, no icon_size required
