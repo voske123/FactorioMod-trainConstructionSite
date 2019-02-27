@@ -13,6 +13,62 @@ traincontroller.icon = data.raw["item"][traincontroller.minable.result].icon
 traincontroller.icon_size = data.raw["item"][traincontroller.minable.result].icon_size
 traincontroller.icons = util.table.deepcopy(data.raw["item"][traincontroller.minable.result].icons)
 
+traincontroller.rail_overlay_animations = {
+  filename = "__core__/graphics/empty.png",
+  width = 1,
+  height = 1,
+  hr_version = nil,
+}
+traincontroller.animations = {
+  filename = "__trainConstructionSite__/graphics/placeholders/2x2.png",
+  width = 128,
+  height = 128,
+  hr_version = nil,
+}
+traincontroller.top_animations = {
+  filename = "__core__/graphics/empty.png",
+  width = 1,
+  height = 1,
+  hr_version = nil,
+}
+traincontroller.light1 = {
+  light = {intensity = 0, size = 0, color = {r = 1.0, g = 1.0, b = 1.0}},
+  picture =
+    {
+      filename = "__core__/graphics/empty.png",
+      width = 1,
+      height = 1,
+      hr_version = nil,
+    },
+  red_picture =
+    {
+      filename = "__core__/graphics/empty.png",
+      width = 1,
+      height = 1,
+      hr_version = nil,
+    },
+}
+traincontroller.light2 = {
+  light = {intensity = 0, size = 0, color = {r = 1.0, g = 1.0, b = 1.0}},
+  picture =
+    {
+      filename = "__core__/graphics/empty.png",
+      width = 1,
+      height = 1,
+      hr_version = nil,
+    },
+  red_picture =
+    {
+      filename = "__core__/graphics/empty.png",
+      width = 1,
+      height = 1,
+      hr_version = nil,
+    },
+}
+
+traincontroller.circuit_wire_max_distance = 0
+
+
 table.insert(traincontroller.flags, "not-blueprintable")
 
 
