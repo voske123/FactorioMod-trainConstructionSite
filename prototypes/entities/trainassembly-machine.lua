@@ -171,7 +171,7 @@ trainassembly.animation =
 }
 
 
-log(serpent.block(trainassembly))
+
 data:extend{
   trainassembly,
 }
