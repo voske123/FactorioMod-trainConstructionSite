@@ -268,7 +268,8 @@ function Traincontroller.Builder:buildNextTrain(trainBuilderIndex)
 
             -- now substract one result from the assembler
             machineOutput.amount = machineOutput.amount - 1
-            machineEntity.fluidbox[1] = machineOutput
+            log(machineOutput.amount) -- this logs 0
+            machineEntity.fluidbox[1] = machineOutput.amount > 0 and machineOutput or nil
           else
             -- if the entity could not be created, the build is not finished yet
             finishTrainBuild = false
