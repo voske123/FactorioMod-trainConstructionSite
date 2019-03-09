@@ -1,6 +1,3 @@
-require "util"
-
-
 
 local locomotiveManualBuild = util.table.deepcopy(data.raw["item-with-entity-data"]["locomotive"])
 

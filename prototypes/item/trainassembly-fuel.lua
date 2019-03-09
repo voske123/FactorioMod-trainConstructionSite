@@ -1,4 +1,3 @@
-require "util"
 
 -- For the fuel needed to kick-start the engine to roll to a station, we need some fuel.
 -- Becose we don't want 10 different recipes for each fuel type, we make a new fuel type
