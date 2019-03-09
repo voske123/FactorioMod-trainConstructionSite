@@ -82,12 +82,12 @@ data:extend{ -- add fuel recipe to tech tree
     prerequisites =
     {
       "trainfuel-3",
-      "rocket-silo",
+      "rocket-fuel",
     },
     unit =
     {
       count = 75,
-      ingredients = util.table.deepcopy(data.raw["technology"]["automation-3"].unit.ingredients),
+      ingredients = util.table.deepcopy(data.raw["technology"]["rocket-fuel"].unit.ingredients),
 
       time = 30,
     },
