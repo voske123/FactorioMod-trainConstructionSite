@@ -1,5 +1,4 @@
 
-
 require "prototypes.categories.recipe-category"
 require "prototypes.categories.groups"
 
@@ -18,10 +17,10 @@ require "prototypes.recipe.trainassembly-placeable"
 require "prototypes.recipe.traincontroller"
 require "prototypes.recipe.traindepo"
 
-require "prototypes.entities.trainassembly-placeable"
-require "prototypes.entities.trainassembly-machine"
-require "prototypes.entities.traincontroller"
-require "prototypes.entities.traindepo"
+require "prototypes.entity.trainassembly-placeable"
+require "prototypes.entity.trainassembly-machine"
+require "prototypes.entity.traincontroller"
+require "prototypes.entity.traindepo"
 
 require "prototypes.technology.traindepo"
 require "prototypes.technology.trainassembly"

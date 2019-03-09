@@ -1,6 +1,5 @@
 require 'util'
-require "lib.directions"
-require "lib.table"
+require "LSlib/lib"
 
 -- Create class
 Trainassembly = {}
@@ -134,7 +133,7 @@ function Trainassembly:saveNewStructure(machineEntity)
 
   -- find_entities_filtered returns a list, we want only the entity,
   -- so we get it out of the table. Also make sure it is valid
-  if not lib.table.isEmpty(trainAssemblerNW) then
+  if not LSlib.utils.table.isEmpty(trainAssemblerNW) then
     trainAssemblerNW = trainAssemblerNW[1]
     if not trainAssemblerNW.valid then
       trainAssemblerNW = nil
@@ -142,7 +141,7 @@ function Trainassembly:saveNewStructure(machineEntity)
   else
     trainAssemblerNW = nil
   end
-  if not lib.table.isEmpty(trainAssemblerSE) then
+  if not LSlib.utils.table.isEmpty(trainAssemblerSE) then
     trainAssemblerSE = trainAssemblerSE[1]
     if not trainAssemblerSE.valid then
       trainAssemblerSE = nil
@@ -157,14 +156,14 @@ function Trainassembly:saveNewStructure(machineEntity)
   if trainAssemblerNW and trainAssemblerNW.valid then
     -- Check if its facing the same or oposite direction, if not, discard.
     if not (trainAssemblerNW.direction == machineEntity.direction
-            or trainAssemblerNW.direction == lib.directions.oposite(machineEntity.direction) ) then
+            or trainAssemblerNW.direction == LSlib.utils.directions.oposite(machineEntity.direction) ) then
       trainAssemblerNW = nil
     end
   end
   if trainAssemblerSE and trainAssemblerSE.valid then
     -- Check if its facing the same or oposite direction, if not, discard.
     if not (trainAssemblerSE.direction == machineEntity.direction
-            or trainAssemblerSE.direction == lib.directions.oposite(machineEntity.direction) ) then
+            or trainAssemblerSE.direction == LSlib.utils.directions.oposite(machineEntity.direction) ) then
       trainAssemblerSE = nil
     end
   end
@@ -334,7 +333,7 @@ function Trainassembly:deleteBuilding(machineEntity)
 
   -- find_entities_filtered returns a list, we want only the entity,
   -- so we get it out of the table. Also make sure it is valid
-  if not lib.table.isEmpty(trainAssemblerNW) then
+  if not LSlib.utils.table.isEmpty(trainAssemblerNW) then
     trainAssemblerNW = trainAssemblerNW[1]
     if not trainAssemblerNW.valid then
       trainAssemblerNW = nil
@@ -342,7 +341,7 @@ function Trainassembly:deleteBuilding(machineEntity)
   else
     trainAssemblerNW = nil
   end
-  if not lib.table.isEmpty(trainAssemblerSE) then
+  if not LSlib.utils.table.isEmpty(trainAssemblerSE) then
     trainAssemblerSE = trainAssemblerSE[1]
     if not trainAssemblerSE.valid then
       trainAssemblerSE = nil
@@ -357,14 +356,14 @@ function Trainassembly:deleteBuilding(machineEntity)
   if trainAssemblerNW and trainAssemblerNW.valid then
     -- Check if its facing the same or oposite direction, if not, discard.
     if not (trainAssemblerNW.direction == machineEntity.direction
-            or trainAssemblerNW.direction == lib.directions.oposite(machineEntity.direction) ) then
+            or trainAssemblerNW.direction == LSlib.utils.directions.oposite(machineEntity.direction) ) then
       trainAssemblerNW = nil
     end
   end
   if trainAssemblerSE and trainAssemblerSE.valid then
     -- Check if its facing the same or oposite direction, if not, discard.
     if not (trainAssemblerSE.direction == machineEntity.direction
-            or trainAssemblerSE.direction == lib.directions.oposite(machineEntity.direction) ) then
+            or trainAssemblerSE.direction == LSlib.utils.directions.oposite(machineEntity.direction) ) then
       trainAssemblerSE = nil
     end
   end
@@ -451,10 +450,10 @@ function Trainassembly:deleteBuilding(machineEntity)
   -- STEP 3: Deleting the trainAssembler
   global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] = nil
 
-  if lib.table.isEmpty(global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y]) then
+  if LSlib.utils.table.isEmpty(global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y]) then
     global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y] = nil
 
-    if lib.table.isEmpty(global.TA_data["trainAssemblers"][machineSurface.index]) then
+    if LSlib.utils.table.isEmpty(global.TA_data["trainAssemblers"][machineSurface.index]) then
       global.TA_data["trainAssemblers"][machineSurface.index] = nil
     end
   end
@@ -688,8 +687,8 @@ function Trainassembly:checkValidPlacement(createdEntity, playerIndex)
 
   local entitySurface = createdEntity.surface
   local entityPosition = createdEntity.position
-  local entityDirection = lib.directions.orientationTo4WayDirection(createdEntity.orientation)
-  local entityOpositeDirection = lib.directions.oposite(entityDirection)
+  local entityDirection = LSlib.utils.directions.orientationTo4WayDirection(createdEntity.orientation)
+  local entityOpositeDirection = LSlib.utils.directions.oposite(entityDirection)
 
   -- STEP 1: check the rails underneath
   for _,railEntity in pairs(entitySurface.find_entities_filtered{
@@ -766,7 +765,7 @@ function Trainassembly:onBuildEntity(createdEntity, playerIndex)
       local machineEntity = createdEntity.surface.create_entity({
         name      = self:getMachineEntityName(),
         position  = entityPosition,
-        direction = lib.directions.orientationTo4WayDirection(createdEntity.orientation),
+        direction = LSlib.utils.directions.orientationTo4WayDirection(createdEntity.orientation),
         force     = entityForce,
       })
 
@@ -846,7 +845,7 @@ function Trainassembly:onPlayerRotatedEntity(rotatedEntity)
   -- Player experience: The player thinks he rotated the entity 180 degree
   if rotatedEntity.name == self:getMachineEntityName() then
     -- STEP 1: get the new direction from the old saved direction
-    local newDirection = lib.directions.oposite(self:getMachineDirection(rotatedEntity))
+    local newDirection = LSlib.utils.directions.oposite(self:getMachineDirection(rotatedEntity))
 
     -- STEP 2: set the new rotated direction
     rotatedEntity.direction = newDirection

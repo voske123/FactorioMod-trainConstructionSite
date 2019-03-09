@@ -1,4 +1,3 @@
-require "util"
 
 local trainTechBuilder = util.table.deepcopy(data.raw["technology"]["railway"])
 

@@ -1,6 +1,5 @@
 require 'util'
-require 'lib.util'
-require 'lib.table'
+require "LSlib/lib"
 
 -- Create class
 Traincontroller = {}
@@ -159,7 +158,7 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuilderIndex)
     global.TC_data["trainControllers"][thisController["surfaceIndex"]][thisController["position"].y][thisController["position"].x]["nextController"] = util.table.deepcopy(nextController)
 
     -- STEP 2d: make sure the next iteration doesn't skip this new controller
-    if lib.table.areEqual(global.TC_data["nextTrainControllerIterate"], nextController) then
+    if LSlib.utils.table.areEqual(global.TC_data["nextTrainControllerIterate"], nextController) then
       global.TC_data["nextTrainControllerIterate"] = util.table.deepcopy(thisController)
     end
   end
@@ -218,9 +217,9 @@ function Traincontroller:deleteController(controllerEntity)
   global.TC_data["trainControllers"][nextController["surfaceIndex"]][nextController["position"].y][nextController["position"].x]["prevController"] = util.table.deepcopy(prevController)
 
   -- STEP 2d: make sure the next iteration does skip this old controller
-  if lib.table.areEqual(global.TC_data["nextTrainControllerIterate"], thisController) then
+  if LSlib.utils.table.areEqual(global.TC_data["nextTrainControllerIterate"], thisController) then
     -- Make sure the next controller isn't this controller, then there are no controllers.
-    if lib.table.areEqual(thisController, nextController) then
+    if LSlib.utils.table.areEqual(thisController, nextController) then
       global.TC_data["nextTrainControllerIterate"] = nil
       -- this is the last one, no need to keep iterating on_tick
       Traincontroller.Builder:deactivateOnTick()
@@ -232,10 +231,10 @@ function Traincontroller:deleteController(controllerEntity)
   -- STEP 2e: Delete this controller
   global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y][controllerPosition.x] = nil
 
-  if lib.table.isEmpty(global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y]) then
+  if LSlib.utils.table.isEmpty(global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y]) then
     global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y] = nil
   end
-  if lib.table.isEmpty(global.TC_data["trainControllers"][controllerSurface.index]) then
+  if LSlib.utils.table.isEmpty(global.TC_data["trainControllers"][controllerSurface.index]) then
     global.TC_data["trainControllers"][controllerSurface.index] = nil
   end
 
@@ -389,7 +388,7 @@ function Traincontroller:getHiddenEntityData(position, direction)
         x = position.x + offsetX * 1,
         y = position.y + offsetY * 1,
       },
-      direction = lib.directions.oposite(direction)
+      direction = LSlib.utils.directions.oposite(direction)
     },
     { -- signal on the other side of the track
       name     = self:getControllerSignalEntityName(),
@@ -469,7 +468,7 @@ function Traincontroller:checkValidAftherChanges(alteredEntity, playerIndex)
           -- Step 2: If this controller doesn't have a valid locomotive yet, we
           --         still have to check if this one might be a valid locomotive
           if not hasValidLocomotive then
-            local builderType = lib.util.stringSplit(machineRecipe.name, "[")
+            local builderType = LSlib.utils.string.split(machineRecipe.name, "[")
             builderType = builderType[#builderType]
             builderType = builderType:sub(1, builderType:len()-1)
             if builderType == "locomotive" then
@@ -608,7 +607,7 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
 
       if (not hasValidLocomotive) and (machineEntity.direction == entityDirection) then
         -- check the direction of the locomotive
-        local builderType = lib.util.stringSplit(machineRecipe.name, "[")
+        local builderType = LSlib.utils.string.split(machineRecipe.name, "[")
         builderType = builderType[#builderType]
         builderType = builderType:sub(1, builderType:len()-1)
         if builderType == "locomotive" then

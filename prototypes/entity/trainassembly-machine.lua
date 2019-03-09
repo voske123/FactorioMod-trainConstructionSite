@@ -1,4 +1,3 @@
-require "util"
 
 local trainassembly = util.table.deepcopy(data.raw["assembling-machine"]["assembling-machine-3"])
 trainassembly.name = "trainassembly-machine"

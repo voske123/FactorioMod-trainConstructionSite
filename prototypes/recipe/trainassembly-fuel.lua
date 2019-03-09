@@ -1,4 +1,3 @@
-require 'util'
 
 local function createRecipeIcons(itemPrototypeName)
   local function getItemIcons(itemPrototypeName, layerScale, layerShift)

@@ -1,4 +1,3 @@
-require 'util'
 
 -- the placeable entity is linked to this item
 local trainassembly = util.table.deepcopy(data.raw["item"]["rail-chain-signal"])

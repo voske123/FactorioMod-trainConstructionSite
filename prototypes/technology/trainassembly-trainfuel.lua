@@ -1,6 +1,3 @@
-require "util"
-
-
 
 for _, recipeName in pairs{
   "trainassembly-trainfuel-wood",
