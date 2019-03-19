@@ -1,4 +1,3 @@
-require "util"
 
 -- For each train type like item we want to make an equal fluid
 -- To accuire all the itemnames, we have to iterate over the entities

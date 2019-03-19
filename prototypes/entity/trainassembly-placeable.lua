@@ -1,4 +1,3 @@
-require "util"
 
 local trainassembly = util.table.deepcopy(data.raw["locomotive"]["locomotive"])
 trainassembly.name = "trainassembly-placeable"

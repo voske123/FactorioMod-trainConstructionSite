@@ -1,4 +1,3 @@
-require "util"
 
 local transportLogistics = util.table.deepcopy(data.raw["item-group"]["logistics"])
 
