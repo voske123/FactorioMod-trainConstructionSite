@@ -1,4 +1,3 @@
-require 'util'
 
 local traincontroller = util.table.deepcopy(data.raw["train-stop"]["train-stop"])
 

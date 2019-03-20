@@ -1,6 +1,4 @@
 
-
-
 table.insert(data.raw["technology"]["trainassembly-automated-train-assembling"].effects,
 {
   type = "unlock-recipe",

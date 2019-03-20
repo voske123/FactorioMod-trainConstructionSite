@@ -1,7 +1,5 @@
 require 'util'
-require 'lib.util'
-require 'lib.table'
-require 'lib.directions'
+require "LSlib/lib"
 
 -- Create class
 Traincontroller.Builder = {}
@@ -172,7 +170,7 @@ function Traincontroller.Builder:canBuildNextTrain(trainBuilderIndex, trainBuild
     local machineEntity = Trainassembly:getMachineEntity(builderLocation["surfaceIndex"], builderLocation["position"])
     if machineEntity and machineEntity.valid then
       local machineRecipe = machineEntity.get_recipe()
-      local buildEntityName = lib.util.stringSplit(machineRecipe.name, "[")[1]
+      local buildEntityName = LSlib.utils.string.split(machineRecipe.name, "[")[1]
       local buildEntityName = buildEntityName:sub(1, buildEntityName:len()-6)
 
       if not game.surfaces[builderLocation["surfaceIndex"]].can_place_entity{
@@ -209,7 +207,7 @@ function Traincontroller.Builder:buildNextTrain(trainBuilderIndex)
     if machineEntity and machineEntity.valid then
       -- get the building entity out of the name
       local machineRecipe = machineEntity.get_recipe()
-      local buildEntityName = lib.util.stringSplit(machineRecipe.name, "[")[1]
+      local buildEntityName = LSlib.utils.string.split(machineRecipe.name, "[")[1]
       local buildEntityName = buildEntityName:sub(1, buildEntityName:len()-6)
 
       -- get the maybe already existing entity
@@ -233,13 +231,13 @@ function Traincontroller.Builder:buildNextTrain(trainBuilderIndex)
             direction        = machineDirection,
             force            = machineEntity.force
           }
-          if createdEntity and (not lib.table.areEqual(createdEntity.position, builderLocation["position"])) then
+          if createdEntity and (not LSlib.utils.table.areEqual(createdEntity.position, builderLocation["position"])) then
             -- it snapped to a train stop probably, so let us build it in reverse first
             createdEntity.destroy()
             createdEntity = game.surfaces[builderLocation["surfaceIndex"]].create_entity{
               name             = buildEntityName,
               position         = builderLocation["position"],
-              direction        = lib.directions.oposite(machineDirection),
+              direction        = LSlib.utils.directions.oposite(machineDirection),
               force            = machineEntity.force
             }
             -- and afther creating it in reverse, we rotate it back
@@ -256,7 +254,7 @@ function Traincontroller.Builder:buildNextTrain(trainBuilderIndex)
             Trainassembly:setCreatedEntity(builderLocation["surfaceIndex"], builderLocation["position"], createdEntity)
 
             -- if this is a locomotive, we have to insert fuel
-            local buildEntityType = lib.util.stringSplit(machineRecipe.name, "[")
+            local buildEntityType = LSlib.utils.string.split(machineRecipe.name, "[")
             buildEntityType = buildEntityType[#buildEntityType]
             buildEntityType = buildEntityType:sub(1, buildEntityType:len()-1)
             if buildEntityType == "locomotive" then
@@ -268,7 +266,8 @@ function Traincontroller.Builder:buildNextTrain(trainBuilderIndex)
 
             -- now substract one result from the assembler
             machineOutput.amount = machineOutput.amount - 1
-            machineEntity.fluidbox[1] = machineOutput
+            log(machineOutput.amount) -- this logs 0
+            machineEntity.fluidbox[1] = machineOutput.amount > 0 and machineOutput or nil
           else
             -- if the entity could not be created, the build is not finished yet
             finishTrainBuild = false

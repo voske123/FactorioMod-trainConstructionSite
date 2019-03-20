@@ -1,6 +1,3 @@
-require "util"
-
-
 
 --making the cargo wagon technology and unlocking the wagon parts and fluid
 
@@ -47,6 +44,9 @@ local trainTechArty = util.table.deepcopy(data.raw["technology"]["artillery"])
 trainTechArty.name = "trainassembly-artillery-wagon"
 trainTechArty.localised_name = {"technology-name.trainassembly-artillery-wagon"}
 trainTechArty.localised_description = {"technology-description.trainassembly-artillery-wagon"}
+
+trainTechArty.icon = "__trainConstructionSite__/graphics/technology/artillery-wagon_-_scaled.png"
+trainTechArty.icon_size = 256
 
 trainTechArty.prerequisites = {"trainassembly-cargo-wagon", "artillery"}
 

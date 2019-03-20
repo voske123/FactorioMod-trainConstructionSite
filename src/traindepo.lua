@@ -1,4 +1,5 @@
 require 'util'
+require "LSlib/lib"
 
 -- Create class
 Traindepo = {}
@@ -79,10 +80,10 @@ function Traindepo:deleteBuilding(depoEntity)
     else
       global.TD_data["depoNames"][depoForceName][depoSurfaceIndex][stationName] = nil
 
-      if lib.table.isEmpty(global.TD_data["depoNames"][depoForceName][depoSurfaceIndex]) then
+      if LSlib.utils.table.isEmpty(global.TD_data["depoNames"][depoForceName][depoSurfaceIndex]) then
         global.TD_data["depoNames"][depoForceName][depoSurfaceIndex] = nil
 
-        if lib.table.isEmpty(global.TD_data["depoNames"][depoForceName]) then
+        if LSlib.utils.table.isEmpty(global.TD_data["depoNames"][depoForceName]) then
           global.TD_data["depoNames"][depoForceName] = nil
         end
       end
@@ -126,7 +127,7 @@ function Traindepo:hasDepoEntities(depoForceName, depoSurfaceIndex)
   -- returns true if at least one depo has been build on the force on that surface
   if global.TD_data["depoNames"][depoForceName] then
     if global.TD_data["depoNames"][depoForceName][depoSurfaceIndex] then
-      return not lib.table.isEmpty(global.TD_data["depoNames"][depoForceName][depoSurfaceIndex])
+      return not LSlib.utils.table.isEmpty(global.TD_data["depoNames"][depoForceName][depoSurfaceIndex])
     end
   end
   return false
