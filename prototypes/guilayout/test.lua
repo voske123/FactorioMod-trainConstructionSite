@@ -3,13 +3,23 @@ require "LSlib.lib"
 local guiLayout = LSlib.gui.layout.create("center")
 
 local guiFrame = LSlib.gui.layout.addFrame(guiLayout, "root", "traincontroller", "horizontal", {
-  style   = "frame_without_footer",
   caption = {"item-name.traincontroller", {[1] = "item-name.trainassembly"}},
+  style   = "frame_without_footer",
 })
 
 local guiTabs = LSlib.gui.layout.addTabs(guiLayout, guiFrame, "traincontroller-tab", {
-  {name = "depoSelection", caption = "select depo", enabled = true},
-  {name = "configuration", caption = "train configuration"},
+  {
+    name    = "depoSelection"                    ,
+    caption = "select depo"                      ,
+    style   = "LSlib_default_tab_button_selected",
+  },
+  {
+    name    = "configuration"           ,
+    caption = "train configuration"     ,
+    style   = "LSlib_default_tab_button",
+  },
+}, {
+  buttonFlowStyle = "LSlib_default_tab_buttonFlow",
 })
 
 --[[
