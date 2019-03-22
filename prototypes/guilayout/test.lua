@@ -10,7 +10,7 @@ local guiFrame = LSlib.gui.layout.addFrame(guiLayout, "root", "traincontroller",
 local guiTabs = LSlib.gui.layout.addTabs(guiLayout, guiFrame, "traincontroller-tab", {
   {
     name    = "depoSelection"                    ,
-    caption = "select depo"                      ,
+    caption = "select depoT"                     ,
     style   = "LSlib_default_tab_button_selected",
   },
   {
@@ -19,7 +19,9 @@ local guiTabs = LSlib.gui.layout.addTabs(guiLayout, guiFrame, "traincontroller-t
     style   = "LSlib_default_tab_button",
   },
 }, {
-  buttonFlowStyle = "LSlib_default_tab_buttonFlow",
+  buttonFlowStyle      = "LSlib_default_tab_buttonFlow",
+  tabInsideFrameStyle  = "LSlib_default_tab_insideDeepFrame",
+  tabContentFrameStyle = "LSlib_default_tab_contentFrame",
 })
 
 --[[
