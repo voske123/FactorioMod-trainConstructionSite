@@ -91,7 +91,7 @@ end)
 
 
 script.on_event(defines.events.on_entity_renamed, function(event)
-  --Called after an entity has been renamed either by the player or through script.
+  -- Called after an entity has been renamed either by the player or through script.
   Traindepo:onRenameEntity(event.entity, event.old_name)
 end)
 
@@ -99,8 +99,16 @@ end)
 
 local trainDepoGui = require("prototypes.guilayout.test")
 script.on_event(defines.events.on_gui_opened, function(event)
-  --Called when the player opens a GUI.
+  -- Called when the player opens a GUI.
   if event.entity and event.entity.name == "traindepo" then
     game.players[event.player_index].opened = LSlib.gui.create(event.player_index, trainDepoGui)
+  end
+end)
+
+
+script.on_event(defines.events.on_gui_closed, function(event)
+  -- Called when the player closes a GUI.
+  if event.element and event.element.name == LSlib.gui.getRootElementName(trainDepoGui) then
+    game.players[event.player_index].opened = LSlib.gui.destroy(event.player_index, trainDepoGui)
   end
 end)

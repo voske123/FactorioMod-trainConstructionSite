@@ -7,7 +7,7 @@ local guiFrame = LSlib.gui.layout.addFrame(guiLayout, "root", "traincontroller",
   style   = "frame_without_footer",
 })
 
-local guiTabs = LSlib.gui.layout.addTabs(guiLayout, guiFrame, "traincontroller-tab", {
+local guiTabContent = LSlib.gui.layout.addTabs(guiLayout, guiFrame, "traincontroller-tab", {
   {
     name    = "depoSelection"                    ,
     caption = "select depoT"                     ,
@@ -24,18 +24,7 @@ local guiTabs = LSlib.gui.layout.addTabs(guiLayout, guiFrame, "traincontroller-t
   tabContentFrameStyle = "LSlib_default_tab_contentFrame",
 })
 
---[[
-local tabFrame = LSlib.gui.layout.addFrame(guiLayout, guiFrame, "tabFrame", "vertical", {
-  style = "inside_deep_frame_for_tabs"
-})
-
--- buttons
-local tabButtonFlow = LSlib.gui.layout.addFlow(guiLayout, tabFrame, "tabFlow", "horizontal")
-LSlib.gui.layout.addButton(guiLayout, tabButtonFlow, "button1")
-LSlib.gui.layout.addButton(guiLayout, tabButtonFlow, "button2")
-
--- content
-tabFrame = LSlib.gui.layout.addFrame(guiLayout, tabFrame, "tabFrame", "vertical")
-]]
+local guiTabContent1 = LSlib.gui.layout.getTabContentFrameFlow(guiLayout, guiTabContent, 1)
+LSlib.gui.layout.textfield(guiLayout, guiTabContent1, "new-depo-name")
 
 return guiLayout
