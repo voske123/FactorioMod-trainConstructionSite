@@ -25,6 +25,6 @@ local guiTabContent = LSlib.gui.layout.addTabs(guiLayout, guiFrame, "traincontro
 })
 
 local guiTabContent1 = LSlib.gui.layout.getTabContentFrameFlow(guiLayout, guiTabContent, 1)
-LSlib.gui.layout.textfield(guiLayout, guiTabContent1, "new-depo-name")
+LSlib.gui.layout.addTextfield(guiLayout, guiTabContent1, "new-depo-name")
 
 return guiLayout

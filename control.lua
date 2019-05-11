@@ -97,7 +97,7 @@ end)
 
 
 
-local trainDepoGui = require("prototypes.guilayout.test")
+local trainDepoGui = require("prototypes.guilayout.traindepo")
 script.on_event(defines.events.on_gui_opened, function(event)
   -- Called when the player opens a GUI.
   if event.entity and event.entity.name == "traindepo" then
