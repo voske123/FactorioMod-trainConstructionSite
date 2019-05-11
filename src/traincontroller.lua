@@ -536,12 +536,12 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
     return false, -1
   end
 
-  -- STEP 1: Check if at least one train depo has been placed, if not, the
+  -- STEP 1: Check if at least one train depot has been placed, if not, the
   --         trainbuilder can't let trains drive off.
-  if not Traindepo:hasDepoEntities(createdEntityForceName, createdEntity.surface.index) then
-    return notValid{"traincontroller-message.noTraindepoFound",
+  if not Traindepot:hasDepoEntities(createdEntityForceName, createdEntity.surface.index) then
+    return notValid{"traincontroller-message.noTraindepotFound",
       --[[1]]{"item-name.traincontroller", {"item-name.trainassembly"}},
-      --[[2]]{"item-name.traindepo"},
+      --[[2]]{"item-name.traindepot"},
     }
   end
 

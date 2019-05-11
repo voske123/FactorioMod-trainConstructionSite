@@ -1,6 +1,6 @@
 require "LSlib.lib"
 require "src.debug"
-require "src.traindepo"
+require "src.traindepot"
 require "src.trainassembly"
 require "src.traincontroller"
 
@@ -13,7 +13,7 @@ script.on_init(function(event)
     Debug:onMapCreated()
   end
 
-  Traindepo:onInit()
+  Traindepot:onInit()
   Trainassembly:onInit()
   Traincontroller:onInit()
 end)
@@ -50,7 +50,7 @@ script.on_event({defines.events.on_built_entity      ,
   if createdEntity and createdEntity.valid then
     local playerIndex = event.player_index
 
-    Traindepo:onBuildEntity(createdEntity)
+    Traindepot:onBuildEntity(createdEntity)
     Trainassembly:onBuildEntity(createdEntity, playerIndex)
     Traincontroller:onBuildEntity(createdEntity, playerIndex)
   end
@@ -64,7 +64,7 @@ script.on_event({defines.events.on_player_mined_entity,
   -- Called when an entity gets removed.
   local removedEntity = event.entity
   if removedEntity and removedEntity.valid then
-    Traindepo:onRemoveEntity(removedEntity)
+    Traindepot:onRemoveEntity(removedEntity)
     Trainassembly:onRemoveEntity(removedEntity)
     Traincontroller:onRemoveEntity(removedEntity)
   end
@@ -92,15 +92,15 @@ end)
 
 script.on_event(defines.events.on_entity_renamed, function(event)
   -- Called after an entity has been renamed either by the player or through script.
-  Traindepo:onRenameEntity(event.entity, event.old_name)
+  Traindepot:onRenameEntity(event.entity, event.old_name)
 end)
 
 
 
-local trainDepoGui = require("prototypes.guilayout.traindepo")
+local trainDepoGui = require("prototypes.guilayout.traindepot")
 script.on_event(defines.events.on_gui_opened, function(event)
   -- Called when the player opens a GUI.
-  if event.entity and event.entity.name == "traindepo" then
+  if event.entity and event.entity.name == "traindepot" then
     game.players[event.player_index].opened = LSlib.gui.create(event.player_index, trainDepoGui)
   end
 end)

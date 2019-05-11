@@ -286,7 +286,7 @@ end
 
 
 
-function Traincontroller.Builder:assembleNextTrain(trainBuilderIndex, depoName)
+function Traincontroller.Builder:assembleNextTrain(trainBuilderIndex, depotName)
   -- The whole train is assembled, so now we can send it away
 
   -- STEP 1: Get the train that is created (not the individual carriages)
@@ -302,9 +302,9 @@ function Traincontroller.Builder:assembleNextTrain(trainBuilderIndex, depoName)
       -- the train schedule recods
       -- https://lua-api.factorio.com/latest/Concepts.html#TrainScheduleRecord
 
-      -- First record: depo stop --
+      -- First record: depot stop --
       {
-        station         = depoName, -- name of the depo station
+        station         = depotName, -- name of the depot station
         wait_conditions = {
           -- wait conditions at this station
           -- https://lua-api.factorio.com/latest/Concepts.html#WaitCondition

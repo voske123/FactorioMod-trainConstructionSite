@@ -56,9 +56,10 @@ function Debug:onPlayerCreated(player_index)
 
     player.insert("rail")
     player.insert("rail-signal")
+    player.insert("train-stop")
     player.insert("trainassembly")
     player.insert("traincontroller")
-    player.insert("traindepo")
+    player.insert("traindepot")
 
     player.insert("locomotive")
     player.insert("trainassembly-recipefuel")

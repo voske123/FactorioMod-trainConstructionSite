@@ -2,20 +2,20 @@ require "LSlib.lib"
 
 local guiLayout = LSlib.gui.layout.create("center")
 
-local guiFrame = LSlib.gui.layout.addFrame(guiLayout, "root", "traindepo", "horizontal", {
-  caption = {"item-name.traindepo"},
+local guiFrame = LSlib.gui.layout.addFrame(guiLayout, "root", "traindepot", "horizontal", {
+  caption = {"item-name.traindepot"},
   style   = "frame_without_footer",
 })
 
-local guiTabContent = LSlib.gui.layout.addTabs(guiLayout, guiFrame, "traindepo-tab", {
+local guiTabContent = LSlib.gui.layout.addTabs(guiLayout, guiFrame, "traindepot-tab", {
   { -- first tab
-    name    = "traindepo-selection"              ,
-    caption = "select depoT"                     ,
+    name    = "traindepot-selection"              ,
+    caption = "select depot"                     ,
     style   = "LSlib_default_tab_button_selected",
   },
   { -- second tab
-    name    = "traindepo-statistics"    ,
-    caption = "depo statistics"         ,
+    name    = "traindepot-statistics"    ,
+    caption = "depot statistics"         ,
     style   = "LSlib_default_tab_button",
   },
 }, {
@@ -34,7 +34,7 @@ local guiNewEntryFlow = LSlib.gui.layout.addFlow(guiLayout, guiTabContent1, "new
   style = "centering_horizontal_flow",
 })
 
-LSlib.gui.layout.addTextfield(guiLayout, guiNewEntryFlow, "new-depo-name", {
+LSlib.gui.layout.addTextfield(guiLayout, guiNewEntryFlow, "new-depot-name", {
   text    = "Enter depot name",
   tooltip = "Enter new depot name or select existing one below.",
 })
