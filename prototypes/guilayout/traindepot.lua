@@ -9,17 +9,18 @@ local guiFrame = LSlib.gui.layout.addFrame(guiLayout, "root", "traindepot", "hor
 
 local guiTabContent = LSlib.gui.layout.addTabs(guiLayout, guiFrame, "traindepot-tab", {
   { -- first tab
-    name    = "traindepot-selection"              ,
-    caption = "select depot"                     ,
-    style   = "LSlib_default_tab_button_selected",
+    name     = "-statistics"     ,
+    caption  = "depot statistics",
+    selected = true              ,
   },
   { -- second tab
-    name    = "traindepot-statistics"    ,
-    caption = "depot statistics"         ,
-    style   = "LSlib_default_tab_button",
+    name     = "-selection"  ,
+    caption  = "select depot",
   },
 }, {
   buttonFlowStyle      = "LSlib_default_tab_buttonFlow"     ,
+  buttonStyle          = "LSlib_default_tab_button"         ,
+  buttonSelectedStyle  = "LSlib_default_tab_button_selected",
   tabInsideFrameStyle  = "LSlib_default_tab_insideDeepFrame",
   tabContentFrameStyle = "LSlib_default_tab_contentFrame"   ,
 })
@@ -27,11 +28,10 @@ local guiTabContent = LSlib.gui.layout.addTabs(guiLayout, guiFrame, "traindepot-
 --------------------------------------------------------------------------------
 -- Name selection tab                                                         --
 --------------------------------------------------------------------------------
-local guiTabContent1 = LSlib.gui.layout.getTabContentFrameFlow(guiLayout, guiTabContent, 1)
+local guiTabContent1 = LSlib.gui.layout.getTabContentFrameFlow(guiLayout, guiTabContent, 2)
 
--- new entry
 local guiNewEntryFlow = LSlib.gui.layout.addFlow(guiLayout, guiTabContent1, "new-entry", "horizontal", {
-  style = "centering_horizontal_flow",
+  style = "traindepot_new_entry_flow_style", --"centering_horizontal_flow",
 })
 
 LSlib.gui.layout.addTextfield(guiLayout, guiNewEntryFlow, "new-depot-name", {
@@ -43,6 +43,16 @@ LSlib.gui.layout.addSpriteButton(guiLayout, guiNewEntryFlow, "enter-new-entry", 
   style = "slot_button"   ,
 })
 
-LSlib.gui.layout.addListbox(guiLayout, guiTabContent1, "old-entries")
+LSlib.gui.layout.addListbox(guiLayout, guiTabContent1, "old-entries", {
+  items = {"test1", "test2", "test3"}
+})
 
+
+
+--------------------------------------------------------------------------------
+-- statistics tab                                                         --
+--------------------------------------------------------------------------------
+local guiTabContent2 = LSlib.gui.layout.getTabContentFrameFlow(guiLayout, guiTabContent, 1)
+
+----------------
 return guiLayout

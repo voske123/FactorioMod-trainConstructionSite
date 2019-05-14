@@ -97,18 +97,20 @@ end)
 
 
 
-local trainDepoGui = require("prototypes.guilayout.traindepot")
 script.on_event(defines.events.on_gui_opened, function(event)
   -- Called when the player opens a GUI.
-  if event.entity and event.entity.name == "traindepot" then
-    game.players[event.player_index].opened = LSlib.gui.create(event.player_index, trainDepoGui)
-  end
+  Traindepot.Gui:onOpenEntity(event.entity, event.player_index)
 end)
+
 
 
 script.on_event(defines.events.on_gui_closed, function(event)
   -- Called when the player closes a GUI.
-  if event.element and event.element.name == LSlib.gui.getRootElementName(trainDepoGui) then
-    game.players[event.player_index].opened = LSlib.gui.destroy(event.player_index, trainDepoGui)
-  end
+  Traindepot.Gui:onCloseEntity(event.element, event.player_index)
+end)
+
+
+
+script.on_event(defines.events.on_gui_click, function(event)
+  Traindepot.Gui:onClickElement(event.element.name, event.player_index)
 end)

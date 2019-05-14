@@ -3,6 +3,7 @@ require "LSlib/lib"
 
 -- Create class
 Traindepot = {}
+require 'src.traindepot-gui'
 
 --------------------------------------------------------------------------------
 -- Initiation of the class
@@ -12,6 +13,7 @@ function Traindepot:onInit()
   if not global.TD_data then
     global.TD_data = self:initGlobalData()
   end
+  self.Gui:onInit()
 end
 
 
@@ -123,7 +125,7 @@ end
 --------------------------------------------------------------------------------
 -- Getter functions to extract data from the data structure
 --------------------------------------------------------------------------------
-function Traindepot:hasDepoEntities(depotForceName, depotSurfaceIndex)
+function Traindepot:hasDepotEntities(depotForceName, depotSurfaceIndex)
   -- returns true if at least one depot has been build on the force on that surface
   if global.TD_data["depotNames"][depotForceName] then
     if global.TD_data["depotNames"][depotForceName][depotSurfaceIndex] then
@@ -135,7 +137,7 @@ end
 
 
 
-function Traindepot:getDepoEntityName()
+function Traindepot:getDepotEntityName()
   return global.TD_data["prototypeData"]["traindepotName"]
 end
 
@@ -146,8 +148,11 @@ end
 --------------------------------------------------------------------------------
 -- When a player builds a new entity
 function Traindepot:onBuildEntity(createdEntity)
-  if createdEntity.name == self:getDepoEntityName() then
+  if createdEntity.name == self:getDepotEntityName() then
     self:saveNewStructure(createdEntity)
+
+    -- after structure is saved, we rename it, this will trigger Traindepot:onRenameEntity as well
+    createdEntity.backer_name = "Unused Traindepot"
   end
 end
 
@@ -155,15 +160,16 @@ end
 
 -- When a player/robot removes the building
 function Traindepot:onRemoveEntity(removedEntity)
-  if removedEntity.name == self:getDepoEntityName() then
+  if removedEntity.name == self:getDepotEntityName() then
     self:deleteBuilding(removedEntity)
   end
 end
 
 
 
+-- When a player/script renames an entity
 function Traindepot:onRenameEntity(renamedEntity, oldName)
-  if renamedEntity.name == self:getDepoEntityName() then
+  if renamedEntity.name == self:getDepotEntityName() then
     self:renameBuilding(renamedEntity, oldName)
   end
 end
