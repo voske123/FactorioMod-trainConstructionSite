@@ -1,4 +1,5 @@
 require "LSlib.lib"
+log("access file")
 
 local guiLayout = LSlib.gui.layout.create("center")
 
@@ -10,19 +11,20 @@ local guiFrame = LSlib.gui.layout.addFrame(guiLayout, "root", "traindepot", "hor
 local guiTabContent = LSlib.gui.layout.addTabs(guiLayout, guiFrame, "traindepot-tab", {
   { -- first tab
     name     = "-statistics"     ,
-    caption  = "depot statistics",
+    caption  = {"gui-traindepot.tab-statistics"},
     selected = true              ,
   },
   { -- second tab
     name     = "-selection"  ,
-    caption  = "select depot",
+    caption  = {"gui-traindepot.tab-name-selection"},
   },
 }, {
   buttonFlowStyle      = "LSlib_default_tab_buttonFlow"     ,
   buttonStyle          = "LSlib_default_tab_button"         ,
   buttonSelectedStyle  = "LSlib_default_tab_button_selected",
   tabInsideFrameStyle  = "LSlib_default_tab_insideDeepFrame",
-  tabContentFrameStyle = "LSlib_default_tab_contentFrame"   ,
+  --tabContentFrameStyle = "LSlib_default_tab_contentFrame"   ,
+  tabContentFrameStyle = "traindepot_contentFrame"          ,
 })
 
 --------------------------------------------------------------------------------
@@ -31,20 +33,21 @@ local guiTabContent = LSlib.gui.layout.addTabs(guiLayout, guiFrame, "traindepot-
 local guiTabContent1 = LSlib.gui.layout.getTabContentFrameFlow(guiLayout, guiTabContent, 2)
 
 local guiNewEntryFlow = LSlib.gui.layout.addFlow(guiLayout, guiTabContent1, "new-entry", "horizontal", {
-  style = "traindepot_new_entry_flow_style", --"centering_horizontal_flow",
+  --style = "centering_horizontal_flow",
+  style = "traindepot_new_entry_flow_style",
 })
 
-LSlib.gui.layout.addTextfield(guiLayout, guiNewEntryFlow, "new-depot-name", {
+LSlib.gui.layout.addTextfield(guiLayout, guiNewEntryFlow, "new-depot-entry", {
   text    = "Enter depot name",
-  tooltip = "Enter new depot name or select existing one below.",
+  tooltip = {"gui-traindepot.new-name-field-tooltip"},
 })
-LSlib.gui.layout.addSpriteButton(guiLayout, guiNewEntryFlow, "enter-new-entry", {
+LSlib.gui.layout.addSpriteButton(guiLayout, guiNewEntryFlow, "new-depot-enter", {
   sprite = "utility/enter",
   style = "slot_button"   ,
 })
 
-LSlib.gui.layout.addListbox(guiLayout, guiTabContent1, "old-entries", {
-  items = {"test1", "test2", "test3"}
+LSlib.gui.layout.addListbox(guiLayout, guiTabContent1, "old-depot-entry", {
+  --items = {"test1", "test2", "test3"},
 })
 
 
@@ -53,6 +56,62 @@ LSlib.gui.layout.addListbox(guiLayout, guiTabContent1, "old-entries", {
 -- statistics tab                                                         --
 --------------------------------------------------------------------------------
 local guiTabContent2 = LSlib.gui.layout.getTabContentFrameFlow(guiLayout, guiTabContent, 1)
+
+local statistics = LSlib.gui.layout.addTable(guiLayout, guiTabContent2, "statistics", 2, {
+  style = "traindepot_statistics_table",
+})
+
+-- name
+LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-station-id", {
+  caption = {"gui-traindepot.depot-name"},
+})
+local stationIDflow = LSlib.gui.layout.addFlow(guiLayout, statistics, "statistics-station-id-flow", "horizontal", {
+  style = "centering_horizontal_flow",
+})
+LSlib.gui.layout.addSpriteButton(guiLayout, stationIDflow, "statistics-station-id-edit", {
+  sprite = "utility/rename_icon_small",
+  style = "mini_button"               ,
+})
+LSlib.gui.layout.addLabel(guiLayout, stationIDflow, "statistics-station-id-value", {
+  caption = {"gui-traindepot.unused-depot-name"},
+})
+
+-- amount
+LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-station-amount", {
+  caption = {"gui-traindepot.depot-availability"},
+})
+LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-station-amount-value", {
+  caption = "1/1",
+})
+
+-- traindepos
+LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-builderproduct-amount", {
+  caption = {"", {"gui-traindepot.depot-auto-request"}, " [img=info]"},
+  tooltip = {"gui-traindepot.depot-auto-request-tooltip"},
+})
+local builderproductFlow = LSlib.gui.layout.addFlow(guiLayout, statistics, "statistics-builderproduct-amount-flow", "horizontal", {
+  style = "centering_horizontal_flow",
+})
+LSlib.gui.layout.addSpriteButton(guiLayout, builderproductFlow, "statistics-builder-amount-value-", {
+  sprite = "utility/editor_speed_down",
+  style = "mini_button"               ,
+})
+LSlib.gui.layout.addLabel(guiLayout, builderproductFlow, "statistics-builder-amount-value", {
+  caption = "0/1",
+})
+LSlib.gui.layout.addSpriteButton(guiLayout, builderproductFlow, "statistics-builder-amount-value+", {
+  sprite = "utility/editor_speed_up",
+  style = "mini_button"             ,
+})
+
+-- trainbuilders
+LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-builders-working-amount", {
+  caption = {"", {"gui-traindepot.depot-builder-utilisation"}, " [img=info]"},
+  tooltip = {"gui-traindepot.depot-builder-utilisation-tooltip"}
+})
+LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-builder-working-amount-value", {
+  caption = "0",
+})
 
 ----------------
 return guiLayout

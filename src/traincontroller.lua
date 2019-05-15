@@ -36,12 +36,13 @@ end
 -- Initiation of the global data
 function Traincontroller:initGlobalData()
   local TC_data = {
-    ["version"]       = 1, -- version of the global data
-    ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
+    ["version"                   ]       = 1, -- version of the global data
+    ["prototypeData"             ] = self:initPrototypeData(), -- data storing info about the prototypes
 
-    ["trainControllerForces"] = {}, -- keep track of the created forces
+    ["trainControllerForces"     ] = {},  -- keep track of the created forces
+    ["trainControllerNamesCount" ] = {},  -- keep track of the depos the controllers are using
 
-    ["trainControllers"]           = {},  -- keep track of all controllers
+    ["trainControllers"          ] = {},  -- keep track of all controllers
     ["nextTrainControllerIterate"] = nil, -- next controller to iterate over
   }
 
@@ -177,7 +178,8 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuilderIndex)
 
   -- STEP 3b:The controller needs to be on another (friendly) force. This way
   --         the controller wont show up on the train menu.
-  controllerEntity.force = controllerEntity.force.name .. self:getControllerForceName()
+  local controllerForceName = controllerEntity.force.name .. self:getControllerForceName()
+  controllerEntity.force = controllerForceName
 
   -- STEP 3c:The controller needs to be disabled. This way the trains won't path
   --         to this stop. To get this behaviour, we connect it to the logistics
@@ -185,30 +187,43 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuilderIndex)
   self:setTrainstopControlBehaviour(controllerEntity)
 
   --game.print(serpent.block(global.TC_data["trainControllers"]))
+
+  -- STEP 3c:Keep track how many controllers are connected to a depot
+  if not global.TC_data["trainControllerNamesCount"][controllerForceName] then
+    global.TC_data["trainControllerNamesCount"][controllerForceName] = {}
+  end
+  if not global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurface.index] then
+    global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurface.index] = {}
+  end
+
+  local stationName = controllerEntity.backer_name
+  local stationAmount = global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurface.index][stationName] or 0
+  global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurface.index][stationName] = stationAmount + 1
 end
 
 
 
 function Traincontroller:deleteController(controllerEntity)
   -- STEP 1: make sure we can index the table
-  local controllerSurface  = controllerEntity.surface
+  --local controllerSurface = controllerEntity.surface
+  local controllerSurfaceIndex = controllerEntity.surface.index
   local controllerPosition = controllerEntity.position
-  if not global.TC_data["trainControllers"][controllerSurface.index] then
+  if not global.TC_data["trainControllers"][controllerSurfaceIndex] then
     return
   end
-  if not global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y] then
+  if not global.TC_data["trainControllers"][controllerSurfaceIndex][controllerPosition.y] then
     return
   end
 
   -- STEP 2: remove this controller from the list
   local thisController = {
-    ["surfaceIndex"] = controllerSurface.index,
+    ["surfaceIndex"] = controllerSurfaceIndex,
     ["position"]     = controllerPosition,
   }
 
   -- STEP 2a: extract the previous and next controller
-  local prevController = global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y][controllerPosition.x]["prevController"]
-  local nextController = global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y][controllerPosition.x]["nextController"]
+  local prevController = global.TC_data["trainControllers"][controllerSurfaceIndex][controllerPosition.y][controllerPosition.x]["prevController"]
+  local nextController = global.TC_data["trainControllers"][controllerSurfaceIndex][controllerPosition.y][controllerPosition.x]["nextController"]
 
   -- STEP 2b: adapt the prevController
   global.TC_data["trainControllers"][prevController["surfaceIndex"]][prevController["position"].y][prevController["position"].x]["nextController"] = util.table.deepcopy(nextController)
@@ -229,16 +244,39 @@ function Traincontroller:deleteController(controllerEntity)
   end
 
   -- STEP 2e: Delete this controller
-  global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y][controllerPosition.x] = nil
+  global.TC_data["trainControllers"][controllerSurfaceIndex][controllerPosition.y][controllerPosition.x] = nil
 
-  if LSlib.utils.table.isEmpty(global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y]) then
-    global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y] = nil
+  if LSlib.utils.table.isEmpty(global.TC_data["trainControllers"][controllerSurfaceIndex][controllerPosition.y]) then
+    global.TC_data["trainControllers"][controllerSurfaceIndex][controllerPosition.y] = nil
   end
-  if LSlib.utils.table.isEmpty(global.TC_data["trainControllers"][controllerSurface.index]) then
-    global.TC_data["trainControllers"][controllerSurface.index] = nil
+  if LSlib.utils.table.isEmpty(global.TC_data["trainControllers"][controllerSurfaceIndex]) then
+    global.TC_data["trainControllers"][controllerSurfaceIndex] = nil
   end
-
   --game.print(serpent.block(global.TC_data["trainControllers"]))
+
+
+  -- STEP 3: remove this controller from the depot list
+  local controllerForceName = controllerEntity.force.name
+
+  local stationName = depotEntity.backer_name
+  local stationAmount = global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex][stationName]
+
+  if stationAmount then
+    if stationAmount > 1 then
+      global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex][stationName] = stationAmount - 1
+    else
+      global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex][stationName] = nil
+
+      if LSlib.utils.table.isEmpty(global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex]) then
+        global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex] = nil
+
+        if LSlib.utils.table.isEmpty(global.TC_data["trainControllerNamesCount"][controllerForceName]) then
+          global.TC_data["trainControllerNamesCount"][controllerForceName] = nil
+        end
+      end
+    end
+  end
+
 end
 
 
@@ -281,6 +319,32 @@ function Traincontroller:deleteBuildTrain(builderIndex)
   -- delete the whole created train from a builder
   for _, builderLocation in pairs(Trainassembly:getTrainBuilder(builderIndex)) do
     Trainassembly:deleteCreatedTrainEntity(builderLocation["surfaceIndex"], builderLocation["position"])
+  end
+end
+
+
+
+function Traincontroller:renameBuilding(controllerEntity, oldName)
+  local stationName = controllerEntity.backer_name
+  if oldName ~= stationName then -- checking to make sure it is actualy changed
+
+    local controllerForceName = controllerEntity.force.name
+    local controllerSurfaceIndex = controllerEntity.surface.index
+
+    -- remove the old one
+    local stationAmount = global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex][oldName]
+    if stationAmount then
+      if stationAmount > 1 then
+        global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex][oldName] = stationAmount - 1
+      else
+        global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex][oldName] = nil
+        -- no need to delete empty tables, since we'll be adding one to it again
+      end
+    end
+
+    -- add the new one
+    stationAmount = global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex][stationName] or 0
+    global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex][stationName] = stationAmount + 1
   end
 end
 
@@ -349,6 +413,37 @@ function Traincontroller:getTrainBuilderIndex(trainController)
 
   -- STEP 2: return the tainBuilderIndex
   return global.TC_data["trainControllers"][surfaceIndex][position.y][position.x]["trainBuilderIndex"]
+end
+
+
+
+function Traincontroller:hasTrainBuilderEntitiess(controllerForceName, controllerSurfaceIndex)
+  -- returns true if at least one depot has been build on the force on that surface
+  if global.TC_data["trainControllerNamesCount"][controllerForceName]                         and
+     global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex] then
+    return not LSlib.utils.table.isEmpty(global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex])
+  end
+  return false
+end
+
+
+
+function Traincontroller:getTrainBuilderNames(controllerForceName, controllerSurfaceIndex)
+  if self:hasTrainBuilderEntitiess(controllerForceName, controllerSurfaceIndex) then
+    return global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex]
+  else
+    return {}
+  end
+end
+
+
+
+function Traincontroller:getTrainBuilderCount(controllerForceName, controllerSurfaceIndex, controllerName)
+  log(controllerForceName)
+  log(controllerName)
+  log(self:getTrainBuilderNames(controllerForceName, controllerSurfaceIndex)[controllerName])
+  log(serpent.block(self:getTrainBuilderNames(controllerForceName, controllerSurfaceIndex)))
+  return self:getTrainBuilderNames(controllerForceName, controllerSurfaceIndex)[controllerName] or 0
 end
 
 
@@ -648,7 +743,9 @@ function Traincontroller:onBuildEntity(createdEntity, playerIndex)
     local validPlacement, trainBuilderIndex = self:checkValidPlacement(createdEntity, playerIndex)
     if validPlacement then -- It is valid, now we have to add the entity to the list
       self:saveNewStructure(createdEntity, trainBuilderIndex)
-      --TODO: name the stop
+
+      -- after structure is saved, we rename it, this will trigger Traincontroller:onRenameEntity as well
+      createdEntity.backer_name = "Unused Trainbuilder"
     end
   end
 end
@@ -696,6 +793,15 @@ function Traincontroller:onPlayerChangedSettings(pastedEntity, playerIndex)
     elseif pastedEntity.name == self:getControllerEntityName() then
       self:setTrainstopControlBehaviour(pastedEntity)
     end
+  end
+end
+
+
+
+-- When a player/script renames an entity
+function Traincontroller:onRenameEntity(renamedEntity, oldName)
+  if renamedEntity.name == self:getControllerEntityName() then
+    self:renameBuilding(renamedEntity, oldName)
   end
 end
 

@@ -92,6 +92,7 @@ end)
 
 script.on_event(defines.events.on_entity_renamed, function(event)
   -- Called after an entity has been renamed either by the player or through script.
+  Traincontroller:onRenameEntity(event.entity, event.old_name)
   Traindepot:onRenameEntity(event.entity, event.old_name)
 end)
 
