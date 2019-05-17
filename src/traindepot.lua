@@ -25,7 +25,7 @@ function Traindepot:initGlobalData()
     ["prototypeData"  ] = self:initPrototypeData(), -- data storing info about the prototypes
 
     ["depotNamesCount"] = {},  -- keep track of all depot names and how many times they are used
-    ["depots"           ] = {},  -- keep track of all depots and there entity data
+    ["depots"         ] = {},  -- keep track of all depots and there entity data
   }
 
   return util.table.deepcopy(TD_data)
@@ -184,6 +184,59 @@ end
 
 function Traindepot:getDepotCount(depotForceName, depotSurfaceIndex, depotName)
   return self:getDepotNames(depotForceName, depotSurfaceIndex)[depotName] or 0
+end
+
+
+
+function Traindepot:getAllTrainsPathingToDepot(depotSurfaceIndex, depotName)
+  -- index all depots on this surface, we need to find one depot with the given name
+  for depotPositionY,depotPositionList in pairs(global.TD_data["depots"][depotSurfaceIndex]) do
+    for depotPositionX,depotEntityData in pairs(depotPositionList) do
+
+      -- check if a depot has the correct name
+      if depotEntityData.entity.backer_name == depotName then
+        return depotEntity.get_train_stop_trains()
+      end
+
+    end
+  end
+
+  -- none found, just return nil
+  return nil
+end
+
+
+function Traindepot:getNumberOfTrainsPathingToDepot(depotSurfaceIndex, depotName)
+  -- obtain a list with all the trains
+  local depotTrains = self:getAllTrainsPathingToDepot(depotSurfaceIndex, depotName) or {}
+
+  -- check schedule of each train
+  local trainAmountPathingToDepot = 0
+  for _,trainWithDepotSchedule in pairs(depotTrains) do
+    local trainSchedule = trainWithDepotSchedule.schedule
+    local currentActiveSchedule = trainSchedule.records[trainSchedule.current]
+    if currentActiveSchedule.station == depotName then
+      trainAmountPathingToDepot = trainAmountPathingToDepot + 1
+    end
+  end
+
+  return trainAmountPathingToDepot
+end
+
+
+
+function Traindepot:getNumberOfTrainsStoppedInDepot(depotSurfaceIndex, depotName)
+  -- returns amount of stations that are currently occupied
+  local amount = 0
+  for depotPositionY,depotPositionList in pairs(global.TD_data["depots"][depotSurfaceIndex]) do
+    for depotPositionX,depotEntityData in pairs(depotPositionList) do
+      local depotEntity = depotEntityData.entity
+      if depotEntity.backer_name == depotName and depotEntity.get_stopped_train() then
+        amount = amount + 1
+      end
+    end
+  end
+  return amount
 end
 
 

@@ -439,10 +439,6 @@ end
 
 
 function Traincontroller:getTrainBuilderCount(controllerForceName, controllerSurfaceIndex, controllerName)
-  log(controllerForceName)
-  log(controllerName)
-  log(self:getTrainBuilderNames(controllerForceName, controllerSurfaceIndex)[controllerName])
-  log(serpent.block(self:getTrainBuilderNames(controllerForceName, controllerSurfaceIndex)))
   return self:getTrainBuilderNames(controllerForceName, controllerSurfaceIndex)[controllerName] or 0
 end
 
