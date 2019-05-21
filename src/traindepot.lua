@@ -24,8 +24,8 @@ function Traindepot:initGlobalData()
     ["version"        ] = 1, -- version of the global data
     ["prototypeData"  ] = self:initPrototypeData(), -- data storing info about the prototypes
 
-    ["depotNamesCount"] = {},  -- keep track of all depot names and how many times they are used
     ["depots"         ] = {},  -- keep track of all depots and there entity data
+    ["depotStatistics"] = {},  -- keep track of all depot names and statistics about them
   }
 
   return util.table.deepcopy(TD_data)
@@ -48,31 +48,16 @@ end
 --------------------------------------------------------------------------------
 function Traindepot:saveNewStructure(depotEntity)
   -- With this function we save all the data we want about a traindepot
-
-  -- STEP 1: Save the station name to the list (used in the UI)
-  -- STEP 1a:Make sure we can index it (same as step 1a)
-  local depotForceName = depotEntity.force.name
-  if not global.TD_data["depotNamesCount"][depotForceName] then
-    global.TD_data["depotNamesCount"][depotForceName] = {}
-  end
+  local depotForceName    = depotEntity.force.name
   local depotSurfaceIndex = depotEntity.surface.index
-  if not global.TD_data["depotNamesCount"][depotForceName][depotSurfaceIndex] then
-    global.TD_data["depotNamesCount"][depotForceName][depotSurfaceIndex] = {}
-  end
+  local depotPosition     = depotEntity.position
+  local depotName         = depotEntity.backer_name
 
-  -- STEP 1b:Now we know we can index (without crashing) to the position as:
-  --         dataStructure[forceName][surfaceIndex]
-  --         Now we can store the depotName here
-  local stationName = depotEntity.backer_name
-  local stationAmount = global.TD_data["depotNamesCount"][depotForceName][depotSurfaceIndex][stationName] or 0
-  global.TD_data["depotNamesCount"][depotForceName][depotSurfaceIndex][stationName] = stationAmount + 1
-
-  -- STEP 2: Save the depot entity
-  -- STEP 2a:Make sure we can index it, meaning, check if the table already
+  -- STEP 1: Save the depot entity
+  -- STEP 1a:Make sure we can index it, meaning, check if the table already
   --         excists for the surface, if not, we make one. Afther that we also
   --         have to check if the surface table has a table we can index for
   --         the y-position, if not, we make one.
-  local depotPosition = depotEntity.position
   if not global.TD_data["depots"][depotSurfaceIndex] then
     global.TD_data["depots"][depotSurfaceIndex] = {}
   end
@@ -80,42 +65,27 @@ function Traindepot:saveNewStructure(depotEntity)
     global.TD_data["depots"][depotSurfaceIndex][depotPosition.y] = {}
   end
 
-  -- STEP 2b:Now we know we can index (without crashing) to the position as:
+  -- STEP 1b:Now we know we can index (without crashing) to the position as:
   --         dataStructure[surfaceIndex][positionY][positionX]
   --         Now we can store our wanted data at this position
   global.TD_data["depots"][depotSurfaceIndex][depotPosition.y][depotPosition.x] = {
     ["entity"] = depotEntity, -- the controller entity
   }
+
+  -- STEP 2: Save the station name to the list of statistics
+  self:setStationAmount(depotForceName, depotSurfaceIndex, depotName, self:getDepotStationCount(depotForceName, depotSurfaceIndex, depotName) + 1)
 end
 
 
 
 function Traindepot:deleteBuilding(depotEntity)
-  local depotForceName = depotEntity.force.name
+  -- With this function we remove all the saved data about the traindepot
+  local depotForceName    = depotEntity.force.name
   local depotSurfaceIndex = depotEntity.surface.index
-  local depotPosition = depotEntity.position
+  local depotPosition     = depotEntity.position
+  local depotName         = depotEntity.backer_name
 
-  local stationName = depotEntity.backer_name
-  local stationAmount = global.TD_data["depotNamesCount"][depotForceName][depotSurfaceIndex][stationName]
-
-  -- delete building count
-  if stationAmount then
-    if stationAmount > 1 then
-      global.TD_data["depotNamesCount"][depotForceName][depotSurfaceIndex][stationName] = stationAmount - 1
-    else
-      global.TD_data["depotNamesCount"][depotForceName][depotSurfaceIndex][stationName] = nil
-
-      if LSlib.utils.table.isEmpty(global.TD_data["depotNamesCount"][depotForceName][depotSurfaceIndex]) then
-        global.TD_data["depotNamesCount"][depotForceName][depotSurfaceIndex] = nil
-
-        if LSlib.utils.table.isEmpty(global.TD_data["depotNamesCount"][depotForceName]) then
-          global.TD_data["depotNamesCount"][depotForceName] = nil
-        end
-      end
-    end
-  end
-
-  -- delete the building
+  -- STEP 1: Delete the building
   if global.TD_data["depots"][depotSurfaceIndex][depotPosition.y][depotPosition.x] then
     global.TD_data["depots"][depotSurfaceIndex][depotPosition.y][depotPosition.x] = nil
 
@@ -128,32 +98,85 @@ function Traindepot:deleteBuilding(depotEntity)
     end
   end
 
+  -- STEP2: Update the statistics
+  self:setStationAmount(depotForceName, depotSurfaceIndex, depotName, self:getDepotStationCount(depotForceName, depotSurfaceIndex, depotName) - 1)
+
 end
 
 
 
 function Traindepot:renameBuilding(depotEntity, oldName)
-  local stationName = depotEntity.backer_name
-  if oldName ~= stationName then -- checking to make sure it is actualy changed
+  local depotName = depotEntity.backer_name
+  if oldName ~= depotName then -- checking to make sure it is actualy changed
 
     local depotForceName = depotEntity.force.name
     local depotSurfaceIndex = depotEntity.surface.index
 
     -- remove the old one
-    local stationAmount = global.TD_data["depotNamesCount"][depotForceName][depotSurfaceIndex][oldName]
-    if stationAmount then
-      if stationAmount > 1 then
-        global.TD_data["depotNamesCount"][depotForceName][depotSurfaceIndex][oldName] = stationAmount - 1
-      else
-        global.TD_data["depotNamesCount"][depotForceName][depotSurfaceIndex][oldName] = nil
-        -- no need to delete empty tables, since we'll be adding one to it again
+    self:setStationAmount(depotForceName, depotSurfaceIndex, oldName,
+      self:getDepotStationCount(depotForceName, depotSurfaceIndex, oldName) - 1)
+
+    -- add the new one
+    self:setStationAmount(depotForceName, depotSurfaceIndex, depotName,
+      self:getDepotStationCount(depotForceName, depotSurfaceIndex, depotName) + 1)
+  end
+end
+
+
+
+function Traindepot:setStationAmount(depotForceName, depotSurfaceIndex, depotName, newStationAmount)
+  if newStationAmount > 0 then
+    -- Make sure we can index it
+    if not global.TD_data["depotStatistics"][depotForceName] then
+      global.TD_data["depotStatistics"][depotForceName] = {}
+    end
+    if not global.TD_data["depotStatistics"][depotForceName][depotSurfaceIndex] then
+      global.TD_data["depotStatistics"][depotForceName][depotSurfaceIndex] = {}
+    end
+
+    -- set the new data
+    local depotData = global.TD_data["depotStatistics"][depotForceName][depotSurfaceIndex][depotName] or {}
+    depotData["stationAmount"] = newStationAmount
+
+    -- make sure the other data is within limits
+    if (not depotData["requestAmount"]) or depotData["requestAmount"] < 0 then
+      depotData["requestAmount"] = 1
+    end
+    if depotData["requestAmount"] > newStationAmount then
+      depotData["requestAmount"] = newStationAmount
+    end
+
+    -- update the data
+    global.TD_data["depotStatistics"][depotForceName][depotSurfaceIndex][depotName] = depotData
+
+  else -- newStationAmount is 0, remove it
+    global.TD_data["depotStatistics"][depotForceName][depotSurfaceIndex][depotName] = nil
+
+    if LSlib.utils.table.isEmpty(global.TD_data["depotStatistics"][depotForceName][depotSurfaceIndex]) then
+      global.TD_data["depotStatistics"][depotForceName][depotSurfaceIndex] = nil
+
+      if LSlib.utils.table.isEmpty(global.TD_data["depotStatistics"][depotForceName]) then
+        global.TD_data["depotStatistics"][depotForceName] = nil
       end
     end
 
-    -- add the new one
-    stationAmount = global.TD_data["depotNamesCount"][depotForceName][depotSurfaceIndex][stationName] or 0
-    global.TD_data["depotNamesCount"][depotForceName][depotSurfaceIndex][stationName] = stationAmount + 1
   end
+end
+
+function Traindepot:setDepotRequestCount(depotForceName, depotSurfaceIndex, depotName, newStationRequestAmount)
+  local depotData = self:getDepotData(depotForceName, depotSurfaceIndex)[depotName]
+  if not depotData then return end
+
+  if newStationRequestAmount > depotData["stationAmount"] then
+    depotData["requestAmount"] = depotData["stationAmount"]
+  elseif newStationRequestAmount < 0 then
+    depotData["requestAmount"] = 0
+  else
+    depotData["requestAmount"] = newStationRequestAmount
+  end
+
+  -- update the data
+  global.TD_data["depotStatistics"][depotForceName][depotSurfaceIndex][depotName] = depotData
 end
 
 
@@ -161,20 +184,32 @@ end
 --------------------------------------------------------------------------------
 -- Getter functions to extract data from the data structure
 --------------------------------------------------------------------------------
+function Traindepot:getDepotEntityName()
+  return global.TD_data["prototypeData"]["traindepotName"]
+end
+
+
+
+function Traindepot:getDepotItemName()
+  return global.TD_data["prototypeData"]["traindepotName"]
+end
+
+
+
 function Traindepot:hasDepotEntities(depotForceName, depotSurfaceIndex)
   -- returns true if at least one depot has been build on the force on that surface
-  if global.TD_data["depotNamesCount"][depotForceName]                    and
-     global.TD_data["depotNamesCount"][depotForceName][depotSurfaceIndex] then
-    return not LSlib.utils.table.isEmpty(global.TD_data["depotNamesCount"][depotForceName][depotSurfaceIndex])
+  if global.TD_data["depotStatistics"][depotForceName]                    and
+     global.TD_data["depotStatistics"][depotForceName][depotSurfaceIndex] then
+    return not LSlib.utils.table.isEmpty(global.TD_data["depotStatistics"][depotForceName][depotSurfaceIndex])
   end
   return false
 end
 
 
 
-function Traindepot:getDepotNames(depotForceName, depotSurfaceIndex)
+function Traindepot:getDepotData(depotForceName, depotSurfaceIndex)
   if self:hasDepotEntities(depotForceName, depotSurfaceIndex) then
-    return global.TD_data["depotNamesCount"][depotForceName][depotSurfaceIndex]
+    return global.TD_data["depotStatistics"][depotForceName][depotSurfaceIndex]
   else
     return {}
   end
@@ -182,8 +217,14 @@ end
 
 
 
-function Traindepot:getDepotCount(depotForceName, depotSurfaceIndex, depotName)
-  return self:getDepotNames(depotForceName, depotSurfaceIndex)[depotName] or 0
+function Traindepot:getDepotStationCount(depotForceName, depotSurfaceIndex, depotName)
+  return (self:getDepotData(depotForceName, depotSurfaceIndex)[depotName] or {})["stationAmount"] or 0
+end
+
+
+
+function Traindepot:getDepotRequestCount(depotForceName, depotSurfaceIndex, depotName)
+  return (self:getDepotData(depotForceName, depotSurfaceIndex)[depotName] or {})["requestAmount"] or 0
 end
 
 
@@ -244,18 +285,6 @@ end
 function Traindepot:getTrainBuilderCount(depotForceName, depotSurfaceIndex, depotName)
   local controllerForceName = depotForceName .. Traincontroller:getControllerForceName()
   return Traincontroller:getTrainBuilderCount(controllerForceName, depotSurfaceIndex, depotName)
-end
-
-
-
-function Traindepot:getDepotEntityName()
-  return global.TD_data["prototypeData"]["traindepotName"]
-end
-
-
-
-function Traindepot:getDepotItemName()
-  return global.TD_data["prototypeData"]["traindepotName"]
 end
 
 

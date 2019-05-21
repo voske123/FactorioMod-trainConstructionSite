@@ -104,18 +104,67 @@ function Traindepot.Gui:initClickHandlerData()
     clickHandlers[tabButtonName] = tabButtonHandler
   end
 
+
+
   ------------------------------------------------------------------------------
   -- statistics
   ------------------------------------------------------------------------------
-  clickHandlers["statistics-station-id-edit"] = function(clickedTabButtonName, playerIndex)
+  clickHandlers["statistics-station-id-edit"] = function(clickedElementName, playerIndex)
     local tabToOpen = "traindepot-tab-selection"
     clickHandlers[tabToOpen](tabToOpen, playerIndex) -- mimic tab pressed
   end
 
+  local builderRequestAmountHandler = function(playerIndex, changeAmount)
+    local depotEntity       = self:getOpenedEntity(playerIndex)
+    local depotForceName    = depotEntity.force.name
+    local depotSurfaceIndex = depotEntity.surface.index
+    local depotName         = depotEntity.backer_name
+
+    -- update the data
+    Traindepot:setDepotRequestCount(depotForceName, depotSurfaceIndex, depotName,
+      Traindepot:getDepotRequestCount(depotForceName, depotSurfaceIndex, depotName) + changeAmount)
+
+    -- update the gui element
+    LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-amount-value")).caption = string.format("%i/%i",
+      Traindepot:getDepotRequestCount(depotForceName, depotSurfaceIndex, depotName),
+      Traindepot:getDepotStationCount(depotForceName, depotSurfaceIndex, depotName))
+  end
+
+  clickHandlers["statistics-builder-amount-value-"] = function(clickedElementName, playerIndex)
+    builderRequestAmountHandler(playerIndex, -1)
+  end
+
+  clickHandlers["statistics-builder-amount-value+"] = function(clickedElementName, playerIndex)
+    builderRequestAmountHandler(playerIndex, 1)
+  end
+
+
+
   ------------------------------------------------------------------------------
   -- select train depot name
   ------------------------------------------------------------------------------
-  -- TODO
+  clickHandlers["old-depot-entry"] = function(clickedElementName, playerIndex)
+    local listboxElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("old-depot-entry"))
+
+    LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("new-depot-entry")).text = listboxElement.get_item(listboxElement.selected_index)
+  end
+
+  clickHandlers["new-depot-enter"] = function(clickedElementName, playerIndex)
+    local depotEntity  = self:getOpenedEntity(playerIndex)
+    local oldDepotName = depotEntity.backer_name
+    local newDepotName = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("new-depot-entry")).text
+
+    if newDepotName ~= oldDepotName then
+      depotEntity.backer_name = newDepotName -- invokes the rename event
+      self:updateGuiInfo(playerIndex)
+    end
+
+    -- mimic tab pressed to go back to statistics tab
+    local tabToOpen = "traindepot-tab-statistics"
+    clickHandlers[tabToOpen](tabToOpen, playerIndex)
+  end
+
+
 
   ------------------------------------------------------------------------------
   return clickHandlers
@@ -171,6 +220,12 @@ end
 
 
 
+function Traindepot.Gui:hasOpenedGui(playerIndex)
+  return self:getOpenedEntity(playerIndex) and true or false
+end
+
+
+
 --------------------------------------------------------------------------------
 -- Gui functions
 --------------------------------------------------------------------------------
@@ -201,17 +256,22 @@ function Traindepot.Gui:updateGuiInfo(playerIndex)
   local depotForceName    = openedEntity and openedEntity.valid and openedEntity.force.name or ""
   local depotSurfaceIndex = openedEntity and openedEntity.valid and openedEntity.surface.index or player.surface.index or 1
 
-  local depotStationCounts = Traindepot:getDepotNames(depotForceName, depotSurfaceIndex) or {}
-  local depotStationCount  = depotStationCounts[depotName] or 0
+  local depotStationCount  = Traindepot:getDepotStationCount(depotForceName, depotSurfaceIndex, depotName)
 
   -- selection tab -------------------------------------------------------------
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("new-depot-entry")).text = depotName
 
   -- name selection list
   local depotEntriesList = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("old-depot-entry"))
-  for trainDepotName,trainDepotCount in pairs(depotStationCounts) do
+  depotEntriesList.clear_items()
+  local itemIndex = 1
+  for trainDepotName,_ in pairs(Traindepot:getDepotData(depotForceName, depotSurfaceIndex) or {}) do
     -- https://lua-api.factorio.com/latest/LuaGuiElement.html#LuaGuiElement.add_item
     depotEntriesList.add_item(trainDepotName)
+    if trainDepotName == depotName then
+      depotEntriesList.selected_index = itemIndex
+    end
+    itemIndex = itemIndex + 1
   end
 
   -- statistics ----------------------------------------------------------------
@@ -219,7 +279,7 @@ function Traindepot.Gui:updateGuiInfo(playerIndex)
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-station-amount-value")).caption = string.format(
     "%i/%i", depotStationCount - Traindepot:getNumberOfTrainsStoppedInDepot(depotSurfaceIndex, depotName), depotStationCount)
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-amount-value")).caption = string.format(
-    "%i/%i", -999, depotStationCount)
+    "%i/%i", Traindepot:getDepotRequestCount(depotForceName, depotSurfaceIndex, depotName), depotStationCount)
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-working-amount-value")).caption =
     Traindepot:getTrainBuilderCount(depotForceName, depotSurfaceIndex, depotName)
 
@@ -252,7 +312,8 @@ end
 
 -- When a player clicks on the gui
 function Traindepot.Gui:onClickElement(clickedElementName, playerIndex)
-  --game.players[playerIndex].print(clickedElementName)
-  local clickHandler = self:getClickHandler(clickedElementName)
-  if clickHandler then clickHandler(clickedElementName, playerIndex) end
+  if self:hasOpenedGui(playerIndex) then
+    local clickHandler = self:getClickHandler(clickedElementName)
+    if clickHandler then clickHandler(clickedElementName, playerIndex) end
+  end
 end

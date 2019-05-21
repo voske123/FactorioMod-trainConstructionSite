@@ -141,6 +141,12 @@ end
 
 
 
+function Traincontroller.Gui:hasOpenedGui(playerIndex)
+  return self:getOpenedEntity(playerIndex) and true or false
+end
+
+
+
 --------------------------------------------------------------------------------
 -- Gui functions
 --------------------------------------------------------------------------------
@@ -189,7 +195,8 @@ end
 
 -- When a player clicks on the gui
 function Traincontroller.Gui:onClickElement(clickedElementName, playerIndex)
-  --game.players[playerIndex].print(clickedElementName)
-  local clickHandler = self:getClickHandler(clickedElementName)
-  if clickHandler then clickHandler(clickedElementName, playerIndex) end
+  if self:hasOpenedGui(playerIndex) then
+    local clickHandler = self:getClickHandler(clickedElementName)
+    if clickHandler then clickHandler(clickedElementName, playerIndex) end
+  end
 end

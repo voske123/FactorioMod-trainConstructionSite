@@ -61,7 +61,7 @@ end)
 script.on_event({defines.events.on_player_mined_entity,
                  defines.events.on_robot_mined_entity ,
                  defines.events.on_entity_died        ,
-                 defines.events.script_raised_destroy	}, function(event)
+                 defines.events.script_raised_destroy }, function(event)
   -- Called when an entity gets removed.
   local removedEntity = event.entity
   if removedEntity and removedEntity.valid then
@@ -115,7 +115,11 @@ end)
 
 
 
-script.on_event(defines.events.on_gui_click, function(event)
+script.on_event({defines.events.on_gui_click                  ,
+                 defines.events.on_gui_elem_changed           ,
+                 defines.events.on_gui_selection_state_changed}, function(event)
+  -- Called when the player clicks on a GUI.
+  --game.players[event.player_index].print(event.element.name)
   Traindepot     .Gui:onClickElement(event.element.name, event.player_index)
   Traincontroller.Gui:onClickElement(event.element.name, event.player_index)
 end)

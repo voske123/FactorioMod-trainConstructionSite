@@ -115,7 +115,7 @@ function Debug:createTestbench(surface)
   end
 
   -- Step 2b:create the train depots
-  local depotName = "test depot %i"
+  local depotName = "test depot id%i"
   for direction,position in pairs{
     [defines.direction.east ] = {x =  areaMax     , y =  distance + 2},
     [defines.direction.west ] = {x = -areaMax     , y =  distance - 2},

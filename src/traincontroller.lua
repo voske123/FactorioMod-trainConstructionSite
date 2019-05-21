@@ -740,7 +740,6 @@ function Traincontroller:onBuildEntity(createdEntity, playerIndex)
     -- it is the correct entity, now check if its correctly placed
     local validPlacement, trainBuilderIndex = self:checkValidPlacement(createdEntity, playerIndex)
     if validPlacement then -- It is valid, now we have to add the entity to the list
-      log(trainBuilderIndex)
       self:saveNewStructure(createdEntity, trainBuilderIndex)
 
       -- after structure is saved, we rename it, this will trigger Traincontroller:onRenameEntity as well
