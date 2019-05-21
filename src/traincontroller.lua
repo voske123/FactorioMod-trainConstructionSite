@@ -598,12 +598,17 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
 
   -- this is the actual force of the player, not the friendly force
   local createdEntityForceName = global.TC_data["trainControllerForces"][createdEntity.force.name] or createdEntity.force.name
+  local entityPosition = createdEntity.position
 
   local notValid = function(localisedMessage)
     -- Try return the item to the player (or drop it)
     if playerIndex then -- return if possible
       local player = game.players[playerIndex]
-      player.print(localisedMessage)
+      --player.print(localisedMessage)
+      player.create_local_flying_text{
+        text = localisedMessage,
+        position = entityPosition,
+      }
       player.insert{
         name = self:getControllerItemName(),
         count = 1,
@@ -652,7 +657,6 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
   elseif entityDirection == defines.direction.south then
     entitySearchDirection.y = -1
   end
-  local entityPosition = createdEntity.position
   local entitySurface = createdEntity.surface
   local entitySurfaceIndex = entitySurface.index
 

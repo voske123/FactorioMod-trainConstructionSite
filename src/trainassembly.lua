@@ -654,12 +654,17 @@ function Trainassembly:checkValidPlacement(createdEntity, playerIndex)
   -- it will inform the player with the corresponding message and return the
   -- trainassembler to the player. If no player is found, it will drop the
   -- trainassembler on the ground where the trainassembler was placed.
+  local entityPosition = createdEntity.position
 
   local notValid = function(localisedMessage)
     -- Try return the item to the player (or drop it)
     if playerIndex then -- return if possible
       local player = game.players[playerIndex]
-      player.print(localisedMessage)
+      --player.print(localisedMessage)
+      player.create_local_flying_text{
+        text = localisedMessage,
+        position = entityPosition,
+      }
       player.insert{
         name = self:getItemName(),
         count = 1,
@@ -686,7 +691,6 @@ function Trainassembly:checkValidPlacement(createdEntity, playerIndex)
   end
 
   local entitySurface = createdEntity.surface
-  local entityPosition = createdEntity.position
   local entityDirection = LSlib.utils.directions.orientationTo4WayDirection(createdEntity.orientation)
   local entityOpositeDirection = LSlib.utils.directions.oposite(entityDirection)
 
