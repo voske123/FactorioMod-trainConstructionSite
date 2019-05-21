@@ -4,6 +4,7 @@ require "LSlib/lib"
 -- Create class
 Traincontroller = {}
 require 'src.traincontroller-builder'
+require 'src.traincontroller-gui'
 
 --------------------------------------------------------------------------------
 -- Initiation of the class
@@ -15,6 +16,7 @@ function Traincontroller:onInit()
   end
   self:createControllerForces()
   self.Builder:onInit()
+  self.Gui    :onInit()
 end
 
 
@@ -258,7 +260,7 @@ function Traincontroller:deleteController(controllerEntity)
   -- STEP 3: remove this controller from the depot list
   local controllerForceName = controllerEntity.force.name
 
-  local stationName = depotEntity.backer_name
+  local stationName = controllerEntity.backer_name
   local stationAmount = global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex][stationName]
 
   if stationAmount then
@@ -738,6 +740,7 @@ function Traincontroller:onBuildEntity(createdEntity, playerIndex)
     -- it is the correct entity, now check if its correctly placed
     local validPlacement, trainBuilderIndex = self:checkValidPlacement(createdEntity, playerIndex)
     if validPlacement then -- It is valid, now we have to add the entity to the list
+      log(trainBuilderIndex)
       self:saveNewStructure(createdEntity, trainBuilderIndex)
 
       -- after structure is saved, we rename it, this will trigger Traincontroller:onRenameEntity as well

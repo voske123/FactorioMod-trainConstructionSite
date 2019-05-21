@@ -254,6 +254,12 @@ end
 
 
 
+function Traindepot:getDepotItemName()
+  return global.TD_data["prototypeData"]["traindepotName"]
+end
+
+
+
 --------------------------------------------------------------------------------
 -- Behaviour functions, mostly event handlers
 --------------------------------------------------------------------------------

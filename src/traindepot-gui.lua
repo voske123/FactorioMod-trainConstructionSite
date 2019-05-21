@@ -58,7 +58,10 @@ function Traindepot.Gui:initPrototypeData()
   end
 
   return {
+    -- gui layout
     ["trainDepotGui"    ] = trainDepotGui    ,
+
+    -- gui element paths (derived from layout)
     ["tabButtonPath"    ] = tabButtonPath    ,
     ["updateElementPath"] = updateElementPath,
   }
@@ -101,6 +104,9 @@ function Traindepot.Gui:initClickHandlerData()
     clickHandlers[tabButtonName] = tabButtonHandler
   end
 
+  ------------------------------------------------------------------------------
+  -- statistics
+  ------------------------------------------------------------------------------
   clickHandlers["statistics-station-id-edit"] = function(clickedTabButtonName, playerIndex)
     local tabToOpen = "traindepot-tab-selection"
     clickHandlers[tabToOpen](tabToOpen, playerIndex) -- mimic tab pressed
@@ -185,7 +191,7 @@ end
 function Traindepot.Gui:updateGuiInfo(playerIndex)
   -- We expect the gui to be created already
   local trainDepotGui = LSlib.gui.getElement(playerIndex, LSlib.gui.layout.getElementPath(self:getDepotGuiLayout(), self:getGuiName()))
-  if not trainDepotGui then return end -- gui was not created yet
+  if not trainDepotGui then return end -- gui was not created, nothing to update
 
   -- data from the traindepo we require to update
   local player = game.players[playerIndex]
@@ -236,7 +242,7 @@ end
 
 -- When a player opens/closes a gui
 function Traindepot.Gui:onCloseEntity(openedGui, playerIndex)
-  if openedGui and openedGui.name == self:getGuiName() then
+  if openedGui and openedGui.valid and openedGui.name == self:getGuiName() then
     self:setOpenedEntity(playerIndex, nil)
     game.players[playerIndex].opened = self:destroyGui(playerIndex)
   end
@@ -247,6 +253,6 @@ end
 -- When a player clicks on the gui
 function Traindepot.Gui:onClickElement(clickedElementName, playerIndex)
   --game.players[playerIndex].print(clickedElementName)
-  local clickHandler = Traindepot.Gui:getClickHandler(clickedElementName)
+  local clickHandler = self:getClickHandler(clickedElementName)
   if clickHandler then clickHandler(clickedElementName, playerIndex) end
 end
