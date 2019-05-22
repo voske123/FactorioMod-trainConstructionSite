@@ -119,6 +119,9 @@ function Traindepot:renameBuilding(depotEntity, oldName)
     -- add the new one
     self:setStationAmount(depotForceName, depotSurfaceIndex, depotName,
       self:getDepotStationCount(depotForceName, depotSurfaceIndex, depotName) + 1)
+
+    -- update the UI's
+    self.Gui:updateOpenedGuis(depotName)
   end
 end
 

@@ -143,7 +143,7 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuilderIndex)
     global.TC_data["trainControllers"][thisController["surfaceIndex"]][thisController["position"].y][thisController["position"].x]["nextController"] = util.table.deepcopy(thisController)
 
     -- STEP 2b: start on_tick events becose we need to start iterating
-    Traincontroller.Builder:activateOnTick()
+    self.Builder:activateOnTick()
   else
     -- when we've added it to the list, we know there is at least one in front
     -- of us. This one has a prev set. We add it inbetween.
@@ -239,7 +239,7 @@ function Traincontroller:deleteController(controllerEntity)
     if LSlib.utils.table.areEqual(thisController, nextController) then
       global.TC_data["nextTrainControllerIterate"] = nil
       -- this is the last one, no need to keep iterating on_tick
-      Traincontroller.Builder:deactivateOnTick()
+      self.Builder:deactivateOnTick()
     else
       global.TC_data["nextTrainControllerIterate"] = util.table.deepcopy(nextController)
     end
@@ -347,6 +347,9 @@ function Traincontroller:renameBuilding(controllerEntity, oldName)
     -- add the new one
     stationAmount = global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex][stationName] or 0
     global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex][stationName] = stationAmount + 1
+
+    -- update the ui
+    self.Gui:updateOpenedGuis(updatedControllerEntity)
   end
 end
 

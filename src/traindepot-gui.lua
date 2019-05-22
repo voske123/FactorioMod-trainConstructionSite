@@ -155,8 +155,8 @@ function Traindepot.Gui:initClickHandlerData()
     local newDepotName = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("new-depot-entry")).text
 
     if newDepotName ~= oldDepotName then
-      depotEntity.backer_name = newDepotName -- invokes the rename event
-      self:updateGuiInfo(playerIndex)
+      depotEntity.backer_name = newDepotName -- invokes the rename event which will update UI's
+      --self:updateGuiInfo(playerIndex)
     end
 
     -- mimic tab pressed to go back to statistics tab
@@ -288,6 +288,17 @@ end
 
 
 
+function Traindepot.Gui:updateOpenedGuis(depotName)
+  for _,player in pairs(game.connected_players) do -- no need to check all players
+    local openedEntity = self:getOpenedEntity(player.index)
+    if openedEntity and openedEntity.backer_name == depotName then
+      self:updateGuiInfo(player.index)
+    end
+  end
+end
+
+
+
 --------------------------------------------------------------------------------
 -- Behaviour functions, mostly event handlers
 --------------------------------------------------------------------------------
@@ -321,8 +332,8 @@ end
 
 
 
-function Traindepot.Gui:onLeftGame(playerIndex)
-  -- Called after a player leaves the game.
+-- Called after a player leaves the game.
+function Traindepot.Gui:onPlayerLeftGame(playerIndex)
   if self:hasOpenedGui(playerIndex) then
     self:onCloseEntity(game.players[playerIndex].opened, playerIndex)
   end

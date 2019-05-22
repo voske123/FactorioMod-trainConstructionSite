@@ -144,6 +144,31 @@ end
 
 
 
+function Traincontroller.Gui:getOpenedControllerStatusString(playerIndex)
+  local controllerStatus = Traincontroller.Builder:getControllerStatus(self:getOpenedEntity(playerIndex))
+  local controllerStates  = global.TC_data.Builder["builderStates"]
+
+  if controllerStatus == controllerStates["idle"] then
+    -- wait until a depot request a train
+    return {"gui-traincontroller.controller-status-wait-to-dispatch"}
+
+  elseif controllerStatus == controllerStates["building"] then
+    -- waiting on resources, building each component
+    return {"gui-traincontroller.controller-status-building-train"}
+
+  elseif controllerStatus == controllerStates["dispatching"] then
+    -- waiting till previous train clears the train block
+    return {"gui-traincontroller.controller-status-ready-to-dispatch"}
+
+  elseif controllerStatus == controllerStates["dispatch"] then
+    -- assembling the train components together and let the train drive off
+    return {"gui-traincontroller.controller-status-ready-to-dispatch"}
+
+  else return "undefined status" end
+end
+
+
+
 function Traincontroller.Gui:getOpenedEntity(playerIndex)
   return global.TC_data.Gui["openedEntity"][playerIndex]
 end
@@ -192,6 +217,18 @@ function Traincontroller.Gui:updateGuiInfo(playerIndex)
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-station-id-value")).caption = controllerName
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-depot-request-value")).caption = string.format(
     "%i/%i", depotTrainCount, depotRequestCount)
+  LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-status-value")).caption = self:getOpenedControllerStatusString(playerIndex)
+end
+
+
+
+function Traincontroller.Gui:updateOpenedGuis(updatedControllerEntity)
+  for _,player in pairs(game.connected_players) do -- no need to check all players
+    local openedEntity = self:getOpenedEntity(player.index)
+    if openedEntity and openedEntity == updatedControllerEntity then
+      self:updateGuiInfo(player.index)
+    end
+  end
 end
 
 
@@ -229,7 +266,7 @@ end
 
 
 
-function Traindepot.Gui:onLeftGame(playerIndex)
+function Traindepot.Gui:onPlayerLeftGame(playerIndex)
   -- Called after a player leaves the game.
   if self:hasOpenedGui(playerIndex) then
     self:onCloseEntity(game.players[playerIndex].opened, playerIndex)

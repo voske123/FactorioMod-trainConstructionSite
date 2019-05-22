@@ -62,6 +62,7 @@ function Traincontroller.Builder:initGlobalData()
 
     ["builderStates"] = { -- states in the builder process
       ["initialState"] = 1, -- what state the controller is in when it is placed down
+
       ["dispatching" ] = 1, -- waiting till previous train clears the train block
       ["building"    ] = 2, -- waiting on resources, building each component
       ["idle"        ] = 3, -- wait until a depot request a train
@@ -108,21 +109,30 @@ end
 
 
 
+function Traincontroller.Builder:getControllerStatus(trainController)
+  local position         = trainController.position
+  return global.TC_data["trainControllers"][trainController.surface.index][position.y][position.x]["controllerStatus"]
+end
+
+
+
 --------------------------------------------------------------------------------
 -- Behaviour functions
 --------------------------------------------------------------------------------
 function Traincontroller.Builder:updateController(surfaceIndex, position)
   -- This function will check the update for a single controller
   --game.print("Updating controller @ ["..surfaceIndex..", "..position.x..", "..position.y.."]")
-  local controllerData    = global.TC_data["trainControllers"][surfaceIndex][position.y][position.x]
-  local controllerStates  = global.TC_data.Builder["builderStates"]
-  local controllerStatus  = controllerData["controllerStatus"]
-  local trainBuilderIndex = controllerData["trainBuilderIndex"]
+  local controllerData      = global.TC_data["trainControllers"][surfaceIndex][position.y][position.x]
+  local controllerStates    = global.TC_data.Builder["builderStates"]
+  local controllerStatus    = controllerData["controllerStatus"]
+  local oldControllerStatus = controllerStatus
+  local controllerEntity    = controllerData["entity"]
+  local trainBuilderIndex   = controllerData["trainBuilderIndex"]
 
 
   if controllerStatus == controllerStates["dispatching"] then
     -- controller is waiting till previous train clears the train block
-    if self:canBuildNextTrain(trainBuilderIndex, controllerData["entity"]) then
+    if self:canBuildNextTrain(trainBuilderIndex, controllerEntity) then
       -- if we can build a new train, we move on to the next step
       --game.print("Start building a train of length: "..#Trainassembly:getTrainBuilder(trainBuilderIndex))
       controllerStatus = controllerStates["building"]
@@ -142,7 +152,7 @@ function Traincontroller.Builder:updateController(surfaceIndex, position)
 
   if controllerStatus == controllerStates["idle"] then
     -- controller is waiting to send the train away
-    if self:depotIsRequestingTrain(controllerData["entity"]) then
+    if self:depotIsRequestingTrain(controllerEntity) then
       -- if a depot is requesting a train, we can send it away
       --game.print("Ready to dispatch a train of length: "..#Trainassembly:getTrainBuilder(trainBuilderIndex))
       controllerStatus = controllerStates["dispatch"]
@@ -152,15 +162,20 @@ function Traincontroller.Builder:updateController(surfaceIndex, position)
 
   if controllerStatus == controllerStates["dispatch"] then
     -- assembling the train components together and let the train drive off
-    if self:assembleNextTrain(trainBuilderIndex, controllerData["entity"].backer_name) then
+    if self:assembleNextTrain(trainBuilderIndex, controllerEntity.backer_name) then
       --game.print("Leaving train of length: "..#Trainassembly:getTrainBuilder(trainBuilderIndex))
       controllerStatus = controllerStates["dispatching"]
     end
   end
 
 
-  -- save changes to the global data
+  -- save changes to the global data before any gui updates
   global.TC_data["trainControllers"][surfaceIndex][position.y][position.x]["controllerStatus"] = controllerStatus
+
+  -- update the gui if needed
+  if controllerStatus ~= oldControllerStatus then
+    Traincontroller.Gui:updateOpenedGuis(controllerEntity)
+  end
 end
 
 
@@ -278,7 +293,6 @@ function Traincontroller.Builder:buildNextTrain(trainBuilderIndex)
 
             -- now substract one result from the assembler
             machineOutput.amount = machineOutput.amount - 1
-            log(machineOutput.amount) -- this logs 0
             machineEntity.fluidbox[1] = machineOutput.amount > 0 and machineOutput or nil
           else
             -- if the entity could not be created, the build is not finished yet
@@ -356,7 +370,7 @@ function Traincontroller.Builder:assembleNextTrain(trainBuilderIndex, depotName)
   } -- end of trainSchedule
 
   -- STEP 2b:Add the schedule to the train
-  train.schedule = util.table.deepcopy(trainSchedule)
+  train.schedule = trainSchedule
 
   -- STEP 3: Send the train away
   -- STEP 3a:Set it in automatic mode

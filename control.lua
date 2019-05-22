@@ -101,8 +101,8 @@ end)
 
 script.on_event(defines.events.on_player_left_game, function(event)
   -- Called after a player leaves the game.
-  Traindepot     .Gui:onLeftGame(event.player_index)
-  Traincontroller.Gui:onLeftGame(event.player_index)
+  Traindepot     .Gui:onPlayerLeftGame(event.player_index)
+  Traincontroller.Gui:onPlayerLeftGame(event.player_index)
 end)
 
 
