@@ -61,9 +61,11 @@ function Traincontroller.Builder:initGlobalData()
     ["onTickDelay"] = settings.global["trainController-tickRate"].value,
 
     ["builderStates"] = { -- states in the builder process
-      ["idle"]       = 1, -- waiting till previous train clears the train block
-      ["building"]   = 2, -- waiting on resources, building each component
-      ["connecting"] = 3, -- assembling the train components together and let the train drive off
+      ["initialState"] = 1, -- what state the controller is in when it is placed down
+      ["dispatching" ] = 1, -- waiting till previous train clears the train block
+      ["building"    ] = 2, -- waiting on resources, building each component
+      ["idle"        ] = 3, -- wait until a depot request a train
+      ["dispatch"    ] = 4, -- assembling the train components together and let the train drive off
     },
   }
 
@@ -118,7 +120,7 @@ function Traincontroller.Builder:updateController(surfaceIndex, position)
   local trainBuilderIndex = controllerData["trainBuilderIndex"]
 
 
-  if controllerStatus == controllerStates["idle"] then
+  if controllerStatus == controllerStates["dispatching"] then
     -- controller is waiting till previous train clears the train block
     if self:canBuildNextTrain(trainBuilderIndex, controllerData["entity"]) then
       -- if we can build a new train, we move on to the next step
@@ -133,16 +135,26 @@ function Traincontroller.Builder:updateController(surfaceIndex, position)
     if self:buildNextTrain(trainBuilderIndex) then
       -- if the whole train is build, we can send it away
       --game.print("Finished building a train of length: "..#Trainassembly:getTrainBuilder(trainBuilderIndex))
-      controllerStatus = controllerStates["connecting"]
+      controllerStatus = controllerStates["idle"]
     end
   end
 
 
-  if controllerStatus == controllerStates["connecting"] then
+  if controllerStatus == controllerStates["idle"] then
+    -- controller is waiting to send the train away
+    if self:depotIsRequestingTrain(controllerData["entity"]) then
+      -- if a depot is requesting a train, we can send it away
+      --game.print("Ready to dispatch a train of length: "..#Trainassembly:getTrainBuilder(trainBuilderIndex))
+      controllerStatus = controllerStates["dispatch"]
+    end
+  end
+
+
+  if controllerStatus == controllerStates["dispatch"] then
     -- assembling the train components together and let the train drive off
     if self:assembleNextTrain(trainBuilderIndex, controllerData["entity"].backer_name) then
       --game.print("Leaving train of length: "..#Trainassembly:getTrainBuilder(trainBuilderIndex))
-      controllerStatus = controllerStates["idle"]
+      controllerStatus = controllerStates["dispatching"]
     end
   end
 
@@ -282,6 +294,19 @@ function Traincontroller.Builder:buildNextTrain(trainBuilderIndex)
   end
 
   return finishTrainBuild
+end
+
+
+
+function Traincontroller.Builder:depotIsRequestingTrain(controllerEntity)
+  local controllerName         = controllerEntity.backer_name
+  local controllerSurfaceIndex = controllerEntity.surface.index
+  local depotForceName         = Traincontroller:getDepotForceName(controllerEntity.force.name)
+
+  local depotRequestCount = Traindepot:getDepotRequestCount(depotForceName, controllerSurfaceIndex, controllerName)
+  local depotTrainCount   = Traindepot:getNumberOfTrainsPathingToDepot(controllerSurfaceIndex, controllerName)
+
+  return depotTrainCount < depotRequestCount
 end
 
 

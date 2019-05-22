@@ -99,6 +99,14 @@ end)
 
 
 
+script.on_event(defines.events.on_player_left_game, function(event)
+  -- Called after a player leaves the game.
+  Traindepot     .Gui:onLeftGame(event.player_index)
+  Traincontroller.Gui:onLeftGame(event.player_index)
+end)
+
+
+
 script.on_event(defines.events.on_gui_opened, function(event)
   -- Called when the player opens a GUI.
   Traindepot     .Gui:onOpenEntity(event.entity, event.player_index)
@@ -119,7 +127,6 @@ script.on_event({defines.events.on_gui_click                  ,
                  defines.events.on_gui_elem_changed           ,
                  defines.events.on_gui_selection_state_changed}, function(event)
   -- Called when the player clicks on a GUI.
-  --game.players[event.player_index].print(event.element.name)
   Traindepot     .Gui:onClickElement(event.element.name, event.player_index)
   Traincontroller.Gui:onClickElement(event.element.name, event.player_index)
 end)

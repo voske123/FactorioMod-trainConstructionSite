@@ -80,7 +80,7 @@ function Traincontroller:createControllerForces()
    -- create all the forces
   for _,forceName in pairs(forcesToCreate) do
     -- create the force and set it friendly
-    local friendlyForceName = forceName..self:getControllerForceName()
+    local friendlyForceName = self:getControllerForceName(forceName)
     game.create_force(friendlyForceName)
         .set_friend(forceName, true)
 
@@ -123,7 +123,7 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuilderIndex)
     ["entity-hidden"]    = {}, -- the hidden entities
 
     ["trainBuilderIndex"] = trainBuilderIndex, -- the trainbuilder it controls
-    ["controllerStatus"] = global.TC_data.Builder["builderStates"]["idle"], -- status
+    ["controllerStatus"] = global.TC_data.Builder["builderStates"]["initialState"], -- status
 
     -- list data
     ["prevController"]   = nil, -- the previous controller
@@ -180,7 +180,7 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuilderIndex)
 
   -- STEP 3b:The controller needs to be on another (friendly) force. This way
   --         the controller wont show up on the train menu.
-  local controllerForceName = controllerEntity.force.name .. self:getControllerForceName()
+  local controllerForceName = self:getControllerForceName(controllerEntity.force.name)
   controllerEntity.force = controllerForceName
 
   -- STEP 3c:The controller needs to be disabled. This way the trains won't path
@@ -373,8 +373,14 @@ end
 
 
 
-function Traincontroller:getControllerForceName()
-  return global.TC_data.prototypeData.trainControllerForce
+function Traincontroller:getControllerForceName(depotForceName)
+  return depotForceName .. global.TC_data.prototypeData.trainControllerForce
+end
+
+
+
+function Traincontroller:getDepotForceName(controllerForceName)
+  return controllerForceName:sub(1, - (global.TC_data.prototypeData.trainControllerForce:len() + 1))
 end
 
 

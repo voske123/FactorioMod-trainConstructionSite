@@ -40,12 +40,23 @@ function Traincontroller.Gui:initPrototypeData()
     tabButtonPath[tabButtonName] = LSlib.gui.layout.getElementPath(trainControllerGui, tabButtonName)
   end
 
+  -- updateElementPath
+  local updateElementPath = {}
+  for _,statisticsTabElementName in pairs{
+    "statistics-station-id-value"    , -- controller name
+    "statistics-depot-request-value" , -- depot request amount
+    "statistics-builder-status-value", -- controller status
+  } do
+    updateElementPath[statisticsTabElementName] = LSlib.gui.layout.getElementPath(trainControllerGui, statisticsTabElementName)
+  end
+
   return {
     -- gui layout
     ["trainControllerGui"] = trainControllerGui,
 
     -- gui element paths (derived from layout)
     ["tabButtonPath"     ] = tabButtonPath     ,
+    ["updateElementPath" ] = updateElementPath ,
   }
 end
 
@@ -115,11 +126,9 @@ function Traincontroller.Gui:getTabElementPath(guiElementName)
 end
 
 
---[[
 function Traincontroller.Gui:getUpdateElementPath(guiElementName)
   return global.TC_data.Gui["prototypeData"]["updateElementPath"][guiElementName]
 end
-]]
 
 
 
@@ -165,7 +174,24 @@ end
 
 
 function Traincontroller.Gui:updateGuiInfo(playerIndex)
+  -- We expect the gui to be created already
+  local trainDepotGui = LSlib.gui.getElement(playerIndex, LSlib.gui.layout.getElementPath(self:getControllerGuiLayout(), self:getGuiName()))
+  if not trainDepotGui then return end -- gui was not created, nothing to update
 
+  -- data from the traindepo we require to update
+  local openedEntity           = self:getOpenedEntity(playerIndex)
+  local controllerName         = openedEntity and openedEntity.valid and openedEntity.backer_name or ""
+  local controllerForceName    = openedEntity and openedEntity.valid and openedEntity.force.name or ""
+  local controllerSurfaceIndex = openedEntity and openedEntity.valid and openedEntity.surface.index or player.surface.index or 1
+
+  local depotForceName    = Traincontroller:getDepotForceName(controllerForceName)
+  local depotRequestCount = Traindepot:getDepotRequestCount(depotForceName, controllerSurfaceIndex, controllerName)
+  local depotTrainCount   = Traindepot:getNumberOfTrainsPathingToDepot(controllerSurfaceIndex, controllerName)
+
+  -- statistics ----------------------------------------------------------------
+  LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-station-id-value")).caption = controllerName
+  LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-depot-request-value")).caption = string.format(
+    "%i/%i", depotTrainCount, depotRequestCount)
 end
 
 
@@ -198,5 +224,14 @@ function Traincontroller.Gui:onClickElement(clickedElementName, playerIndex)
   if self:hasOpenedGui(playerIndex) then
     local clickHandler = self:getClickHandler(clickedElementName)
     if clickHandler then clickHandler(clickedElementName, playerIndex) end
+  end
+end
+
+
+
+function Traindepot.Gui:onLeftGame(playerIndex)
+  -- Called after a player leaves the game.
+  if self:hasOpenedGui(playerIndex) then
+    self:onCloseEntity(game.players[playerIndex].opened, playerIndex)
   end
 end

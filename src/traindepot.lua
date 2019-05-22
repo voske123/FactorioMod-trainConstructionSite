@@ -236,7 +236,7 @@ function Traindepot:getAllTrainsPathingToDepot(depotSurfaceIndex, depotName)
 
       -- check if a depot has the correct name
       if depotEntityData.entity.backer_name == depotName then
-        return depotEntity.get_train_stop_trains()
+        return depotEntityData.entity.get_train_stop_trains()
       end
 
     end
@@ -283,7 +283,7 @@ end
 
 
 function Traindepot:getTrainBuilderCount(depotForceName, depotSurfaceIndex, depotName)
-  local controllerForceName = depotForceName .. Traincontroller:getControllerForceName()
+  local controllerForceName = Traincontroller:getControllerForceName(depotForceName)
   return Traincontroller:getTrainBuilderCount(controllerForceName, depotSurfaceIndex, depotName)
 end
 

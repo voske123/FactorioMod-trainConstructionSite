@@ -256,8 +256,6 @@ function Traindepot.Gui:updateGuiInfo(playerIndex)
   local depotForceName    = openedEntity and openedEntity.valid and openedEntity.force.name or ""
   local depotSurfaceIndex = openedEntity and openedEntity.valid and openedEntity.surface.index or player.surface.index or 1
 
-  local depotStationCount  = Traindepot:getDepotStationCount(depotForceName, depotSurfaceIndex, depotName)
-
   -- selection tab -------------------------------------------------------------
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("new-depot-entry")).text = depotName
 
@@ -265,7 +263,8 @@ function Traindepot.Gui:updateGuiInfo(playerIndex)
   local depotEntriesList = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("old-depot-entry"))
   depotEntriesList.clear_items()
   local itemIndex = 1
-  for trainDepotName,_ in pairs(Traindepot:getDepotData(depotForceName, depotSurfaceIndex) or {}) do
+  local orderedPairs = LSlib.utils.table.orderedPairs
+  for trainDepotName,_ in orderedPairs(Traindepot:getDepotData(depotForceName, depotSurfaceIndex)) do
     -- https://lua-api.factorio.com/latest/LuaGuiElement.html#LuaGuiElement.add_item
     depotEntriesList.add_item(trainDepotName)
     if trainDepotName == depotName then
@@ -275,6 +274,8 @@ function Traindepot.Gui:updateGuiInfo(playerIndex)
   end
 
   -- statistics ----------------------------------------------------------------
+  local depotStationCount  = Traindepot:getDepotStationCount(depotForceName, depotSurfaceIndex, depotName)
+
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-station-id-value")).caption = depotName
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-station-amount-value")).caption = string.format(
     "%i/%i", depotStationCount - Traindepot:getNumberOfTrainsStoppedInDepot(depotSurfaceIndex, depotName), depotStationCount)
@@ -315,5 +316,14 @@ function Traindepot.Gui:onClickElement(clickedElementName, playerIndex)
   if self:hasOpenedGui(playerIndex) then
     local clickHandler = self:getClickHandler(clickedElementName)
     if clickHandler then clickHandler(clickedElementName, playerIndex) end
+  end
+end
+
+
+
+function Traindepot.Gui:onLeftGame(playerIndex)
+  -- Called after a player leaves the game.
+  if self:hasOpenedGui(playerIndex) then
+    self:onCloseEntity(game.players[playerIndex].opened, playerIndex)
   end
 end

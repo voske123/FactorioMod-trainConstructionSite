@@ -82,7 +82,7 @@ LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-station-amount", {
   caption = {"gui-traindepot.depot-availability"},
 })
 LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-station-amount-value", {
-  caption = "-999/1",
+  caption = "-999/999",
 })
 
 -- traindepos
@@ -98,7 +98,7 @@ LSlib.gui.layout.addSpriteButton(guiLayout, builderproductFlow, "statistics-buil
   style = "mini_button"               ,
 })
 LSlib.gui.layout.addLabel(guiLayout, builderproductFlow, "statistics-builder-amount-value", {
-  caption = "-999/1",
+  caption = "-999/999",
 })
 LSlib.gui.layout.addSpriteButton(guiLayout, builderproductFlow, "statistics-builder-amount-value+", {
   sprite = "utility/editor_speed_up",
@@ -111,7 +111,7 @@ LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-builders-working-am
   tooltip = {"gui-traindepot.depot-builder-utilisation-tooltip"}
 })
 LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-builder-working-amount-value", {
-  caption = "0",
+  caption = "-999",
 })
 
 

@@ -89,7 +89,7 @@ LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-depot-request", {
   tooltip = {"gui-traincontroller.depot-availability-tooltip"},
 })
 LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-depot-request-value", {
-  caption = "-999/1",
+  caption = "-999/999",
 })
 
 -- controller status
