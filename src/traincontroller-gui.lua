@@ -73,20 +73,17 @@ function Traincontroller.Gui:initClickHandlerData()
     "traincontroller-tab-statistics",
   }
 
-  local tabButtonHandler = function(clickedTabButtonName, playerIndex)
+  local tabButtonHandler = function(clickedTabButton, playerIndex)
     -- Get the flow with all the buttons
-    local tabButtonFlow = LSlib.gui.getElement(playerIndex, self:getTabElementPath(clickedTabButtonName))
-    if not tabButtonFlow then return end
-    tabButtonFlow = tabButtonFlow.parent
-    if not tabButtonFlow then return end
+    local tabButtonFlow = clickedTabButton.parent
 
     -- Get the flow with all the contents
     local tabContentFlow = tabButtonFlow.parent
-    if not tabContentFlow then return end
     tabContentFlow = tabContentFlow[tabContentFlow.name .. "-content"]
     if not tabContentFlow then return end
 
     -- For each button in the flow, set the new style and set the tabs
+    local clickedTabButtonName = clickedTabButton.name
     for _,tabButtonName in pairs(tabButtonNames) do
       tabButtonFlow[tabButtonName].style = (tabButtonName == clickedTabButtonName and "LSlib_default_tab_button_selected" or "LSlib_default_tab_button")
       tabContentFlow[tabButtonName].visible = (tabButtonName == clickedTabButtonName)
@@ -257,10 +254,11 @@ end
 
 
 -- When a player clicks on the gui
-function Traincontroller.Gui:onClickElement(clickedElementName, playerIndex)
+function Traincontroller.Gui:onClickElement(clickedElement, playerIndex)
   if self:hasOpenedGui(playerIndex) then
-    local clickHandler = self:getClickHandler(clickedElementName)
-    if clickHandler then clickHandler(clickedElementName, playerIndex) end
+    if not clickedElement.valid then return end
+    local clickHandler = self:getClickHandler(clickedElement.name)
+    if clickHandler then clickHandler(clickedElement, playerIndex) end
   end
 end
 

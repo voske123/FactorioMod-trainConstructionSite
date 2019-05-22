@@ -407,6 +407,26 @@ end
 
 
 
+function Traincontroller:getAllTrainControllers(surfaceIndex, controllerName)
+  if not global.TC_data["trainControllers"][surfaceIndex] then return {} end
+
+  local entities = {}
+  local entityIndex = 1
+  for posY,posYdata in pairs(global.TC_data["trainControllers"][surfaceIndex]) do
+    for posX,trainController in pairs(posYdata) do
+      local entity = trainController["entity"]
+      if entity.backer_name == controllerName then
+        entities[entityIndex] = entity
+        entityIndex = entityIndex + 1
+      end
+    end
+  end
+
+  return entities
+end
+
+
+
 function Traincontroller:getTrainBuilderIndex(trainController)
   local surfaceIndex = trainController.surface.index
   local position     = trainController.position
@@ -428,7 +448,7 @@ end
 
 
 
-function Traincontroller:hasTrainBuilderEntitiess(controllerForceName, controllerSurfaceIndex)
+function Traincontroller:hasTrainBuilderEntities(controllerForceName, controllerSurfaceIndex)
   -- returns true if at least one depot has been build on the force on that surface
   if global.TC_data["trainControllerNamesCount"][controllerForceName]                         and
      global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex] then
@@ -440,7 +460,7 @@ end
 
 
 function Traincontroller:getTrainBuilderNames(controllerForceName, controllerSurfaceIndex)
-  if self:hasTrainBuilderEntitiess(controllerForceName, controllerSurfaceIndex) then
+  if self:hasTrainBuilderEntities(controllerForceName, controllerSurfaceIndex) then
     return global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex]
   else
     return {}

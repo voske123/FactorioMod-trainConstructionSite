@@ -127,6 +127,6 @@ script.on_event({defines.events.on_gui_click                  ,
                  defines.events.on_gui_elem_changed           ,
                  defines.events.on_gui_selection_state_changed}, function(event)
   -- Called when the player clicks on a GUI.
-  Traindepot     .Gui:onClickElement(event.element.name, event.player_index)
-  Traincontroller.Gui:onClickElement(event.element.name, event.player_index)
+  Traindepot     .Gui:onClickElement(event.element, event.player_index)
+  Traincontroller.Gui:onClickElement(event.element, event.player_index)
 end)

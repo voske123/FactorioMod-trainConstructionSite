@@ -113,8 +113,14 @@ LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-builders-working-am
 LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-builder-working-amount-value", {
   caption = "-999",
 })
-
-
+local controllerList = LSlib.gui.layout.addScrollPane(guiLayout, guiTabContent1, "statistics-builder-list-flow", {
+  horizontal_scroll_policy = "never"                                   ,
+  vertical_scroll_policy   = "always"                                  ,
+  style                    = "traindepot_controller_minimap_scrollpane",
+})
+controllerList = LSlib.gui.layout.addTable(guiLayout, controllerList, "statistics-builder-list", 2, {
+  style = "traindepot_controller_minimap_table",
+})
 
 ----------------
 return guiLayout

@@ -53,6 +53,7 @@ function Traindepot.Gui:initPrototypeData()
     "statistics-station-amount-value"        , -- number of depots
     "statistics-builder-amount-value"        , -- number of trains to be available at the depot
     "statistics-builder-working-amount-value", -- number of trainbuilders that are connected to this builder
+    "statistics-builder-list"                , -- list of all trainbuilders connected to this depot
   } do
     updateElementPath[statisticsTabElementName] = LSlib.gui.layout.getElementPath(trainDepotGui, statisticsTabElementName)
   end
@@ -80,20 +81,17 @@ function Traindepot.Gui:initClickHandlerData()
     "traindepot-tab-statistics",
   }
 
-  local tabButtonHandler = function(clickedTabButtonName, playerIndex)
+  local tabButtonHandler = function(clickedTabButton, playerIndex)
     -- Get the flow with all the buttons
-    local tabButtonFlow = LSlib.gui.getElement(playerIndex, self:getTabElementPath(clickedTabButtonName))
-    if not tabButtonFlow then return end
-    tabButtonFlow = tabButtonFlow.parent
-    if not tabButtonFlow then return end
+    local tabButtonFlow = clickedTabButton.parent
 
     -- Get the flow with all the contents
     local tabContentFlow = tabButtonFlow.parent
-    if not tabContentFlow then return end
     tabContentFlow = tabContentFlow[tabContentFlow.name .. "-content"]
     if not tabContentFlow then return end
 
     -- For each button in the flow, set the new style and set the tabs
+    local clickedTabButtonName = clickedTabButton.name
     for _,tabButtonName in pairs(tabButtonNames) do
       tabButtonFlow[tabButtonName].style = (tabButtonName == clickedTabButtonName and "LSlib_default_tab_button_selected" or "LSlib_default_tab_button")
       tabContentFlow[tabButtonName].visible = (tabButtonName == clickedTabButtonName)
@@ -109,9 +107,9 @@ function Traindepot.Gui:initClickHandlerData()
   ------------------------------------------------------------------------------
   -- statistics
   ------------------------------------------------------------------------------
-  clickHandlers["statistics-station-id-edit"] = function(clickedElementName, playerIndex)
+  clickHandlers["statistics-station-id-edit"] = function(clickedElement, playerIndex)
     local tabToOpen = "traindepot-tab-selection"
-    clickHandlers[tabToOpen](tabToOpen, playerIndex) -- mimic tab pressed
+    clickHandlers[tabToOpen](LSlib.gui.getElement(playerIndex, self:getTabElementPath(tabToOpen)), playerIndex) -- mimic tab pressed
   end
 
   local builderRequestAmountHandler = function(playerIndex, changeAmount)
@@ -130,12 +128,28 @@ function Traindepot.Gui:initClickHandlerData()
       Traindepot:getDepotStationCount(depotForceName, depotSurfaceIndex, depotName))
   end
 
-  clickHandlers["statistics-builder-amount-value-"] = function(clickedElementName, playerIndex)
+  clickHandlers["statistics-builder-amount-value-"] = function(clickedElement, playerIndex)
     builderRequestAmountHandler(playerIndex, -1)
   end
 
-  clickHandlers["statistics-builder-amount-value+"] = function(clickedElementName, playerIndex)
+  clickHandlers["statistics-builder-amount-value+"] = function(clickedElement, playerIndex)
     builderRequestAmountHandler(playerIndex, 1)
+  end
+
+  clickHandlers["statistics-builder-list-button"] = function(clickedElement, playerIndex)
+    local minimapElement   = clickedElement["statistics-builder-list-minimap"]
+    local controllerEntity = game.surfaces[minimapElement.surface_index].find_entities_filtered{
+      name     = Traincontroller:getControllerEntityName(),
+      position = minimapElement.position,
+      limit    = 1,
+    }[1]
+    if controllerEntity then
+      -- destroy this depot UI
+      self:destroyGui(playerIndex)
+
+      -- open the controller UI
+      Traincontroller.Gui:onOpenEntity(controllerEntity, playerIndex)
+    end
   end
 
 
@@ -143,13 +157,13 @@ function Traindepot.Gui:initClickHandlerData()
   ------------------------------------------------------------------------------
   -- select train depot name
   ------------------------------------------------------------------------------
-  clickHandlers["old-depot-entry"] = function(clickedElementName, playerIndex)
+  clickHandlers["old-depot-entry"] = function(clickedElement, playerIndex)
     local listboxElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("old-depot-entry"))
 
     LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("new-depot-entry")).text = listboxElement.get_item(listboxElement.selected_index)
   end
 
-  clickHandlers["new-depot-enter"] = function(clickedElementName, playerIndex)
+  clickHandlers["new-depot-enter"] = function(clickedElement, playerIndex)
     local depotEntity  = self:getOpenedEntity(playerIndex)
     local oldDepotName = depotEntity.backer_name
     local newDepotName = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("new-depot-entry")).text
@@ -161,7 +175,7 @@ function Traindepot.Gui:initClickHandlerData()
 
     -- mimic tab pressed to go back to statistics tab
     local tabToOpen = "traindepot-tab-statistics"
-    clickHandlers[tabToOpen](tabToOpen, playerIndex)
+    clickHandlers[tabToOpen](LSlib.gui.getElement(playerIndex, self:getTabElementPath(tabToOpen)), playerIndex)
   end
 
 
@@ -276,14 +290,48 @@ function Traindepot.Gui:updateGuiInfo(playerIndex)
   -- statistics ----------------------------------------------------------------
   local depotStationCount  = Traindepot:getDepotStationCount(depotForceName, depotSurfaceIndex, depotName)
 
+  -- station name
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-station-id-value")).caption = depotName
+
+  -- number of depots available
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-station-amount-value")).caption = string.format(
     "%i/%i", depotStationCount - Traindepot:getNumberOfTrainsStoppedInDepot(depotSurfaceIndex, depotName), depotStationCount)
+
+  -- number of trains to be available at the depot
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-amount-value")).caption = string.format(
     "%i/%i", Traindepot:getDepotRequestCount(depotForceName, depotSurfaceIndex, depotName), depotStationCount)
+
+  -- number of trainbuilders that are connected to this builder
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-working-amount-value")).caption =
     Traindepot:getTrainBuilderCount(depotForceName, depotSurfaceIndex, depotName)
 
+  -- list of all trainbuilders connected to this depot
+  local controllerList = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-list"))
+  controllerList.clear()
+  local controllers = Traincontroller:getAllTrainControllers(depotSurfaceIndex, depotName)
+  for controllerIndex,controller in pairs(controllers) do
+    controllerList.add{
+      -- flow is required so all the buttons have the same name
+      type      = "flow"                                          ,
+      name      = "statistics-builder-list-flow-"..controllerIndex,
+      direction = "vertical"                                      ,
+      style     = "traindepot_controller_minimap_flow"            ,
+    }.add{
+      type    = "button"                                                ,
+      name    = "statistics-builder-list-button"                        ,
+      tooltip = {"gui-traindepot.depot-builder-open-controller-tooltip"},
+      style   = "traindepot_controller_minimap_button"                  ,
+    }.add{
+      type                   = "minimap"                        ,
+      name                   = "statistics-builder-list-minimap",
+      position               = controller.position              ,
+      surface_index          = depotSurfaceIndex                ,
+      force                  = depotForceName                   ,
+      style                  = "traindepot_controller_minimap"  ,
+      zoom                   = 2                                ,
+      ignored_by_interaction = true --[[for button behaviour]]  ,
+    }
+  end
 end
 
 
@@ -323,10 +371,11 @@ end
 
 
 -- When a player clicks on the gui
-function Traindepot.Gui:onClickElement(clickedElementName, playerIndex)
+function Traindepot.Gui:onClickElement(clickedElement, playerIndex)
   if self:hasOpenedGui(playerIndex) then
-    local clickHandler = self:getClickHandler(clickedElementName)
-    if clickHandler then clickHandler(clickedElementName, playerIndex) end
+    if not clickedElement.valid then return end
+    local clickHandler = self:getClickHandler(clickedElement.name)
+    if clickHandler then clickHandler(clickedElement, playerIndex) end
   end
 end
 
