@@ -145,7 +145,7 @@ function Traindepot.Gui:initClickHandlerData()
     }[1]
     if controllerEntity then
       -- destroy this depot UI
-      self:destroyGui(playerIndex)
+      self:onCloseEntity(game.players[playerIndex].opened, playerIndex)
 
       -- open the controller UI
       Traincontroller.Gui:onOpenEntity(controllerEntity, playerIndex)

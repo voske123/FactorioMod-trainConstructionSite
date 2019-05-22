@@ -34,13 +34,17 @@ local guiTabContent = LSlib.gui.layout.addTabs(guiLayout, guiFrame, "traindepot-
 local guiTabContent2 = LSlib.gui.layout.getTabContentFrameFlow(guiLayout, guiTabContent, 2)
 
 local guiNewEntryFlow = LSlib.gui.layout.addFlow(guiLayout, guiTabContent2, "new-entry", "horizontal", {
-  --style = "centering_horizontal_flow",
-  style = "traindepot_new_entry_flow_style",
+  style = "traindepot_new_entry_flow",
 })
 
+LSlib.gui.layout.addLabel(guiLayout, guiNewEntryFlow, "new-depot-label", {
+  caption = {"", {"gui-traindepot.new-name-field"}, " [img=info]"},
+  tooltip = {"gui-traindepot.new-name-field-tooltip"},
+})
 LSlib.gui.layout.addTextfield(guiLayout, guiNewEntryFlow, "new-depot-entry", {
   text    = "Enter depot name",
   tooltip = {"gui-traindepot.new-name-field-tooltip"},
+  style = "traindepot_new_entry_textfield",
 })
 LSlib.gui.layout.addSpriteButton(guiLayout, guiNewEntryFlow, "new-depot-enter", {
   sprite = "utility/enter",
@@ -48,7 +52,8 @@ LSlib.gui.layout.addSpriteButton(guiLayout, guiNewEntryFlow, "new-depot-enter", 
 })
 
 LSlib.gui.layout.addListbox(guiLayout, guiTabContent2, "old-depot-entry", {
-  --items = {"test1", "test2", "test3"},
+  items = {"test1", "test2", "test3"},
+  style = "traindepot_select_name_list_box",
 })
 
 

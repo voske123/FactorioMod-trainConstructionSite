@@ -35,7 +35,7 @@ local guiTabContent2 = LSlib.gui.layout.getTabContentFrameFlow(guiLayout, guiTab
 
 local guiSelectedEntryFlow = LSlib.gui.layout.addFlow(guiLayout, guiTabContent2, "selected-depot", "horizontal", {
   --style = "centering_horizontal_flow",
-  style = "traincontroller_new_entry_flow_style",
+  style = "traincontroller_new_entry_flow",
 })
 
 LSlib.gui.layout.addLabel(guiLayout, guiSelectedEntryFlow, "selected-depot-label", {
@@ -45,7 +45,7 @@ LSlib.gui.layout.addLabel(guiLayout, guiSelectedEntryFlow, "selected-depot-label
 LSlib.gui.layout.addLabel(guiLayout, guiSelectedEntryFlow, "selected-depot-name", {
   caption = "Enter controller name"                             ,
   tooltip = {"gui-traincontroller.selected-entry-label-tooltip"},
-  style   = "traincontroller_selected_entry_label_style"        ,
+  style   = "traincontroller_selected_entry_label"        ,
 })
 LSlib.gui.layout.addSpriteButton(guiLayout, guiSelectedEntryFlow, "selected-depot-enter", {
   sprite = "utility/enter",
@@ -54,6 +54,7 @@ LSlib.gui.layout.addSpriteButton(guiLayout, guiSelectedEntryFlow, "selected-depo
 
 LSlib.gui.layout.addListbox(guiLayout, guiTabContent2, "selected-depot-list", {
   items = {"test1", "test2", "test3"},
+  style = "traincontroller_select_name_list_box",
 })
 
 

@@ -24,7 +24,7 @@ guiStyles["traindepot_contentFrame"] = {
   }
 }
 
-guiStyles["traindepot_new_entry_flow_style"] = {
+guiStyles["traindepot_new_entry_flow"] = {
   type = "horizontal_flow_style"      ,
   parent = "centering_horizontal_flow",
 
@@ -33,11 +33,18 @@ guiStyles["traindepot_new_entry_flow_style"] = {
   bottom_padding = 8,
 }
 
+guiStyles["traindepot_new_entry_textfield"] = {
+  type = "textbox_style",
+  parent = "textbox"    ,
+
+  horizontally_stretchable = "on",
+}
+
 guiStyles["traindepot_statistics_table"] = {
   type = "table_style",
 
-  left_cell_padding  = guiStyles["traindepot_new_entry_flow_style"].left_padding ,
-  right_cell_padding = guiStyles["traindepot_new_entry_flow_style"].right_padding,
+  left_cell_padding  = guiStyles["traindepot_new_entry_flow"].left_padding ,
+  right_cell_padding = guiStyles["traindepot_new_entry_flow"].right_padding,
 
   column_widths =
   {
@@ -57,8 +64,8 @@ guiStyles["traindepot_controller_minimap_scrollpane"] = {
 
   padding = 12,
 
-  minimal_width = guiStyles["traindepot_contentFrame"].vertical_flow_style.minimal_width,
-  maximal_width = guiStyles["traindepot_contentFrame"].vertical_flow_style.maximal_width,
+  horizontally_stretchable = "on",
+  vertically_stretchable   = "on",
 }
 
 guiStyles["traindepot_controller_minimap_table"] = {
@@ -72,10 +79,10 @@ guiStyles["traindepot_controller_minimap_table"] = {
   horizontally_squashable = "off",
   verticaly_squashable    = "off",
 
-  minimal_width  = guiStyles["traindepot_controller_minimap_scrollpane"].minimal_width  - 4,
-  maximal_width  = guiStyles["traindepot_controller_minimap_scrollpane"].maximal_width  - 4,
-  --minimal_height = guiStyles["traindepot_contentFrame"].vertical_flow_style.minimal_height - 2 * 8 - 4,
-  --maximal_height = guiStyles["traindepot_contentFrame"].vertical_flow_style.maximal_height - 2 * 8 - 4,
+  minimal_width = 356,
+  maximal_width = 356,
+  --minimal_width = guiStyles["traindepot_contentFrame"].vertical_flow_style.minimal_width - 2 * guiStyles["traindepot_controller_minimap_scrollpane"].padding - 2 * 4 - 4,
+  --maximal_width = guiStyles["traindepot_contentFrame"].vertical_flow_style.maximal_width - 2 * guiStyles["traindepot_controller_minimap_scrollpane"].padding - 2 * 4 - 4,
 }
 
 guiStyles["traindepot_controller_minimap_flow"] = {
@@ -107,6 +114,13 @@ guiStyles["traindepot_controller_minimap_button"] = {
   maximal_heigh  = 8 + guiStyles["traindepot_controller_minimap"].maximal_height,
 }
 
+guiStyles["traindepot_select_name_list_box"] = {
+  type = "list_box_style",
+  parent = "list_box"    ,
+
+  vertically_stretchable   = "on",
+}
+
 
 
 -- traincontroller custom styles -----------------------------------------------
@@ -115,12 +129,22 @@ guiStyles["traincontroller_contentFrame"] = {
   parent = "traindepot_contentFrame",
 }
 
-guiStyles["traincontroller_new_entry_flow_style"] = {
-  type   = guiStyles["traindepot_new_entry_flow_style"].type,
-  parent = "traindepot_new_entry_flow_style",
+guiStyles["traincontroller_new_entry_flow"] = {
+  type   = guiStyles["traindepot_new_entry_flow"].type,
+  parent = "traindepot_new_entry_flow",
 }
 
-guiStyles["traincontroller_selected_entry_label_style"] = {
+guiStyles["traincontroller_new_entry_textfield"] = {
+  type = "textbox_style",
+  parent = "traindepot_new_entry_textfield",
+}
+
+guiStyles["traincontroller_select_name_list_box"] = {
+  type   = guiStyles["traindepot_select_name_list_box"].type,
+  parent = "traindepot_select_name_list_box",
+}
+
+guiStyles["traincontroller_selected_entry_label"] = {
   type          = "label_style",
   parent        = "label"      ,
 
