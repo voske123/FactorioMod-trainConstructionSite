@@ -639,12 +639,90 @@ end
 
 function Trainassembly:getTrainBuilder(trainBuilderIndex)
   --step 1: Make sure there is a valid index
-  if not trainBuilderIndex then
-    return nil
-  end
+  if not trainBuilderIndex then return nil end
 
   --step 2: In this step we return the trainBuilders with the trainBuilderIndex.
   return global.TA_data["trainBuilders"][trainBuilderIndex]
+end
+
+
+
+function Trainassembly:getTrainBuilderIterator(dir)
+  return function(t)
+    -- Ordered table iterator, allow to iterate in the order that the trainBuilder
+    -- connects the train together. Equivalent of the pairs() function on tables.
+    -- Allows to iterate in order.
+
+    local function iteratorNext(t, state)
+      -- Equivalent of the next function, but returns the keys in order that the
+      -- trainbuilder will build. We use a temporary ordered key table that is
+      -- stored in the table being iterated.
+
+      local function __genIteratorIndex(t)
+        -- generate the index
+        local pos = (dir == defines.direction.east or dir == defines.direction.west) and "x" or "y"
+
+        -- first sort the values
+        local orderedValues = {}
+        local orderedValuesIndex = 1
+        for _,val in pairs(t) do
+          -- table.insert(orderedIndex, key)
+          orderedValues[orderedValuesIndex] = val.position[pos]
+          orderedValuesIndex = orderedValuesIndex + 1
+        end
+        table.sort(orderedValues)
+
+        if dir == defines.direction.east or dir == defines.direction.south then
+          -- invert order
+          local i, j = 1, #orderedValues
+          while i < j do
+            orderedValues[i], orderedValues[j] = orderedValues[j], orderedValues[i]
+            i, j = i + 1, j - 1
+          end
+        end
+
+        -- now that we know the order of the values, we can remap these values to there keys
+        local orderedIndex = {}
+        for orderedIdexIndex, orderedValue in pairs(orderedValues) do
+          local orderedValueFound = false
+          for key,val in pairs(t) do -- obtain the key that is linked to this orderedValue
+            if (not orderedValueFound) and (val.position[pos] == orderedValue) then
+              orderedIndex[orderedIdexIndex] = key
+              orderedValueFound = true
+            end
+          end
+        end
+
+        -- now the values are ordened and we got an ordened list of these keys
+        return orderedIndex
+      end
+
+      local key = nil
+      --print("iteratorNext: state = "..tostring(state) )
+      if state == nil then
+        -- the first time, generate the index
+        t.__iteratorIndex = __genIteratorIndex(t)
+        key = t.__iteratorIndex[1]
+      else
+        -- fetch the next value
+        for i = 1, #t.__iteratorIndex do
+          if t.__iteratorIndex[i] == state then
+            key = t.__iteratorIndex[i+1]
+          end
+        end
+      end
+
+      if key then
+        return key, t[key]
+      end
+
+      -- no more value to return, cleanup
+      t.__iteratorIndex = nil
+      return
+    end
+
+    return iteratorNext, t, nil
+  end
 end
 
 

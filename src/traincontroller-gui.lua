@@ -43,9 +43,10 @@ function Traincontroller.Gui:initPrototypeData()
   -- updateElementPath
   local updateElementPath = {}
   for _,statisticsTabElementName in pairs{
-    "statistics-station-id-value"    , -- controller name
-    "statistics-depot-request-value" , -- depot request amount
-    "statistics-builder-status-value", -- controller status
+    "statistics-station-id-value"          , -- controller name
+    "statistics-depot-request-value"       , -- depot request amount
+    "statistics-builder-status-value"      , -- controller status
+    "statistics-builder-configuration-flow", -- controller configuration
   } do
     updateElementPath[statisticsTabElementName] = LSlib.gui.layout.getElementPath(trainControllerGui, statisticsTabElementName)
   end
@@ -75,6 +76,7 @@ function Traincontroller.Gui:initClickHandlerData()
 
   local tabButtonHandler = function(clickedTabButton, playerIndex)
     -- Get the flow with all the buttons
+    if clickedTabButton.type ~= "button" then return end -- clicked on content
     local tabButtonFlow = clickedTabButton.parent
 
     -- Get the flow with all the contents
@@ -92,6 +94,43 @@ function Traincontroller.Gui:initClickHandlerData()
 
   for _,tabButtonName in pairs(tabButtonNames) do
     clickHandlers[tabButtonName] = tabButtonHandler
+  end
+
+
+
+  ------------------------------------------------------------------------------
+  -- statistics
+  ------------------------------------------------------------------------------
+  --[[clickHandlers["statistics-builder-configuration-button-recipe"] = function(clickedElement, playerIndex)
+    --game.get_player(playerIndex).print("clicked!")
+    local trainAssemblerIndex = tonumber(clickedElement.parent.name)
+    local trainBuilder = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(self:getOpenedEntity(playerIndex)))
+    local trainAssemblerLocation = trainBuilder[trainAssemblerIndex]
+    local trainAssembler = Trainassembly:getMachineEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position)
+
+    game.get_player(playerIndex).print(trainAssembler.get_recipe().products[1].name)
+    trainAssembler.set_recipe(nil) -- remove recipe
+    game.get_player(playerIndex).opened = trainAssembler -- open the UI
+  end]]
+
+  clickHandlers["statistics-builder-configuration-button-rotate"] = function(clickedElement, playerIndex)
+    -- get the trainbuilder
+    local trainBuilder = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(self:getOpenedEntity(playerIndex)))
+    if not trainBuilder then return end
+
+    -- get the assembler
+    local trainAssemblerLocation = trainBuilder[tonumber(clickedElement.parent.name)]
+    local trainAssembler = Trainassembly:getMachineEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position)
+    if not (trainAssembler and trainAssembler.valid) then return end
+
+    -- rotate the assembler
+    local previous_direction = trainAssembler.direction
+    trainAssembler.rotate()
+    script.raise_event(defines.events.on_player_rotated_entity, {
+      entity = trainAssembler,
+      previous_direction = previous_direction,
+      player_index = playerIndex
+    })
   end
 
   --------------------
@@ -202,19 +241,61 @@ function Traincontroller.Gui:updateGuiInfo(playerIndex)
 
   -- data from the traindepo we require to update
   local openedEntity           = self:getOpenedEntity(playerIndex)
-  local controllerName         = openedEntity and openedEntity.valid and openedEntity.backer_name or ""
-  local controllerForceName    = openedEntity and openedEntity.valid and openedEntity.force.name or ""
-  local controllerSurfaceIndex = openedEntity and openedEntity.valid and openedEntity.surface.index or player.surface.index or 1
+  if not (openedEntity and openedEntity.valid) then
+    self:onCloseEntity(trainDepotGui, playerIndex)
+  end
+
+  local controllerName         = openedEntity.backer_name or ""
+  local controllerForceName    = openedEntity.force.name or ""
+  local controllerSurfaceIndex = openedEntity.surface.index or game.get_player(playerIndex).surface.index or 1
+  local controllerDirection    = openedEntity.direction or defines.direction.north
 
   local depotForceName    = Traincontroller:getDepotForceName(controllerForceName)
   local depotRequestCount = Traindepot:getDepotRequestCount(depotForceName, controllerSurfaceIndex, controllerName)
   local depotTrainCount   = Traindepot:getNumberOfTrainsPathingToDepot(controllerSurfaceIndex, controllerName)
 
+  local trainBuilder         = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(openedEntity))
+  local trainBuilderIterator = Trainassembly:getTrainBuilderIterator(controllerDirection)
+
   -- statistics ----------------------------------------------------------------
+  -- controller depot name
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-station-id-value")).caption = controllerName
+
+  -- requested amount of trains in depot
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-depot-request-value")).caption = string.format(
     "%i/%i", depotTrainCount, depotRequestCount)
+
+  -- status of the builder
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-status-value")).caption = self:getOpenedControllerStatusString(playerIndex)
+
+  -- configuration
+  local configurationElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-configuration-flow"))
+  configurationElement.clear()
+  for trainAssemblerIndex,trainAssemblerLocation in trainBuilderIterator(trainBuilder) do
+    local trainAssembler = Trainassembly:getMachineEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position)
+    if trainAssembler and trainAssembler.valid then
+      local trainAssemblerRecipe = trainAssembler.get_recipe()
+
+      local flow = configurationElement.add{
+        type      = "flow",
+        name      = string.format("%i", trainAssemblerIndex),
+        direction = "vertical",
+        style     = "traincontroller_configuration_flow",
+      }
+
+      flow.add{
+        type   = "sprite-button",
+        name   = "statistics-builder-configuration-button-recipe",
+        sprite = trainAssemblerRecipe and string.format("%s-%s", trainAssemblerRecipe.products[1].name, trainAssembler.direction == controllerDirection and "L" or "R"),
+      }
+      flow.add{
+        type   = "sprite-button",
+        name   = "statistics-builder-configuration-button-rotate",
+        sprite = "utility/refresh",
+      }
+    end
+  end
+
 end
 
 
@@ -222,9 +303,18 @@ end
 function Traincontroller.Gui:updateOpenedGuis(updatedControllerEntity)
   for _,player in pairs(game.connected_players) do -- no need to check all players
     local openedEntity = self:getOpenedEntity(player.index)
-    if openedEntity and openedEntity == updatedControllerEntity then
-      self:updateGuiInfo(player.index)
+    if openedEntity then
+      if openedEntity.valid and openedEntity.health > 0 then
+        if openedEntity == updatedControllerEntity then
+          self:updateGuiInfo(player.index)
+        end
+      else -- not valid/killed
+        self:onCloseEntity(player.opened, player.index)
+      end
     end
+  end
+  if updatedControllerEntity.valid then
+    Traindepot.Gui:updateOpenedGuis(updatedControllerEntity.backer_name)
   end
 end
 

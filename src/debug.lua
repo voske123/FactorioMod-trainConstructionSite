@@ -80,6 +80,13 @@ end
 
 function Debug:createTestbench(surface)
   local areaRange = 60
+  self:createTestbench1(surface, areaRange)
+  self:createTestbench2(surface, areaRange)
+end
+
+
+
+function Debug:createTestbench1(surface, areaRange)
 
   -- STEP 1: delete all entities surrounding the test surface
   surface.destroy_decoratives{area = {{-areaRange, -areaRange}, {areaRange, areaRange}}}
@@ -91,8 +98,6 @@ function Debug:createTestbench(surface)
   }) do
     entity.destroy()
   end
-
-  --if true then return end -- waiting on v0.17.42 as events are not raised in on_init
 
   -- STEP 2: Create the test bench
   -- STEP 2a:create the rails
@@ -117,7 +122,7 @@ function Debug:createTestbench(surface)
   -- Step 2b:create the train depots
   local depotName = "test depot id%i"
   for direction,position in pairs{
-    [defines.direction.east ] = {x =  areaMax     , y =  distance + 2},
+    [defines.direction.east ] = {x =  areaMax  - 2, y =  distance + 2},
     [defines.direction.west ] = {x = -areaMax     , y =  distance - 2},
     [defines.direction.north] = {x = -distance + 2, y = -areaMax     },
     [defines.direction.south] = {x =  distance - 2, y = -3           },
@@ -167,4 +172,82 @@ function Debug:createTestbench(surface)
       raise_built = true,
     }.backer_name = string.format(depotName, direction)
   end
+end
+
+
+
+function Debug:createTestbench2(surface, areaRange)
+  local offset = {x = -2 * areaRange, y = 0}
+
+  -- STEP 1: delete all entities surrounding the test surface
+  surface.destroy_decoratives{area = {{-areaRange + offset.x, -areaRange + offset.y}, {areaRange + offset.x, areaRange + offset.y}}}
+  for _, entity in pairs(surface.find_entities_filtered{
+    area   = {{-areaRange + offset.x, -areaRange + offset.y}, {areaRange + offset.x, areaRange + offset.y}},
+    type   = "character",
+    invert = true,
+  }) do
+    entity.destroy()
+  end
+
+  -- STEP 2: Create the testbench
+  -- STEP 2a:create the rails
+  local distance = math.floor(.5 + areaRange/2)
+  local areaMax = math.floor(.5 + (areaRange-6)/2)*2
+  for i = 3, areaMax, 2 do
+    for direction,position in pairs{
+      [defines.direction.east ] = {x =  i        + offset.x, y =  distance + offset.y},
+      [defines.direction.west ] = {x = -i        + offset.x, y =  distance + offset.y},
+      [defines.direction.north] = {x =  distance + offset.x, y = -i        + offset.y},
+      [defines.direction.south] = {x = -distance + offset.x, y = -i        + offset.y},
+    } do
+      surface.create_entity{
+        name      = "straight-rail",
+        position  = position,
+        direction = direction,
+        force     = "player",
+      }
+    end
+  end
+
+  -- Step 2b:create the train assemblers
+  local length = 6
+  for i = 0, length - 1 do
+    for direction,position in pairs{
+      [defines.direction.east ] = {x =  7 + 7 * i + offset.x, y =  distance            + offset.y},
+      [defines.direction.west ] = {x = -7 - 7 * i + offset.x, y =  distance            + offset.y},
+      [defines.direction.north] = {x = -distance  + offset.x, y = -7           - 7 * i + offset.y},
+      [defines.direction.south] = {x =  distance  + offset.x, y = -areaMax + 5 + 7 * i + offset.y},
+    } do
+      surface.create_entity{
+        name        = Trainassembly:getPlaceableEntityName(),
+        position    = position,
+        direction   = direction,
+        force       = "player",
+        raise_built = true,
+      }
+      surface.find_entities_filtered{
+        name        = Trainassembly:getMachineEntityName(),
+        position    = position,
+        limit       = 1,
+      }[1].set_recipe("locomotive-fluid[locomotive]")
+    end
+  end
+
+  -- Step 2c:create the traincontrollers
+  local i = length - 1
+  for direction,position in pairs{
+    [defines.direction.east ] = {x =  7 + 7 * i + 4 + offset.x, y =  distance + 2            + offset.y},
+    [defines.direction.west ] = {x = -7 - 7 * i - 5 + offset.x, y =  distance - 2            + offset.y},
+    [defines.direction.north] = {x = -distance + 2  + offset.x, y = -7           - 4 - 7 * i + offset.y},
+    [defines.direction.south] = {x =  distance - 2  + offset.x, y = -areaMax + 5 + 4 + 7 * i + offset.y},
+  } do
+    surface.create_entity{
+      name        = Traincontroller:getControllerEntityName(),
+      position    = position,
+      direction   = direction,
+      force       = "player",
+      raise_built = true,
+    }.backer_name = string.format("test depot id%i", direction)
+  end
+
 end

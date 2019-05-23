@@ -83,6 +83,7 @@ function Traindepot.Gui:initClickHandlerData()
 
   local tabButtonHandler = function(clickedTabButton, playerIndex)
     -- Get the flow with all the buttons
+    if clickedTabButton.type ~= "button" then return end -- clicked on content
     local tabButtonFlow = clickedTabButton.parent
 
     -- Get the flow with all the contents
@@ -339,8 +340,14 @@ end
 function Traindepot.Gui:updateOpenedGuis(depotName)
   for _,player in pairs(game.connected_players) do -- no need to check all players
     local openedEntity = self:getOpenedEntity(player.index)
-    if openedEntity and openedEntity.backer_name == depotName then
-      self:updateGuiInfo(player.index)
+    if openedEntity then
+      if openedEntity.valid and openedEntity.health > 0 then
+        if openedEntity.backer_name == depotName then
+          self:updateGuiInfo(player.index)
+        end
+      else -- not valid/killed
+        self:onCloseEntity(player.opened, player.index)
+      end
     end
   end
 end

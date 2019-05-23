@@ -101,6 +101,8 @@ function Traindepot:deleteBuilding(depotEntity)
   -- STEP2: Update the statistics
   self:setStationAmount(depotForceName, depotSurfaceIndex, depotName, self:getDepotStationCount(depotForceName, depotSurfaceIndex, depotName) - 1)
 
+  -- STEP3: Update the UI
+  self.Gui:updateOpenedGuis(depotName)
 end
 
 

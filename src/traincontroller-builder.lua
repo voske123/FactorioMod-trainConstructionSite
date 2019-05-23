@@ -234,6 +234,7 @@ function Traincontroller.Builder:buildNextTrain(trainBuilderIndex)
     if machineEntity and machineEntity.valid then
       -- get the building entity out of the name
       local machineRecipe = machineEntity.get_recipe()
+      if not machineRecipe then return false end
       local buildEntityName = LSlib.utils.string.split(machineRecipe.name, "[")[1]
       local buildEntityName = buildEntityName:sub(1, buildEntityName:len()-6)
 

@@ -28,4 +28,4 @@ require "prototypes.technology.traincontroller"
 require "prototypes.technology.trainassembly-trainfuel"
 require "prototypes.technology.trainassembly-vehicles"
 
-require "prototypes.guilayout.styles"
+require "prototypes.guilayout.guistyles"

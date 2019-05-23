@@ -9,8 +9,6 @@ guiStyles["traindepot_contentFrame"] = {
   type   = "frame_style"                   ,
   parent = "LSlib_default_tab_contentFrame",
 
-  --bottom_margin = -8,
-
   vertical_flow_style = {
     type = "vertical_flow_style",
     parent = "vertical_flow"    ,
@@ -59,9 +57,6 @@ guiStyles["traindepot_controller_minimap_scrollpane"] = {
   type = "scroll_pane_style",
   parent = "scroll_pane",
 
-  --left_margin  = 8,
-  --right_margin = 8,
-
   padding = 12,
 
   horizontally_stretchable = "on",
@@ -81,8 +76,6 @@ guiStyles["traindepot_controller_minimap_table"] = {
 
   minimal_width = 356,
   maximal_width = 356,
-  --minimal_width = guiStyles["traindepot_contentFrame"].vertical_flow_style.minimal_width - 2 * guiStyles["traindepot_controller_minimap_scrollpane"].padding - 2 * 4 - 4,
-  --maximal_width = guiStyles["traindepot_contentFrame"].vertical_flow_style.maximal_width - 2 * guiStyles["traindepot_controller_minimap_scrollpane"].padding - 2 * 4 - 4,
 }
 
 guiStyles["traindepot_controller_minimap_flow"] = {
@@ -151,4 +144,18 @@ guiStyles["traincontroller_selected_entry_label"] = {
   left_padding  = 8  ,
   minimal_width = 175,
   maximal_width = 175,
+}
+
+guiStyles["traincontroller_configuration_scrollpane"] = {
+  type = "scroll_pane_style",
+  parent = "traindepot_controller_minimap_scrollpane",
+
+  padding = 12,
+
+  horizontally_stretchable = "on",
+}
+
+guiStyles["traincontroller_configuration_flow"] = {
+  type = "vertical_flow_style"   ,
+  parent = "traindepot_controller_minimap_flow",
 }

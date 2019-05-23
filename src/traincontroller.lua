@@ -279,6 +279,9 @@ function Traincontroller:deleteController(controllerEntity)
     end
   end
 
+  -- Update the UI
+  controllerEntity.health = 0 -- set health to 0, otherwise it's not working
+  self.Gui:updateOpenedGuis(controllerEntity)
 end
 
 
@@ -349,7 +352,8 @@ function Traincontroller:renameBuilding(controllerEntity, oldName)
     global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex][stationName] = stationAmount + 1
 
     -- update the ui
-    self.Gui:updateOpenedGuis(updatedControllerEntity)
+    Traindepot.Gui:updateOpenedGuis(oldName)
+    self.Gui:updateOpenedGuis(controllerEntity)
   end
 end
 
@@ -567,7 +571,7 @@ function Traincontroller:checkValidAftherChanges(alteredEntity, playerIndex)
         self:deleteController(trainController)
 
         -- Destroy the placed item
-        trainController.destroy()
+        trainController.destroy{raise_destroy = true}
         return false
       end
 
@@ -609,6 +613,7 @@ function Traincontroller:checkValidAftherChanges(alteredEntity, playerIndex)
         }
       end
 
+      self.Gui:updateOpenedGuis(trainController)
       return true
     end
 
@@ -808,7 +813,7 @@ function Traincontroller:onPlayerRotatedEntity(rotatedEntity, playerIndex)
   -- The player rotated the machine entity, we need to make sure the controller
   -- is still valid.
   if rotatedEntity.name == Trainassembly:getMachineEntityName() then
-    Traincontroller:checkValidAftherChanges(rotatedEntity, playerIndex)
+    self:checkValidAftherChanges(rotatedEntity, playerIndex)
   end
 end
 
@@ -821,8 +826,10 @@ function Traincontroller:onPlayerChangedSettings(pastedEntity, playerIndex)
   if pastedEntity and pastedEntity.valid then
     if pastedEntity.name == Trainassembly:getMachineEntityName() then
       self:checkValidAftherChanges(pastedEntity, playerIndex)
+
     elseif pastedEntity.name == self:getControllerEntityName() then
       self:setTrainstopControlBehaviour(pastedEntity)
+
     end
   end
 end
@@ -863,6 +870,6 @@ function Traincontroller:onTrainbuilderAltered(trainBuilderIndex)
     }
     droppedItem.to_be_looted = true
     droppedItem.order_deconstruction(trainController.force)
-    trainController.destroy()
+    trainController.destroy{raise_destroy = true}
   end
 end

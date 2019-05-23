@@ -106,10 +106,12 @@ LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-builder-configurati
   caption = {"gui-traincontroller.builder-configuration"},
 })
 local controllerFlow = LSlib.gui.layout.addScrollPane(guiLayout, guiTabContent1, "statistics-builder-configuration-flow-scrolling", {
-  horizontal_scroll_policy = "auto" ,
-  vertical_scroll_policy   = "never",
+  horizontal_scroll_policy = "always",
+  vertical_scroll_policy   = "never" ,
+  
+  style = "traincontroller_configuration_scrollpane",
 })
-controllerFlow = LSlib.gui.layout.addFlow(guiLayout, controllerFlow, "statistics-station-id-flow", "horizontal", {
+controllerFlow = LSlib.gui.layout.addFlow(guiLayout, controllerFlow, "statistics-builder-configuration-flow", "horizontal", {
   style = "research_queue_first_slot_flow", -- no padding
 })
 
