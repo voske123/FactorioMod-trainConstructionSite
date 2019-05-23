@@ -103,6 +103,11 @@ function Traindepot:deleteBuilding(depotEntity)
 
   -- STEP3: Update the UI
   self.Gui:updateOpenedGuis(depotName)
+  
+  local trainControllers = Traincontroller:getAllTrainControllers(depotSurfaceIndex, depotName)
+  for _,trainController in pairs(trainControllers) do
+    Traincontroller.Gui:updateOpenedGuis(trainController, false)
+  end
 end
 
 

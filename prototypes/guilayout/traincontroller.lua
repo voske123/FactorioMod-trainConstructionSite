@@ -45,7 +45,7 @@ LSlib.gui.layout.addLabel(guiLayout, guiSelectedEntryFlow, "selected-depot-label
 LSlib.gui.layout.addLabel(guiLayout, guiSelectedEntryFlow, "selected-depot-name", {
   caption = "Enter controller name"                             ,
   tooltip = {"gui-traincontroller.selected-entry-label-tooltip"},
-  style   = "traincontroller_selected_entry_label"        ,
+  style   = "traincontroller_selected_entry_label"              ,
 })
 LSlib.gui.layout.addSpriteButton(guiLayout, guiSelectedEntryFlow, "selected-depot-enter", {
   sprite = "utility/enter",
@@ -108,7 +108,7 @@ LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-builder-configurati
 local controllerFlow = LSlib.gui.layout.addScrollPane(guiLayout, guiTabContent1, "statistics-builder-configuration-flow-scrolling", {
   horizontal_scroll_policy = "always",
   vertical_scroll_policy   = "never" ,
-  
+
   style = "traincontroller_configuration_scrollpane",
 })
 controllerFlow = LSlib.gui.layout.addFlow(guiLayout, controllerFlow, "statistics-builder-configuration-flow", "horizontal", {

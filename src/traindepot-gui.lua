@@ -43,8 +43,8 @@ function Traindepot.Gui:initPrototypeData()
   -- updateElementPath
   local updateElementPath = {}
   for _,selectionTabElementName in pairs{
-    "new-depot-entry", -- current/new depot name
-    "old-depot-entry", -- list of all depot names
+    "selected-depot-name", -- current/new depot name
+    "selected-depot-list", -- list of all depot names
   } do
     updateElementPath[selectionTabElementName] = LSlib.gui.layout.getElementPath(trainDepotGui, selectionTabElementName)
   end
@@ -158,16 +158,16 @@ function Traindepot.Gui:initClickHandlerData()
   ------------------------------------------------------------------------------
   -- select train depot name
   ------------------------------------------------------------------------------
-  clickHandlers["old-depot-entry"] = function(clickedElement, playerIndex)
-    local listboxElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("old-depot-entry"))
+  clickHandlers["selected-depot-list"] = function(clickedElement, playerIndex)
+    local listboxElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("selected-depot-list"))
 
-    LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("new-depot-entry")).text = listboxElement.get_item(listboxElement.selected_index)
+    LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("selected-depot-name")).text = listboxElement.get_item(listboxElement.selected_index)
   end
 
-  clickHandlers["new-depot-enter"] = function(clickedElement, playerIndex)
+  clickHandlers["selected-depot-enter"] = function(clickedElement, playerIndex)
     local depotEntity  = self:getOpenedEntity(playerIndex)
     local oldDepotName = depotEntity.backer_name
-    local newDepotName = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("new-depot-entry")).text
+    local newDepotName = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("selected-depot-name")).text
 
     if newDepotName ~= oldDepotName then
       depotEntity.backer_name = newDepotName -- invokes the rename event which will update UI's
@@ -272,10 +272,10 @@ function Traindepot.Gui:updateGuiInfo(playerIndex)
   local depotSurfaceIndex = openedEntity and openedEntity.valid and openedEntity.surface.index or player.surface.index or 1
 
   -- selection tab -------------------------------------------------------------
-  LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("new-depot-entry")).text = depotName
+  LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("selected-depot-name")).text = depotName
 
   -- name selection list
-  local depotEntriesList = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("old-depot-entry"))
+  local depotEntriesList = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("selected-depot-list"))
   depotEntriesList.clear_items()
   local itemIndex = 1
   local orderedPairs = LSlib.utils.table.orderedPairs

@@ -37,21 +37,21 @@ local guiNewEntryFlow = LSlib.gui.layout.addFlow(guiLayout, guiTabContent2, "new
   style = "traindepot_new_entry_flow",
 })
 
-LSlib.gui.layout.addLabel(guiLayout, guiNewEntryFlow, "new-depot-label", {
+LSlib.gui.layout.addLabel(guiLayout, guiNewEntryFlow, "selected-depot-label", {
   caption = {"", {"gui-traindepot.new-name-field"}, " [img=info]"},
   tooltip = {"gui-traindepot.new-name-field-tooltip"},
 })
-LSlib.gui.layout.addTextfield(guiLayout, guiNewEntryFlow, "new-depot-entry", {
+LSlib.gui.layout.addTextfield(guiLayout, guiNewEntryFlow, "selected-depot-name", {
   text    = "Enter depot name",
   tooltip = {"gui-traindepot.new-name-field-tooltip"},
   style = "traindepot_new_entry_textfield",
 })
-LSlib.gui.layout.addSpriteButton(guiLayout, guiNewEntryFlow, "new-depot-enter", {
+LSlib.gui.layout.addSpriteButton(guiLayout, guiNewEntryFlow, "selected-depot-enter", {
   sprite = "utility/enter",
   style = "slot_button"   ,
 })
 
-LSlib.gui.layout.addListbox(guiLayout, guiTabContent2, "old-depot-entry", {
+LSlib.gui.layout.addListbox(guiLayout, guiTabContent2, "selected-depot-list", {
   items = {"test1", "test2", "test3"},
   style = "traindepot_select_name_list_box",
 })

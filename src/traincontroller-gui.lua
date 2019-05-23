@@ -42,6 +42,12 @@ function Traincontroller.Gui:initPrototypeData()
 
   -- updateElementPath
   local updateElementPath = {}
+  for _,selectionTabElementName in pairs{
+    "selected-depot-name", -- current/new depot name
+    "selected-depot-list", -- list of all depot names
+  } do
+    updateElementPath[selectionTabElementName] = LSlib.gui.layout.getElementPath(trainControllerGui, selectionTabElementName)
+  end
   for _,statisticsTabElementName in pairs{
     "statistics-station-id-value"          , -- controller name
     "statistics-depot-request-value"       , -- depot request amount
@@ -101,6 +107,11 @@ function Traincontroller.Gui:initClickHandlerData()
   ------------------------------------------------------------------------------
   -- statistics
   ------------------------------------------------------------------------------
+  clickHandlers["statistics-station-id-edit"] = function(clickedElement, playerIndex)
+    local tabToOpen = "traincontroller-tab-selection"
+    clickHandlers[tabToOpen](LSlib.gui.getElement(playerIndex, self:getTabElementPath(tabToOpen)), playerIndex) -- mimic tab pressed
+  end
+
   --[[clickHandlers["statistics-builder-configuration-button-recipe"] = function(clickedElement, playerIndex)
     --game.get_player(playerIndex).print("clicked!")
     local trainAssemblerIndex = tonumber(clickedElement.parent.name)
@@ -131,6 +142,30 @@ function Traincontroller.Gui:initClickHandlerData()
       previous_direction = previous_direction,
       player_index = playerIndex
     })
+  end
+
+  ------------------------------------------------------------------------------
+  -- select train depot name
+  ------------------------------------------------------------------------------
+  clickHandlers["selected-depot-list"] = function(clickedElement, playerIndex)
+    local listboxElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("selected-depot-list"))
+
+    LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("selected-depot-name")).caption = listboxElement.get_item(listboxElement.selected_index)
+  end
+
+  clickHandlers["selected-depot-enter"] = function(clickedElement, playerIndex)
+    local controllerEntity  = self:getOpenedEntity(playerIndex)
+    local oldControllerName = controllerEntity.backer_name
+    local newControllerName = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("selected-depot-name")).caption
+
+    if newControllerName ~= oldControllerName then
+      controllerEntity.backer_name = newControllerName -- invokes the rename event which will update UI's
+      --self:updateGuiInfo(playerIndex)
+    end
+
+    -- mimic tab pressed to go back to statistics tab
+    local tabToOpen = "traincontroller-tab-statistics"
+    clickHandlers[tabToOpen](LSlib.gui.getElement(playerIndex, self:getTabElementPath(tabToOpen)), playerIndex)
   end
 
   --------------------
@@ -296,11 +331,30 @@ function Traincontroller.Gui:updateGuiInfo(playerIndex)
     end
   end
 
+  -- select depot name ---------------------------------------------------------
+  LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("selected-depot-name")).caption = controllerName
+
+  -- name selection list
+  local depotEntriesList = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("selected-depot-list"))
+  depotEntriesList.clear_items()
+
+  local itemIndex = 1
+  local orderedPairs = LSlib.utils.table.orderedPairs
+  for trainDepotName,_ in orderedPairs(Traindepot:getDepotData(depotForceName, controllerSurfaceIndex)) do
+    -- https://lua-api.factorio.com/latest/LuaGuiElement.html#LuaGuiElement.add_item
+    depotEntriesList.add_item(trainDepotName)
+    if trainDepotName == controllerName then
+      depotEntriesList.selected_index = itemIndex
+    end
+    itemIndex = itemIndex + 1
+  end
+
 end
 
 
 
-function Traincontroller.Gui:updateOpenedGuis(updatedControllerEntity)
+function Traincontroller.Gui:updateOpenedGuis(updatedControllerEntity, upgradeDepots)
+
   for _,player in pairs(game.connected_players) do -- no need to check all players
     local openedEntity = self:getOpenedEntity(player.index)
     if openedEntity then
@@ -313,7 +367,9 @@ function Traincontroller.Gui:updateOpenedGuis(updatedControllerEntity)
       end
     end
   end
-  if updatedControllerEntity.valid then
+
+  if upgradeDepots ~= false then upgradeDepots = true end
+  if upgradeDepots and updatedControllerEntity.valid then
     Traindepot.Gui:updateOpenedGuis(updatedControllerEntity.backer_name)
   end
 end
