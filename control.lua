@@ -123,9 +123,11 @@ end)
 
 
 
-script.on_event({defines.events.on_gui_click                  ,
-                 defines.events.on_gui_elem_changed           ,
-                 defines.events.on_gui_selection_state_changed}, function(event)
+script.on_event({--defines.events.on_gui_elem_changed           , -- Called when element value is changed (choose element button)
+                 defines.events.on_gui_text_changed           , -- Called when text is changed by the player (textbox)
+                 defines.events.on_gui_value_changed          , -- Called when slider value is changed (slider)
+                 defines.events.on_gui_selection_state_changed, -- Called when selection state is changed (dropdown/listbox)
+                 defines.events.on_gui_click                  }, function(event)
   -- Called when the player clicks on a GUI.
   Traindepot     .Gui:onClickElement(event.element, event.player_index)
   Traincontroller.Gui:onClickElement(event.element, event.player_index)

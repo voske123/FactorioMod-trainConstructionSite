@@ -2,7 +2,11 @@ require "LSlib.lib"
 
 local guiLayout = LSlib.gui.layout.create("center")
 
-local guiFrame = LSlib.gui.layout.addFrame(guiLayout, "root", "traincontroller", "horizontal", {
+local guiFlow = LSlib.gui.layout.addFlow(guiLayout, "root", "traincontroller", "horizontal", {
+  style = "traincontroller_contentFlow", -- no padding
+})
+
+local guiFrame = LSlib.gui.layout.addFrame(guiLayout, guiFlow, "traincontroller-mainframe", "horizontal", {
   caption = {"item-name.traincontroller", {[1] = "item-name.trainassembly"}},
   style   = "frame_without_footer"       ,
 })
@@ -60,7 +64,7 @@ LSlib.gui.layout.addListbox(guiLayout, guiTabContent2, "selected-depot-list", {
 
 
 --------------------------------------------------------------------------------
--- statistics tab                                                         --
+-- statistics tab                                                             --
 --------------------------------------------------------------------------------
 local guiTabContent1 = LSlib.gui.layout.getTabContentFrameFlow(guiLayout, guiTabContent, 1)
 
@@ -76,12 +80,12 @@ LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-station-id", {
 local stationIDflow = LSlib.gui.layout.addFlow(guiLayout, statistics, "statistics-station-id-flow", "horizontal", {
   style = "centering_horizontal_flow",
 })
+LSlib.gui.layout.addLabel(guiLayout, stationIDflow, "statistics-station-id-value", {
+  caption = {"gui-traindepot.unused-depot-name"},
+})
 LSlib.gui.layout.addSpriteButton(guiLayout, stationIDflow, "statistics-station-id-edit", {
   sprite = "utility/rename_icon_small",
   style = "mini_button"               ,
-})
-LSlib.gui.layout.addLabel(guiLayout, stationIDflow, "statistics-station-id-value", {
-  caption = {"gui-traindepot.unused-depot-name"},
 })
 
 -- depot requests
@@ -116,5 +120,51 @@ controllerFlow = LSlib.gui.layout.addFlow(guiLayout, controllerFlow, "statistics
 })
 
 
+
+--------------------------------------------------------------------------------
+-- color picker                                                               --
+--------------------------------------------------------------------------------
+local colorPicker = LSlib.gui.layout.addFrame(guiLayout, guiFlow, "traincontroller-color-picker", "vertical", {
+  --hidden = true
+})
+
+for _,color in pairs{"red", "green", "blue"} do
+  local colorName = "traincontroller-color-picker-%s"
+
+  local colorPickerColorFlow = LSlib.gui.layout.addFlow(guiLayout, colorPicker, string.format(colorName, string.format("flow-%s", string.sub(color, 1, 1))), "horizontal", {
+    style = "centering_horizontal_flow",
+  })
+  LSlib.gui.layout.addLabel(guiLayout, colorPickerColorFlow, string.format(colorName, "label"), {
+    caption = string.upper(string.sub(color, 1, 1)),
+  })
+  LSlib.gui.layout.addSlider(guiLayout, colorPickerColorFlow, string.format(colorName, "slider"), {
+    minimum_value = 0  ,
+    maximum_value = 255,
+    value         = 127,
+
+    style         = string.format("%s_slider", color),
+  })
+  LSlib.gui.layout.addTextfield(guiLayout, colorPickerColorFlow, string.format(colorName, "textfield"), {
+    text    = "-1",
+    style = "slider_value_textfield",
+  })
+end
+
+local colorPickerButtonFlow = LSlib.gui.layout.addFlow(guiLayout, colorPicker, "traincontroller-color-picker-button-flow", "horizontal", {
+  style = "traincontroller_color_picker_button_flow",
+})
+LSlib.gui.layout.addButton(guiLayout, colorPickerButtonFlow, "traincontroller-color-picker-button-discard", {
+  caption = "discard",
+  tooltip = "discard changes",
+  style = "red_back_button"
+})
+local colorPicker = LSlib.gui.layout.addFrame(guiLayout, colorPickerButtonFlow, "traincontroller-color-picker-button-filler", "vertical", {
+  style = "traincontroller_button_filler",
+})
+LSlib.gui.layout.addButton(guiLayout, colorPickerButtonFlow, "traincontroller-color-picker-button-confirm", {
+  caption = "confirm",
+  tooltip = "save changes",
+  style = "confirm_button"
+})
 ----------------
 return guiLayout

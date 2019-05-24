@@ -74,12 +74,12 @@ LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-station-id", {
 local stationIDflow = LSlib.gui.layout.addFlow(guiLayout, statistics, "statistics-station-id-flow", "horizontal", {
   style = "centering_horizontal_flow",
 })
+LSlib.gui.layout.addLabel(guiLayout, stationIDflow, "statistics-station-id-value", {
+  caption = {"gui-traindepot.unused-depot-name"},
+})
 LSlib.gui.layout.addSpriteButton(guiLayout, stationIDflow, "statistics-station-id-edit", {
   sprite = "utility/rename_icon_small",
   style = "mini_button"               ,
-})
-LSlib.gui.layout.addLabel(guiLayout, stationIDflow, "statistics-station-id-value", {
-  caption = {"gui-traindepot.unused-depot-name"},
 })
 
 -- amount
@@ -123,7 +123,7 @@ local controllerList = LSlib.gui.layout.addScrollPane(guiLayout, guiTabContent1,
   vertical_scroll_policy   = "always"                                  ,
   style                    = "traindepot_controller_minimap_scrollpane",
 })
-controllerList = LSlib.gui.layout.addTable(guiLayout, controllerList, "statistics-builder-list", 2, {
+LSlib.gui.layout.addTable(guiLayout, controllerList, "statistics-builder-list", 2, {
   style = "traindepot_controller_minimap_table",
 })
 

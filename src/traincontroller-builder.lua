@@ -163,6 +163,11 @@ function Traincontroller.Builder:updateController(surfaceIndex, position)
   if controllerStatus == controllerStates["dispatch"] then
     -- assembling the train components together and let the train drive off
     if self:assembleNextTrain(trainBuilderIndex, controllerEntity.backer_name) then
+      -- update all traincontrollers with this name
+      local trainControllers = Traincontroller:getAllTrainControllers(controllerEntity.surface.index, controllerEntity.backer_name)
+      for _,trainController in pairs(trainControllers) do
+        Traincontroller.Gui:updateOpenedGuis(trainController, false)
+      end
       --game.print("Leaving train of length: "..#Trainassembly:getTrainBuilder(trainBuilderIndex))
       controllerStatus = controllerStates["dispatching"]
     end

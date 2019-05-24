@@ -1,4 +1,4 @@
-local createUtilityDirectionSprites = require "prototypes.guilayout.sprites"
+local createUtilityDirectionSprites = require "prototypes.gui.sprites.trainassembly-resultFluid"
 
 -- For each train type like item we want to make an equal fluid
 -- To accuire all the itemnames, we have to iterate over the entities
