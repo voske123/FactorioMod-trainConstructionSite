@@ -13,10 +13,8 @@ guiStyles["traindepot_contentFrame"] = {
     type = "vertical_flow_style",
     parent = "vertical_flow"    ,
 
-    minimal_width  = 400,
-    maximal_width  = 400,
-    minimal_height = 300,
-    maximal_height = 300,
+    width  = 400,
+    height = 300,
 
     bottom_padding = -8,
   }
@@ -74,8 +72,7 @@ guiStyles["traindepot_controller_minimap_table"] = {
   horizontally_squashable = "off",
   verticaly_squashable    = "off",
 
-  minimal_width = 356,
-  maximal_width = 356,
+  width = 356,
 }
 
 guiStyles["traindepot_controller_minimap_flow"] = {
@@ -89,10 +86,7 @@ guiStyles["traindepot_controller_minimap"] = {
   type = "minimap_style",
   parent = "minimap"    ,
 
-  minimal_width  = 160,
-  maximal_width  = 160,
-  minimal_height = 160,
-  maximal_height = 160,
+  size = 160,
 }
 
 guiStyles["traindepot_controller_minimap_button"] = {
@@ -101,10 +95,7 @@ guiStyles["traindepot_controller_minimap_button"] = {
 
   padding = 0,
 
-  minimal_width  = 8 + guiStyles["traindepot_controller_minimap"].minimal_width ,
-  maximal_width  = 8 + guiStyles["traindepot_controller_minimap"].maximal_width ,
-  minimal_height = 8 + guiStyles["traindepot_controller_minimap"].minimal_height,
-  maximal_heigh  = 8 + guiStyles["traindepot_controller_minimap"].maximal_height,
+  size = 8 + guiStyles["traindepot_controller_minimap"].size,
 }
 
 guiStyles["traindepot_select_name_list_box"] = {

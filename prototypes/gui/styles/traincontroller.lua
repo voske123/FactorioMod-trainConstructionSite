@@ -37,8 +37,7 @@ guiStyles["traincontroller_selected_entry_label"] = {
   parent        = "label"      ,
 
   left_padding  = 8  ,
-  minimal_width = 175,
-  maximal_width = 175,
+  width = 175,
 }
 
 guiStyles["traincontroller_configuration_scrollpane"] = {
@@ -46,7 +45,6 @@ guiStyles["traincontroller_configuration_scrollpane"] = {
   parent = "traindepot_controller_minimap_scrollpane",
 
   padding = 12,
-
   horizontally_stretchable = "on",
 }
 
@@ -61,7 +59,22 @@ guiStyles["traincontroller_color_picker_button_flow"] = {
   top_padding = 4
 }
 
-guiStyles["traincontroller_color_indicator"] = {
+guiStyles["traincontroller_color_indicator_button_housing"] = {
+  type = "button_style",
+  parent = "icon_button",
+
+  padding = 0,
+}
+
+guiStyles["traincontroller_color_indicator_button_housing_pressed"] = {
+  type = "button_style",
+  parent = "traincontroller_color_indicator_button_housing",
+
+  default_graphical_set = guiStyles["button"].clicked_graphical_set,
+  padding = guiStyles["traincontroller_color_indicator_button_housing"].padding - 1,
+}
+
+guiStyles["traincontroller_color_indicator_button_color"] = {
   type = "progressbar_style",
   --parent = "progressbar",
   bar_width = 36,
@@ -79,17 +92,36 @@ guiStyles["traincontroller_color_indicator"] = {
     size = {1, 13},
     scale = 1
   },
-  width=14,
-  height=35,
-  right_padding = 0,
-  left_padding = 0,
-  bottom_padding = 2
+
+  width=guiStyles["icon_button"].size - 2 * guiStyles["icon_button"].default_graphical_set.corner_size,
+  height=guiStyles["icon_button"].size - 2 * guiStyles["icon_button"].default_graphical_set.corner_size,
+
+  padding = 0,
+}
+
+guiStyles["traincontroller_color_indicator_button_sprite"] = {
+  type = "button_style",
+  parent = "traincontroller_color_indicator_button_housing",
+
+  default_graphical_set =
+  {
+    filename = "__core__/graphics/empty.png",
+    width = 1,
+    height = 1,
+  },
+
+  width  = guiStyles["traincontroller_color_indicator_button_color"].width ,
+  height = guiStyles["traincontroller_color_indicator_button_color"].height,
+
+  left_padding   = math.floor(0.5 + .1   * guiStyles["traincontroller_color_indicator_button_color"].width ),
+  rigth_padding  = math.floor(0.5 + .125 * guiStyles["traincontroller_color_indicator_button_color"].width ),
+  top_padding    = math.floor(0.5 + .125 * guiStyles["traincontroller_color_indicator_button_color"].height),
+  bottom_padding = math.floor(0.5 + .125 * guiStyles["traincontroller_color_indicator_button_color"].height),
 }
 
 guiStyles["traincontroller_button_filler"] = {
   type = "frame_style",
   parent = "LSlib_default_filler_frame",
 
-  minimal_height = guiStyles["dialog_button"].height,
-  maximal_height = guiStyles["dialog_button"].height,
+  height = guiStyles["dialog_button"].height,
 }

@@ -81,9 +81,10 @@ function Trainassembly:saveNewStructure(machineEntity)
   --         Now we can store our wanted data at this position
   global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] =
   {
-    ["entity"]            = machineEntity,           -- the entity
-    ["direction"]         = machineEntity.direction, -- the direction its facing
-    ["createdEntity"]     = nil,                     -- the created train entity from this building
+    ["entity"           ] = machineEntity,           -- the entity
+    ["direction"        ] = machineEntity.direction, -- the direction its facing
+    ["trainColor"       ] = LSlib.utils.table.convertRGBA{r = 234, g = 17, b = 0}, -- the color of the train entity when it will be created
+    ["createdEntity"    ] = nil,                     -- the created train entity from this building
     ["trainBuilderIndex"] = nil,                     -- the trainBuilder it belongs to (see further down)
   }
 
@@ -485,6 +486,33 @@ end
 
 
 
+function Trainassembly:setMachineTint(machineEntity, tintColor)
+
+  if not (machineEntity and machineEntity.valid) then
+    return nil
+  end
+  local machineSurface  = machineEntity.surface
+  if not global.TA_data["trainAssemblers"][machineSurface.index] then
+    return nil
+  end
+  local machinePosition = machineEntity.position
+  if not global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y] then
+    return nil
+  end
+  if not global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] then
+    return nil
+  end
+
+  global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainColor"] = {
+    r = tintColor.r or 0,
+    g = tintColor.g or 0,
+    b = tintColor.b or 0,
+  }
+
+end
+
+
+
 function Trainassembly:setCreatedEntity(machineSurfaceIndex, machinePosition, createdEntity)
   -- STEP 1: If we don't have a trainBuilder saved on that surface, or not
   --         on that y position or on that x position, it means that we don't
@@ -584,6 +612,34 @@ function Trainassembly:getMachineDirection(machineEntity)
   -- STEP 3: In step 2 we checked for an invalid data structure. So now we
   --         can return the direction the machine is/was facing.
   return global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["direction"]
+end
+
+
+
+function Trainassembly:getMachineTint(machineEntity)
+  -- STEP 1: If the machineEntity isn't valid, its position isn't valid either
+  if not (machineEntity and machineEntity.valid) then
+    return nil
+  end
+
+  -- STEP 2: If we don't have a trainBuilder saved on that surface, or not
+  --         on that y position or on that x position, it means that we don't
+  --         have a direction available for that machine.
+  local machineSurface = machineEntity.surface
+  if not global.TA_data["trainAssemblers"][machineSurface.index] then
+    return nil
+  end
+  local machinePosition = machineEntity.position
+  if not global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y] then
+    return nil
+  end
+  if not global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] then
+    return nil
+  end
+
+  -- STEP 3: In step 2 we checked for an invalid data structure. So now we
+  --         can return the direction the machine is/was facing.
+  return global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainColor"]
 end
 
 
@@ -919,6 +975,7 @@ function Trainassembly:onRemoveEntity(removedEntity)
 end
 
 
+
 -- When a player rotates an entity
 function Trainassembly:onPlayerRotatedEntity(rotatedEntity)
   -- The player rotated the machine entity +/-90 degrees, the building can only be
@@ -940,5 +997,14 @@ function Trainassembly:onPlayerRotatedEntity(rotatedEntity)
     if createdTrainEntity and createdTrainEntity.valid then
       createdTrainEntity.rotate()
     end
+  end
+end
+
+
+
+function Trainassembly:onPlayerChangedSettings(sourceEntity, destinationEntity)
+  if sourceEntity     .name == self:getMachineEntityName() and
+     destinationEntity.name == self:getMachineEntityName() then
+    self:setMachineTint(destinationEntity, self:getMachineTint(sourceEntity))
   end
 end

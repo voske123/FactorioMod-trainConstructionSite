@@ -125,7 +125,7 @@ controllerFlow = LSlib.gui.layout.addFlow(guiLayout, controllerFlow, "statistics
 -- color picker                                                               --
 --------------------------------------------------------------------------------
 local colorPicker = LSlib.gui.layout.addFrame(guiLayout, guiFlow, "traincontroller-color-picker", "vertical", {
-  --hidden = true
+  visible = false
 })
 
 for _,color in pairs{"red", "green", "blue"} do
@@ -154,16 +154,16 @@ local colorPickerButtonFlow = LSlib.gui.layout.addFlow(guiLayout, colorPicker, "
   style = "traincontroller_color_picker_button_flow",
 })
 LSlib.gui.layout.addButton(guiLayout, colorPickerButtonFlow, "traincontroller-color-picker-button-discard", {
-  caption = "discard",
-  tooltip = "discard changes",
+  caption = {"gui-traincontroller.discard"},
+  tooltip = {"discard-changes"},
   style = "red_back_button"
 })
 local colorPicker = LSlib.gui.layout.addFrame(guiLayout, colorPickerButtonFlow, "traincontroller-color-picker-button-filler", "vertical", {
   style = "traincontroller_button_filler",
 })
 LSlib.gui.layout.addButton(guiLayout, colorPickerButtonFlow, "traincontroller-color-picker-button-confirm", {
-  caption = "confirm",
-  tooltip = "save changes",
+  caption = {"gui-traincontroller.confirm"},
+  tooltip = {"gui-traincontroller.confirm-tooltip"},
   style = "confirm_button"
 })
 ----------------

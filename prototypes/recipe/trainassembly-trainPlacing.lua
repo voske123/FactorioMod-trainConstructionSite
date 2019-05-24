@@ -20,7 +20,7 @@ for _, trainType in pairs({
       data:extend{
         {
           type = "recipe",
-          name = itemName .. "-fluid[" .. trainType .. "]",
+          name = trainEntity.name .. "-fluid[" .. trainType .. "]",
           category = "trainassembling",
           expensive = nil,
           normal =

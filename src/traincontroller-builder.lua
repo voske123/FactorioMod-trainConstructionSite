@@ -241,7 +241,7 @@ function Traincontroller.Builder:buildNextTrain(trainBuilderIndex)
       local machineRecipe = machineEntity.get_recipe()
       if not machineRecipe then return false end
       local buildEntityName = LSlib.utils.string.split(machineRecipe.name, "[")[1]
-      local buildEntityName = buildEntityName:sub(1, buildEntityName:len()-6)
+      buildEntityName = buildEntityName:sub(1, buildEntityName:len()-6)
 
       -- get the maybe already existing entity
       local createdEntity = Trainassembly:getCreatedEntity(builderLocation["surfaceIndex"], builderLocation["position"])

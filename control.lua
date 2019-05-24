@@ -86,6 +86,7 @@ end)
 
 script.on_event(defines.events.on_entity_settings_pasted, function(event)
   -- Called after entity copy-paste is done.
+  Trainassembly  :onPlayerChangedSettings(event.source     , event.destination )
   Traincontroller:onPlayerChangedSettings(event.destination, event.player_index)
 end)
 

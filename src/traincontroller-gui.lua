@@ -29,7 +29,7 @@ end
 
 
 
-local trainControllerGui = require("prototypes.gui.layout.traincontroller")
+local trainControllerGui = require "prototypes.gui.layout.traincontroller"
 function Traincontroller.Gui:initPrototypeData()
   -- tabButtonPath
   local tabButtonPath = {}
@@ -53,6 +53,8 @@ function Traincontroller.Gui:initPrototypeData()
     "statistics-depot-request-value"       , -- depot request amount
     "statistics-builder-status-value"      , -- controller status
     "statistics-builder-configuration-flow", -- controller configuration
+
+    "traincontroller-color-picker"         , -- color picking frame
   } do
     updateElementPath[statisticsTabElementName] = LSlib.gui.layout.getElementPath(trainControllerGui, statisticsTabElementName)
   end
@@ -144,6 +146,179 @@ function Traincontroller.Gui:initClickHandlerData()
     })
   end
 
+
+
+  clickHandlers["statistics-builder-configuration-button-color"] = function(clickedElement, playerIndex)
+    local clickedElementStyle = "traincontroller_color_indicator_button_housing"
+    local colorPickerFrame = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("traincontroller-color-picker"))
+
+    if clickedElement.style.name == clickedElementStyle then
+      if colorPickerFrame.visible then
+        -- another picker is open, we simulate clicking the discard button
+        clickHandlers["traincontroller-color-picker-button-discard"](clickedElement, playerIndex)
+      end
+
+      -- set the button as selected
+      clickedElement.style = clickedElement.style.name .. "_pressed"
+
+      -- set the color picker ui visible
+      colorPickerFrame.visible = true
+
+      -- set the colorPicker to the currently active color
+      local color = clickedElement[clickedElement.name].style.color or {}
+      local colorName = "traincontroller-color-picker-%s"
+      for _, colorIndex in pairs{"r", "g", "b"} do
+        local colorPickerIndexFrame = colorPickerFrame[string.format(colorName, "flow-"..colorIndex)]
+        local colorPickerIndexValue = math.floor(.5 + (color[colorIndex] or 0) * 255)
+        colorPickerIndexFrame[string.format(colorName, "slider"   )].slider_value = colorPickerIndexValue
+        colorPickerIndexFrame[string.format(colorName, "textfield")].text         = colorPickerIndexValue
+      end
+
+
+    else
+      -- simulate clicking the discard button
+      clickHandlers["traincontroller-color-picker-button-discard"](clickedElement, playerIndex)
+    end
+  end
+
+
+
+  ------------------------------------------------------------------------------
+  -- color pickers
+  ------------------------------------------------------------------------------
+  clickHandlers["traincontroller-color-picker-button-discard"] = function(clickedElement, playerIndex)
+
+    -- STEP 1: set color picker hidden
+    LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("traincontroller-color-picker")).visible = false
+
+    -- STEP 2: find the selected one
+    local clickedElementStyle        = "traincontroller_color_indicator_button_housing"
+    local clickedElementPressedStyle = clickedElementStyle.."_pressed"
+    local configurationElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-configuration-flow"))
+
+    for _, assemblerElementIndex in pairs(configurationElement.children_names) do
+      local colorElement = configurationElement[assemblerElementIndex]["statistics-builder-configuration-button-color"]
+      if colorElement.style.name == clickedElementPressedStyle then
+        -- found the selected one
+
+        -- STEP 3: reset the color button
+        colorElement.style = clickedElementStyle
+
+        local trainAssemblerLocation = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(self:getOpenedEntity(playerIndex)))[tonumber(assemblerElementIndex)]
+        colorElement[colorElement.name].style.color = Trainassembly:getMachineTint(Trainassembly:getMachineEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position))
+
+        break -- no need to look further
+      end
+    end
+  end
+
+
+
+  clickHandlers["traincontroller-color-picker-button-confirm"] = function(clickedElement, playerIndex)
+
+    -- STEP 1: set color picker hidden
+    LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("traincontroller-color-picker")).visible = false
+
+    -- STEP 2: find the selected one
+    local clickedElementStyle        = "traincontroller_color_indicator_button_housing"
+    local clickedElementPressedStyle = clickedElementStyle.."_pressed"
+    local configurationElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-configuration-flow"))
+
+    for _, assemblerElementIndex in pairs(configurationElement.children_names) do
+      local colorElement = configurationElement[assemblerElementIndex]["statistics-builder-configuration-button-color"]
+      if colorElement.style.name == clickedElementPressedStyle then
+        -- found the selected one
+
+        -- STEP 3: reset the color button
+        colorElement.style = clickedElementStyle
+
+        -- STEP 4: save the machine tint
+        local trainAssemblerLocation = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(self:getOpenedEntity(playerIndex)))[tonumber(assemblerElementIndex)]
+        Trainassembly:setMachineTint(Trainassembly:getMachineEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position), colorElement[colorElement.name].style.color)
+
+        break -- no need to look further
+      end
+    end
+
+  end
+
+
+
+  clickHandlers["traincontroller-color-picker-textfield"] = function(clickedElement, playerIndex)
+    local clickedElementValue = clickedElement.text
+    clickedElementValue = tonumber(clickedElementValue ~= "" and clickedElementValue or "0") -- if "", we assume 0
+    local oldClickedElementValue = clickedElementValue
+    if clickedElementValue then -- valid number
+
+      -- STEP1: make sure the value is within limits
+      if clickedElementValue < 0   then
+        clickedElementValue = 0
+      elseif clickedElementValue > 255 then
+        clickedElementValue = 255
+      else
+        clickedElementValue = math.floor(.5 + clickedElementValue)
+      end
+      if clickedElementValue ~= oldClickedElementValue then
+        -- only update if needed
+        clickedElement.text = clickedElementValue
+      end
+
+      -- STEP2: set the slider value
+      clickedElement.parent["traincontroller-color-picker-slider"].slider_value = clickedElementValue
+
+      -- STEP3: update the color button
+      local clickedElementStyle        = "traincontroller_color_indicator_button_housing"
+      local clickedElementPressedStyle = clickedElementStyle.."_pressed"
+      local configurationElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-configuration-flow"))
+
+      for _, assemblerElementIndex in pairs(configurationElement.children_names) do
+        local colorElement = configurationElement[assemblerElementIndex]["statistics-builder-configuration-button-color"]
+        if colorElement.style.name == clickedElementPressedStyle then
+          -- found the selected one
+
+          local color = colorElement[colorElement.name].style.color
+          color[string.sub(clickedElement.parent.name, -1)] = clickedElementValue/255
+          colorElement[colorElement.name].style.color = color
+
+          break -- no need to look further
+        end
+      end
+
+    else -- invalid number
+      -- reset the content of the element to the value on the slider
+      clickedElement.text = math.floor(.5 + clickedElement.parent["traincontroller-color-picker-slider"].slider_value)
+    end
+  end
+
+
+
+  clickHandlers["traincontroller-color-picker-slider"] = function(clickedElement, playerIndex)
+    -- STEP 1: update the textfield
+    local clickedElementValue = math.floor(.5 + clickedElement.slider_value)
+    clickedElement.parent["traincontroller-color-picker-textfield"].text = clickedElementValue
+
+    -- STEP 2: update the color button
+    local clickedElementStyle        = "traincontroller_color_indicator_button_housing"
+    local clickedElementPressedStyle = clickedElementStyle.."_pressed"
+    local configurationElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-configuration-flow"))
+
+    for _, assemblerElementIndex in pairs(configurationElement.children_names) do
+      local colorElement = configurationElement[assemblerElementIndex]["statistics-builder-configuration-button-color"]
+      if colorElement.style.name == clickedElementPressedStyle then
+        -- found the selected one
+
+        local color = colorElement[colorElement.name].style.color
+        color[string.sub(clickedElement.parent.name, -1)] = clickedElementValue/255
+        colorElement[colorElement.name].style.color = color
+
+        break -- no need to look further
+      end
+    end
+
+  end
+
+
+
   ------------------------------------------------------------------------------
   -- select train depot name
   ------------------------------------------------------------------------------
@@ -167,6 +342,8 @@ function Traincontroller.Gui:initClickHandlerData()
     local tabToOpen = "traincontroller-tab-statistics"
     clickHandlers[tabToOpen](LSlib.gui.getElement(playerIndex, self:getTabElementPath(tabToOpen)), playerIndex)
   end
+
+
 
   --------------------
   return clickHandlers
@@ -309,8 +486,6 @@ function Traincontroller.Gui:updateGuiInfo(playerIndex)
   for trainAssemblerIndex,trainAssemblerLocation in trainBuilderIterator(trainBuilder) do
     local trainAssembler = Trainassembly:getMachineEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position)
     if trainAssembler and trainAssembler.valid then
-      local trainAssemblerRecipe = trainAssembler.get_recipe()
-
       local flow = configurationElement.add{
         type      = "flow",
         name      = string.format("%i", trainAssemblerIndex),
@@ -318,16 +493,48 @@ function Traincontroller.Gui:updateGuiInfo(playerIndex)
         style     = "traincontroller_configuration_flow",
       }
 
-      flow.add{
-        type   = "sprite-button",
-        name   = "statistics-builder-configuration-button-recipe",
-        sprite = trainAssemblerRecipe and string.format("%s-%s", trainAssemblerRecipe.products[1].name, trainAssembler.direction == controllerDirection and "L" or "R"),
-      }
-      flow.add{
-        type   = "sprite-button",
-        name   = "statistics-builder-configuration-button-rotate",
-        sprite = "utility/refresh",
-      }
+      local trainAssemblerRecipe = trainAssembler.get_recipe()
+      if trainAssemblerRecipe then
+        flow.add{
+          type   = "sprite-button",
+          name   = "statistics-builder-configuration-button-recipe",
+          sprite = string.format("fluid/%s", trainAssemblerRecipe.products[1].name),
+        }
+
+        local trainAssemblyType = LSlib.utils.string.split(trainAssemblerRecipe.name, "[")[2]
+        trainAssemblyType = trainAssemblyType:sub(1, trainAssemblyType:len()-1)
+        if trainAssemblyType == "locomotive"      or
+           trainAssemblyType == "artillery-wagon" then
+          flow.add{
+            type    = "sprite-button",
+            name    = "statistics-builder-configuration-button-rotate",
+            tooltip = {"controls.rotate"},
+            sprite  = string.format("traincontroller-orientation-%s", trainAssembler.direction == controllerDirection and "L" or "R"),
+          }
+
+          if trainAssemblyType == "locomotive" then
+            flow.add{
+              type  = "button",
+              name  = "statistics-builder-configuration-button-color",
+              --tooltip = {"controls.rotate"},
+              style = "traincontroller_color_indicator_button_housing",
+            }.add{
+              type  = "progressbar",
+              name  = "statistics-builder-configuration-button-color",
+              value = 1,
+              style = "traincontroller_color_indicator_button_color",
+              ignored_by_interaction = true,
+            }.add{
+              type   = "sprite-button",
+              name   = "statistics-builder-configuration-button-color",
+              sprite = "utility/color_picker",
+              style  = "traincontroller_color_indicator_button_sprite",
+              ignored_by_interaction = true,
+            }.parent.style.color = Trainassembly:getMachineTint(trainAssembler)
+          end
+        end
+      end
+
     end
   end
 
@@ -347,6 +554,11 @@ function Traincontroller.Gui:updateGuiInfo(playerIndex)
       depotEntriesList.selected_index = itemIndex
     end
     itemIndex = itemIndex + 1
+  end
+
+  -- color picker --------------------------------------------------------------
+  if LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("traincontroller-color-picker")).visible then
+    game.print("update visible")
   end
 
 end

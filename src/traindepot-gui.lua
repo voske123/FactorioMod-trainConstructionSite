@@ -29,7 +29,7 @@ end
 
 
 
-local trainDepotGui = require("prototypes.gui.layout.traindepot")
+local trainDepotGui = require "prototypes.gui.layout.traindepot"
 function Traindepot.Gui:initPrototypeData()
   -- tabButtonPath
   local tabButtonPath = {}

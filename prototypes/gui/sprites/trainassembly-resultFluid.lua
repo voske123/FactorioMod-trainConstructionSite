@@ -7,7 +7,7 @@ return function(fluidName, makeUtilityDirectionSprites)
     priority = nil     , -- default to medium
     layers   = {}      ,
   }
-  for iconLayerIndex,iconLayer in pairs(LSlib.item.getIcons("fluid", fluidName)) do
+  for iconLayerIndex,iconLayer in pairs(LSlib.item.getIcons("fluid", fluidName, nil, {0, -16}, nil)) do
     utilitySprite.layers[iconLayerIndex] = {
       filename = iconLayer.icon     ,
       width    = iconLayer.icon_size,
@@ -28,9 +28,10 @@ return function(fluidName, makeUtilityDirectionSprites)
         width    = 64,
         height   = 64,
         scale    = .5,
+        shift    = {0, 32},
         flags    = {
           "icon",
-          "no-crop"
+          --"no-crop"
         },
       })
     end
