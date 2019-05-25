@@ -19,11 +19,11 @@ end
 -- Initiation of the global data
 function Traincontroller.Gui:initGlobalData()
   local gui = {
-    ["version"      ] = 1, -- version of the global data
-    ["surfaceName"  ] = "trainConstructionSite",
-    ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
-    ["clickHandler" ] = self:initClickHandlerData(),
-    ["openedEntity" ] = {} -- opened entity for each player
+    ["version"       ] = 1, -- version of the global data
+    ["surfaceName"   ] = "trainConstructionSite",
+    ["prototypeData" ] = self:initPrototypeData(), -- data storing info about the prototypes
+    ["clickHandler"  ] = self:initClickHandlerData(),
+    ["openedEntities"] = {} -- opened entity for each player
   }
 
   return util.table.deepcopy(gui)
@@ -69,6 +69,8 @@ function Traincontroller.Gui:initPrototypeData()
     -- gui element paths (derived from layout)
     ["tabButtonPath"     ] = tabButtonPath     ,
     ["updateElementPath" ] = updateElementPath ,
+
+    ["recipeSelector"    ] = Trainassembly:getMachineEntityName() .. "-recipe-selector"
   }
 end
 
@@ -177,22 +179,21 @@ function Traincontroller.Gui:initClickHandlerData()
 
 
   --[[clickHandlers["statistics-builder-configuration-button-recipe"] = function(clickedElement, playerIndex)
-    --game.get_player(playerIndex).print("clicked!")
-    local trainAssemblerIndex = tonumber(clickedElement.parent.name)
-    local trainBuilder = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(self:getOpenedEntity(playerIndex)))
-    local trainAssemblerLocation = trainBuilder[trainAssemblerIndex]
-    local trainAssembler = Trainassembly:getMachineEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position)
-
-    game.get_player(playerIndex).print(trainAssembler.get_recipe().products[1].name)
-    trainAssembler.set_recipe(nil) -- remove recipe
-    game.get_player(playerIndex).opened = trainAssembler -- open the UI
+    local player = game.get_player(playerIndex)
+    local recipeEntity =  player.surface.create_entity{
+      name     = self:getRecipeSelectorEntityName(),
+      position = player.position,
+      force    = player.force,
+    }
+    self:setOpenedRecipeEntity(playerIndex, recipeEntity)
+    player.opened = recipeEntity
   end]]
 
 
 
   clickHandlers["statistics-builder-configuration-button-rotate"] = function(clickedElement, playerIndex)
     -- get the trainbuilder
-    local trainBuilder = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(self:getOpenedEntity(playerIndex)))
+    local trainBuilder = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(self:getOpenedControllerEntity(playerIndex)))
     if not trainBuilder then return end
 
     -- get the assembler
@@ -303,7 +304,7 @@ function Traincontroller.Gui:initClickHandlerData()
         -- STEP 3: reset the color button
         colorElement.style = clickedElementStyle
 
-        local trainBuilder = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(self:getOpenedEntity(playerIndex)))
+        local trainBuilder = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(self:getOpenedControllerEntity(playerIndex)))
         if trainBuilder then
           local trainAssemblerLocation = trainBuilder[tonumber(assemblerElementIndex)]
           colorElement[colorElement.name].style.color = Trainassembly:getMachineTint(Trainassembly:getMachineEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position))
@@ -346,7 +347,7 @@ function Traincontroller.Gui:initClickHandlerData()
         colorElement.style = clickedElementStyle
 
         -- STEP 4: save the machine tint
-        local trainAssemblerLocation = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(self:getOpenedEntity(playerIndex)))[tonumber(assemblerElementIndex)]
+        local trainAssemblerLocation = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(self:getOpenedControllerEntity(playerIndex)))[tonumber(assemblerElementIndex)]
         Trainassembly:setMachineTint(Trainassembly:getMachineEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position), colorElement[colorElement.name].style.color)
 
         break -- no need to look further
@@ -491,7 +492,7 @@ function Traincontroller.Gui:initClickHandlerData()
 
 
   clickHandlers["selected-depot-enter"] = function(clickedElement, playerIndex)
-    local controllerEntity  = self:getOpenedEntity(playerIndex)
+    local controllerEntity  = self:getOpenedControllerEntity(playerIndex)
     local oldControllerName = controllerEntity.backer_name
     local newControllerName = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("selected-depot-name")).caption
 
@@ -516,8 +517,20 @@ end
 --------------------------------------------------------------------------------
 -- Setter functions to alter data into the data structure
 --------------------------------------------------------------------------------
-function Traincontroller.Gui:setOpenedEntity(playerIndex, openedEntity)
-  global.TC_data.Gui["openedEntity"][playerIndex] = openedEntity
+function Traincontroller.Gui:setOpenedControllerEntity(playerIndex, openedEntity)
+  if not global.TC_data.Gui["openedEntities"][playerIndex] then
+    global.TC_data.Gui["openedEntities"][playerIndex] = {}
+  end
+  global.TC_data.Gui["openedEntities"][playerIndex]["traincontroller"] = openedEntity
+end
+
+
+
+function Traincontroller.Gui:setOpenedRecipeEntity(playerIndex, openedEntity)
+  if not global.TC_data.Gui["openedEntities"][playerIndex] then
+    global.TC_data.Gui["openedEntities"][playerIndex] = {}
+  end
+  global.TC_data.Gui["openedEntities"][playerIndex]["traincontroller-recipe"] = openedEntity
 end
 
 
@@ -533,6 +546,12 @@ end
 
 function Traincontroller.Gui:getControllerGuiLayout()
   return global.TC_data.Gui["prototypeData"]["trainControllerGui"]
+end
+
+
+
+function Traincontroller.Gui:getRecipeSelectorEntityName()
+  return global.TC_data.Gui["prototypeData"]["recipeSelector"]
 end
 
 
@@ -561,7 +580,7 @@ end
 
 
 function Traincontroller.Gui:getOpenedControllerStatusString(playerIndex)
-  local controllerStatus = Traincontroller.Builder:getControllerStatus(self:getOpenedEntity(playerIndex))
+  local controllerStatus = Traincontroller.Builder:getControllerStatus(self:getOpenedControllerEntity(playerIndex))
   local controllerStates  = global.TC_data.Builder["builderStates"]
 
   if controllerStatus == controllerStates["idle"] then
@@ -585,14 +604,28 @@ end
 
 
 
-function Traincontroller.Gui:getOpenedEntity(playerIndex)
-  return global.TC_data.Gui["openedEntity"][playerIndex]
+function Traincontroller.Gui:getOpenedControllerEntity(playerIndex)
+  if global.TC_data.Gui["openedEntities"][playerIndex] then
+    return global.TC_data.Gui["openedEntities"][playerIndex]["traincontroller"]
+  else
+    return nil
+  end
+end
+
+
+
+function Traincontroller.Gui:getOpenedRecipeEntity(playerIndex)
+  if global.TC_data.Gui["openedEntities"][playerIndex] then
+    return global.TC_data.Gui["openedEntities"][playerIndex]["traincontroller-recipe"]
+  else
+    return nil
+  end
 end
 
 
 
 function Traincontroller.Gui:hasOpenedGui(playerIndex)
-  return self:getOpenedEntity(playerIndex) and true or false
+  return self:getOpenedControllerEntity(playerIndex) and true or false
 end
 
 
@@ -626,7 +659,7 @@ function Traincontroller.Gui:updateGuiInfo(playerIndex)
   if not trainDepotGui then return end -- gui was not created, nothing to update
 
   -- data from the traindepo we require to update
-  local openedEntity           = self:getOpenedEntity(playerIndex)
+  local openedEntity           = self:getOpenedControllerEntity(playerIndex)
   if not (openedEntity and openedEntity.valid) then
     self:onCloseEntity(trainDepotGui, playerIndex)
   end
@@ -792,7 +825,7 @@ end
 function Traincontroller.Gui:updateOpenedGuis(updatedControllerEntity, upgradeDepots)
 
   for _,player in pairs(game.connected_players) do -- no need to check all players
-    local openedEntity = self:getOpenedEntity(player.index)
+    local openedEntity = self:getOpenedControllerEntity(player.index)
     if openedEntity then
       if openedEntity.valid and openedEntity.health > 0 then
         if openedEntity == updatedControllerEntity then
@@ -818,7 +851,7 @@ end
 -- When a player opens a gui
 function Traincontroller.Gui:onOpenEntity(openedEntity, playerIndex)
   if openedEntity and openedEntity.name == Traincontroller:getControllerEntityName() then
-    self:setOpenedEntity(playerIndex, openedEntity)
+    self:setOpenedControllerEntity(playerIndex, openedEntity)
     game.players[playerIndex].opened = self:createGui(playerIndex)
   end
 end
@@ -827,9 +860,14 @@ end
 
 -- When a player opens/closes a gui
 function Traincontroller.Gui:onCloseEntity(openedGui, playerIndex)
-  if openedGui and openedGui.valid and openedGui.name == self:getGuiName() then
-    game.players[playerIndex].opened = self:destroyGui(playerIndex)
-    self:setOpenedEntity(playerIndex, nil)
+  if openedGui and openedGui.valid then
+    if openedGui.name == self:getGuiName() then
+      game.players[playerIndex].opened = self:destroyGui(playerIndex)
+      self:setOpenedControllerEntity(playerIndex, nil)
+
+    elseif openedGui.name == self:getRecipeSelectorEntityName() then
+      -- TODO... at some point if I can get it working
+    end
   end
 end
 

@@ -2,7 +2,7 @@ require "LSlib.lib"
 
 local guiLayout = LSlib.gui.layout.create("center")
 
-local guiFlow = LSlib.gui.layout.addFlow(guiLayout, "root", "traincontroller", "horizontal", {
+local guiFlow = LSlib.gui.layout.addFlow(guiLayout, "root", "traincontroller-gui", "horizontal", {
   style = "traincontroller_contentFlow", -- no padding
 })
 

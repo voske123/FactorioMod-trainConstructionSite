@@ -2,7 +2,7 @@ require "LSlib.lib"
 
 local guiLayout = LSlib.gui.layout.create("center")
 
-local guiFrame = LSlib.gui.layout.addFrame(guiLayout, "root", "traindepot", "horizontal", {
+local guiFrame = LSlib.gui.layout.addFrame(guiLayout, "root", "traindepot-gui", "horizontal", {
   caption = {"item-name.traindepot"},
   style   = "frame_without_footer"  ,
 })
