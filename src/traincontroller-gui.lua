@@ -293,7 +293,7 @@ function Traincontroller.Gui:initClickHandlerData()
 
     for _, assemblerElementIndex in pairs(configurationElement.children_names) do
       local colorElement = configurationElement[assemblerElementIndex]["statistics-builder-configuration-button-color"]
-      if colorElement.style.name == clickedElementPressedStyle then
+      if colorElement and colorElement.style.name == clickedElementPressedStyle then
         -- found the selected one
 
         -- STEP 3: reset the color button
@@ -332,7 +332,7 @@ function Traincontroller.Gui:initClickHandlerData()
 
     for _, assemblerElementIndex in pairs(configurationElement.children_names) do
       local colorElement = configurationElement[assemblerElementIndex]["statistics-builder-configuration-button-color"]
-      if colorElement.style.name == clickedElementPressedStyle then
+      if colorElement and colorElement.style.name == clickedElementPressedStyle then
         -- found the selected one
 
         -- STEP 3: reset the color button
@@ -384,7 +384,7 @@ function Traincontroller.Gui:initClickHandlerData()
       local color
       for _, assemblerElementIndex in pairs(configurationElement.children_names) do
         local colorElement = configurationElement[assemblerElementIndex]["statistics-builder-configuration-button-color"]
-        if colorElement.style.name == clickedElementPressedStyle then
+        if colorElement and colorElement.style.name == clickedElementPressedStyle then
           -- found the selected one
 
           color = colorElement[colorElement.name].style.color
@@ -439,7 +439,7 @@ function Traincontroller.Gui:initClickHandlerData()
     local color
     for _, assemblerElementIndex in pairs(configurationElement.children_names) do
       local colorElement = configurationElement[assemblerElementIndex]["statistics-builder-configuration-button-color"]
-      if colorElement.style.name == clickedElementPressedStyle then
+      if colorElement and colorElement.style.name == clickedElementPressedStyle then
         -- found the selected one
 
         color = colorElement[colorElement.name].style.color
