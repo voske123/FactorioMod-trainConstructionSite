@@ -4,17 +4,15 @@ require "src.traindepot"
 require "src.trainassembly"
 require "src.traincontroller"
 
+Debug.enabled = true -- only when debugging
+
 script.on_init(function(event)
   -- This is called once when a new save game is created or once
   -- when a save file is loaded that previously didn't contain the mod.
+  Debug          :onInit()
   Traindepot     :onInit()
   Trainassembly  :onInit()
   Traincontroller:onInit()
-
-  if Debug.enabled then
-    -- Terraforming the land to fit our debugging needs
-    Debug:onMapCreated()
-  end
 end)
 
 
@@ -34,11 +32,7 @@ end)
 
 script.on_event(defines.events.on_player_created, function(event)
   -- Called after the new player was created.
-  if Debug.enabled then
-    -- Insert items we want for debugging purposes
-    Debug:onPlayerCreated(event.player_index)
-  end
-
+  Debug              :onPlayerCreated(event.player_index)
   Traincontroller.Gui:onPlayerCreated(event.player_index)
 end)
 
@@ -59,7 +53,6 @@ script.on_event({defines.events.on_built_entity      ,
   local createdEntity = event.created_entity or event.entity
   if createdEntity and createdEntity.valid then
     local playerIndex = event.player_index
-
     Traindepot     :onBuildEntity(createdEntity)
     Trainassembly  :onBuildEntity(createdEntity, playerIndex)
     Traincontroller:onBuildEntity(createdEntity, playerIndex)

@@ -174,6 +174,8 @@ function Traincontroller.Gui:initClickHandlerData()
     clickHandlers[tabToOpen](LSlib.gui.getElement(playerIndex, self:getTabElementPath(tabToOpen)), playerIndex) -- mimic tab pressed
   end
 
+
+
   --[[clickHandlers["statistics-builder-configuration-button-recipe"] = function(clickedElement, playerIndex)
     --game.get_player(playerIndex).print("clicked!")
     local trainAssemblerIndex = tonumber(clickedElement.parent.name)
@@ -185,6 +187,8 @@ function Traincontroller.Gui:initClickHandlerData()
     trainAssembler.set_recipe(nil) -- remove recipe
     game.get_player(playerIndex).opened = trainAssembler -- open the UI
   end]]
+
+
 
   clickHandlers["statistics-builder-configuration-button-rotate"] = function(clickedElement, playerIndex)
     -- get the trainbuilder
@@ -299,8 +303,11 @@ function Traincontroller.Gui:initClickHandlerData()
         -- STEP 3: reset the color button
         colorElement.style = clickedElementStyle
 
-        local trainAssemblerLocation = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(self:getOpenedEntity(playerIndex)))[tonumber(assemblerElementIndex)]
-        colorElement[colorElement.name].style.color = Trainassembly:getMachineTint(Trainassembly:getMachineEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position))
+        local trainBuilder = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(self:getOpenedEntity(playerIndex)))
+        if trainBuilder then
+          local trainAssemblerLocation = trainBuilder[tonumber(assemblerElementIndex)]
+          colorElement[colorElement.name].style.color = Trainassembly:getMachineTint(Trainassembly:getMachineEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position))
+        end
 
         break -- no need to look further
       end
@@ -481,6 +488,8 @@ function Traincontroller.Gui:initClickHandlerData()
     LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("selected-depot-name")).caption = listboxElement.get_item(listboxElement.selected_index)
   end
 
+
+
   clickHandlers["selected-depot-enter"] = function(clickedElement, playerIndex)
     local controllerEntity  = self:getOpenedEntity(playerIndex)
     local oldControllerName = controllerEntity.backer_name
@@ -647,6 +656,25 @@ function Traincontroller.Gui:updateGuiInfo(playerIndex)
 
   -- configuration
   local configurationElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-configuration-flow"))
+
+  local colorPickerSelectedIndex -- extract the selected element first, required for the color picker
+  local configurationElementCount = #configurationElement.children_names
+  local colorPickerFrame = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("traincontroller-color-picker"))
+  local clickedElementStyle        = "traincontroller_color_indicator_button_housing"
+  local clickedElementPressedStyle = clickedElementStyle.."_pressed"
+
+  if colorPickerFrame.visible then
+    for _, assemblerElementIndex in pairs(configurationElement.children_names) do
+      local colorElement = configurationElement[assemblerElementIndex]["statistics-builder-configuration-button-color"]
+      if colorElement and colorElement.style.name == clickedElementPressedStyle then
+        -- found the selected one
+        colorPickerSelectedIndex = assemblerElementIndex
+
+        break -- no need to look further
+      end
+    end
+  end
+
   configurationElement.clear()
   for trainAssemblerIndex,trainAssemblerLocation in trainBuilderIterator(trainBuilder) do
     local trainAssembler = Trainassembly:getMachineEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position)
@@ -679,10 +707,10 @@ function Traincontroller.Gui:updateGuiInfo(playerIndex)
 
           if trainAssemblyType == "locomotive" then
             flow.add{
-              type  = "button",
-              name  = "statistics-builder-configuration-button-color",
-              --tooltip = {"controls.rotate"},
-              style = "traincontroller_color_indicator_button_housing",
+              type    = "button",
+              name    = "statistics-builder-configuration-button-color",
+              tooltip = {"gui-train.color"},
+              style   = "traincontroller_color_indicator_button_housing",
             }.add{
               type  = "progressbar",
               name  = "statistics-builder-configuration-button-color",
@@ -703,6 +731,8 @@ function Traincontroller.Gui:updateGuiInfo(playerIndex)
     end
   end
 
+
+
   -- select depot name ---------------------------------------------------------
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("selected-depot-name")).caption = controllerName
 
@@ -722,11 +752,37 @@ function Traincontroller.Gui:updateGuiInfo(playerIndex)
   end
 
   -- color picker --------------------------------------------------------------
-  if LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("traincontroller-color-picker")).visible then
-    game.print("update visible")
-    -- TODO: recolor the colorbutton as it changed back to its default value while this player is changing it
-    -- before clearing the button, we have to check where the selected index was, see if its still selected
-    -- if not, we have to delete this color picker (simulate discard), else set the color back to where we left off
+  if colorPickerFrame.visible then
+    -- set the button to selected again, else we close the UI
+    local colorPickerFrameValid = true
+    if colorPickerSelectedIndex and configurationElementCount == #configurationElement.children_names then
+      -- still the same amount of children, make sure the recipe is still the same
+      local colorElement = configurationElement[string.format("%i", colorPickerSelectedIndex)]["statistics-builder-configuration-button-color"]
+      if colorElement then
+        -- set it selected again
+        colorElement.style = clickedElementPressedStyle
+
+        -- and we update the color
+        local buttonColor = {}
+        local colorName = "traincontroller-color-picker-%s"
+        for _, colorIndex in pairs{"r", "g", "b"} do
+          buttonColor[colorIndex] = math.floor(.5 + colorPickerFrame[string.format(colorName, "flow-"..colorIndex)][string.format(colorName, "slider")].slider_value)
+        end
+        colorElement[colorElement.name].style.color = buttonColor
+
+      else
+        -- no picker element anymore, close the UI
+        colorPickerFrameValid = false
+      end
+    else -- no selected index found, or something got removed, we remove the picker
+      colorPickerFrameValid = false
+    end
+
+    if not colorPickerFrameValid then
+      -- close the UI as it is not needed anymore, simulate clicking discard
+      self:getClickHandler("traincontroller-color-picker-button-discard")(nil, playerIndex)
+    end
+
   end
 
 end

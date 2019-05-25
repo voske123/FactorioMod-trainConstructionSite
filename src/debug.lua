@@ -3,15 +3,17 @@ require "src.traindepot"
 require "src.trainassembly"
 require "src.traincontroller"
 
-Debug = {}
+Debug = {
+  enabled = false
+}
 
-Debug.enabled = false
-Debug.enabled = true
+function Debug:onInit()
+  if not self.enabled then return end
 
-function Debug:onMapCreated()
   local size = 500
 
   local surface = game.surfaces["nauvis"]
+  surface.always_day = true
   if game.active_mods["The_Lab_tiles"] then
     -- Let's create lab tiles
     local labTiles = {}
@@ -48,31 +50,32 @@ end
 
 
 function Debug:onPlayerCreated(player_index)
-  if self.enabled then
-    -- research all technologies
-    game.players[player_index].force.research_all_technologies()
+  -- Insert items we want for debugging purposes
+  if not self.enabled then return end
 
-    -- insert debug items
-    local player = game.players[player_index]
+  -- research all technologies
+  game.players[player_index].force.research_all_technologies()
 
-    player.insert("solar-panel")
-    player.insert("accumulator")
-    player.insert("substation")
+  -- insert debug items
+  local player = game.players[player_index]
 
-    player.insert("rail")
-    player.insert("rail-signal")
-    player.insert("train-stop")
-    player.insert(Trainassembly:getItemName())
-    player.insert(Traincontroller:getControllerItemName())
-    player.insert(Traindepot:getDepotItemName())
+  player.insert("solar-panel")
+  player.insert("accumulator")
+  player.insert("substation")
 
-    player.insert("locomotive")
-    player.insert("trainassembly-recipefuel")
+  player.insert("rail")
+  player.insert("rail-signal")
+  player.insert("train-stop")
+  player.insert(Trainassembly:getItemName())
+  player.insert(Traincontroller:getControllerItemName())
+  player.insert(Traindepot:getDepotItemName())
 
-    -- create debug environment if this is the first player
-    if player_index == 1 then
-      Debug:createTestbench(player.surface)
-    end
+  player.insert("locomotive")
+  player.insert("trainassembly-recipefuel")
+
+  -- create debug environment if this is the first player ingame
+  if player_index == 1 then
+    Debug:createTestbench(player.surface)
   end
 end
 
