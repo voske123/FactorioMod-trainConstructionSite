@@ -70,12 +70,14 @@ local statistics = LSlib.gui.layout.addTable(guiLayout, guiTabContent1, "statist
 -- name
 LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-station-id", {
   caption = {"gui-traindepot.depot-name"},
+  ignored_by_interaction = true,
 })
 local stationIDflow = LSlib.gui.layout.addFlow(guiLayout, statistics, "statistics-station-id-flow", "horizontal", {
   style = "centering_horizontal_flow",
 })
 LSlib.gui.layout.addLabel(guiLayout, stationIDflow, "statistics-station-id-value", {
   caption = {"gui-traindepot.unused-depot-name"},
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addSpriteButton(guiLayout, stationIDflow, "statistics-station-id-edit", {
   sprite = "utility/rename_icon_small",
@@ -85,9 +87,11 @@ LSlib.gui.layout.addSpriteButton(guiLayout, stationIDflow, "statistics-station-i
 -- amount
 LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-station-amount", {
   caption = {"gui-traindepot.depot-availability"},
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-station-amount-value", {
   caption = "-999/999",
+  ignored_by_interaction = true,
 })
 
 -- traindepos
@@ -104,6 +108,7 @@ LSlib.gui.layout.addSpriteButton(guiLayout, builderproductFlow, "statistics-buil
 })
 LSlib.gui.layout.addLabel(guiLayout, builderproductFlow, "statistics-builder-amount-value", {
   caption = "-999/999",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addSpriteButton(guiLayout, builderproductFlow, "statistics-builder-amount-value+", {
   sprite = "utility/editor_speed_up",
@@ -117,6 +122,7 @@ LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-builders-working-am
 })
 LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-builder-working-amount-value", {
   caption = "-999",
+  ignored_by_interaction = true,
 })
 local controllerList = LSlib.gui.layout.addScrollPane(guiLayout, guiTabContent1, "statistics-builder-list-flow", {
   horizontal_scroll_policy = "never"                                   ,

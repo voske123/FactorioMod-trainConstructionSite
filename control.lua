@@ -38,6 +38,16 @@ script.on_event(defines.events.on_player_created, function(event)
     -- Insert items we want for debugging purposes
     Debug:onPlayerCreated(event.player_index)
   end
+
+  Traincontroller.Gui:onPlayerCreated(event.player_index)
+end)
+
+
+
+script.on_event(defines.events.on_player_left_game, function(event)
+  -- Called after a player leaves the game.
+  Traindepot     .Gui:onPlayerLeftGame(event.player_index)
+  Traincontroller.Gui:onPlayerLeftGame(event.player_index)
 end)
 
 
@@ -96,14 +106,6 @@ script.on_event(defines.events.on_entity_renamed, function(event)
   -- Called after an entity has been renamed either by the player or through script.
   Traincontroller:onRenameEntity(event.entity, event.old_name)
   Traindepot     :onRenameEntity(event.entity, event.old_name)
-end)
-
-
-
-script.on_event(defines.events.on_player_left_game, function(event)
-  -- Called after a player leaves the game.
-  Traindepot     .Gui:onPlayerLeftGame(event.player_index)
-  Traincontroller.Gui:onPlayerLeftGame(event.player_index)
 end)
 
 

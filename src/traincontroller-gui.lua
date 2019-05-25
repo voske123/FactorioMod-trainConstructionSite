@@ -10,6 +10,7 @@ Traincontroller.Gui = {}
 function Traincontroller.Gui:onInit()
   if not global.TC_data.Gui then
     global.TC_data.Gui = self:initGlobalData()
+    self:initEntityPreviewSurface()
   end
 end
 
@@ -19,6 +20,7 @@ end
 function Traincontroller.Gui:initGlobalData()
   local gui = {
     ["version"      ] = 1, -- version of the global data
+    ["surfaceName"  ] = "trainConstructionSite",
     ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
     ["clickHandler" ] = self:initClickHandlerData(),
     ["openedEntity" ] = {} -- opened entity for each player
@@ -49,12 +51,13 @@ function Traincontroller.Gui:initPrototypeData()
     updateElementPath[selectionTabElementName] = LSlib.gui.layout.getElementPath(trainControllerGui, selectionTabElementName)
   end
   for _,statisticsTabElementName in pairs{
-    "statistics-station-id-value"          , -- controller name
-    "statistics-depot-request-value"       , -- depot request amount
-    "statistics-builder-status-value"      , -- controller status
-    "statistics-builder-configuration-flow", -- controller configuration
+    "statistics-station-id-value"                , -- controller name
+    "statistics-depot-request-value"             , -- depot request amount
+    "statistics-builder-status-value"            , -- controller status
+    "statistics-builder-configuration-flow"      , -- controller configuration
 
-    "traincontroller-color-picker"         , -- color picking frame
+    "traincontroller-color-picker"               , -- color picking frame
+    "traincontroller-color-picker-entity-preview", -- color picker entity preview
   } do
     updateElementPath[statisticsTabElementName] = LSlib.gui.layout.getElementPath(trainControllerGui, statisticsTabElementName)
   end
@@ -67,6 +70,63 @@ function Traincontroller.Gui:initPrototypeData()
     ["tabButtonPath"     ] = tabButtonPath     ,
     ["updateElementPath" ] = updateElementPath ,
   }
+end
+
+
+
+function Traincontroller.Gui:initEntityPreviewSurface()
+  game.create_surface(self:getControllerSurfaceName(), {
+    -- TERRAIN SPECIFICATION --
+    terrain_segmentation = 0,
+    water = 0, -- no water
+    width  = 0, -- infinite
+    height = 10,
+
+    -- AUTOPLACE SETTINGS --
+    autoplace_controls = nil,
+    default_enable_all_autoplace_controls = false, -- autoplace not set, disallow to get default controls
+    autoplace_settings = nil,
+    cliff_settings = nil, -- no cliffs
+    seed   = 0, -- doesn't matter, just has to be something
+
+    starting_area   = 0,    -- no starting area generation procedure
+    starting_points = {},   -- no starting points on this map
+    peaceful_mode   = true, -- doesn't mater, no biters are autoplaced
+
+    property_expression_names = {
+      ["moisture"            ] = 1,
+      ["aux"                 ] = .5,
+      ["temperature"         ] = -20,
+      ["elevation"           ] = 1,
+      ["cliffiness"          ] = 0,
+      ["enemy-base-intensity"] = 0,
+      ["enemy-base-frequency"] = 0,
+      ["enemy-base-radius"   ] = 0
+    },
+  })
+  for playerIndex,_ in pairs(game.players) do
+    self:initEntityPreviewPlayer(playerIndex)
+  end
+end
+
+
+
+function Traincontroller.Gui:initEntityPreviewPlayer(playerIndex)
+  local radius = 10
+  local surface = game.surfaces[self:getControllerSurfaceName()]
+
+  for x = -radius, radius, 2 do
+    surface.create_entity{
+      name = "straight-rail",
+      position = {
+        x = x + 3*radius*playerIndex,
+        y = 0
+      },
+      direction = defines.direction.east,
+      force = game.get_player(playerIndex).force,
+      player = playerIndex,
+    }
+  end
 end
 
 
@@ -174,7 +234,31 @@ function Traincontroller.Gui:initClickHandlerData()
         colorPickerIndexFrame[string.format(colorName, "textfield")].text         = colorPickerIndexValue
       end
 
+      -- set the entity-preview entity
+      local entityRadius = 10
+      local entityPreviewEntity = game.surfaces[self:getControllerSurfaceName()].create_entity{
+        name      = string.sub(clickedElement.parent["statistics-builder-configuration-button-recipe"].sprite, 7, -7),
+        position  = {x = 3*entityRadius*playerIndex,
+                     y = 0                         },
+        direction = defines.direction.east,
+        force     = game.get_player(playerIndex).force,
+        player    = playerIndex,
+      }
+      if entityPreviewEntity then
+        entityPreviewEntity.get_fuel_inventory().insert{
+          name = "trainassembly-trainfuel",
+          count = 1
+        }
+        entityPreviewEntity.color = {r=color.r, g=color.g, b=color.b, a = 127/255}
 
+        local previewElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("traincontroller-color-picker-entity-preview"))
+        previewElement.entity = entityPreviewEntity
+      else
+        game.print(string.format("entity preview for %q could not be added at position {%i, %i}",
+          string.sub(clickedElement.parent["statistics-builder-configuration-button-recipe"].sprite, 7, -7),
+          3*entityRadius*playerIndex, 0
+        ))
+      end
     else
       -- simulate clicking the discard button
       clickHandlers["traincontroller-color-picker-button-discard"](clickedElement, playerIndex)
@@ -190,6 +274,17 @@ function Traincontroller.Gui:initClickHandlerData()
 
     -- STEP 1: set color picker hidden
     LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("traincontroller-color-picker")).visible = false
+
+    -- also remove the entity-preview entity
+    local entityRadius = 10
+    game.surfaces[self:getControllerSurfaceName()].find_entities_filtered{
+      name      = "straight-rail",
+      invert    = true,
+      position  = {x = 3*entityRadius*playerIndex,
+                   y = 0                         },
+      radius    = entityRadius,
+      limit     = 1,
+    }[1].destroy()
 
     -- STEP 2: find the selected one
     local clickedElementStyle        = "traincontroller_color_indicator_button_housing"
@@ -218,6 +313,17 @@ function Traincontroller.Gui:initClickHandlerData()
 
     -- STEP 1: set color picker hidden
     LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("traincontroller-color-picker")).visible = false
+
+    -- also remove the entity-preview entity
+    local entityRadius = 10
+    game.surfaces[self:getControllerSurfaceName()].find_entities_filtered{
+      name      = "straight-rail",
+      invert    = true,
+      position  = {x = 3*entityRadius*playerIndex,
+                   y = 0                         },
+      radius    = entityRadius,
+      limit     = 1,
+    }[1].destroy()
 
     -- STEP 2: find the selected one
     local clickedElementStyle        = "traincontroller_color_indicator_button_housing"
@@ -259,29 +365,52 @@ function Traincontroller.Gui:initClickHandlerData()
         clickedElementValue = math.floor(.5 + clickedElementValue)
       end
       if clickedElementValue ~= oldClickedElementValue then
-        -- only update if needed
         clickedElement.text = clickedElementValue
       end
 
       -- STEP2: set the slider value
-      clickedElement.parent["traincontroller-color-picker-slider"].slider_value = clickedElementValue
+      local sliderElement = clickedElement.parent["traincontroller-color-picker-slider"]
+      if math.floor(.5 + sliderElement.slider_value) ~= clickedElementValue then
+        sliderElement.slider_value = clickedElementValue
+      else
+        return -- no update required
+      end
 
       -- STEP3: update the color button
       local clickedElementStyle        = "traincontroller_color_indicator_button_housing"
       local clickedElementPressedStyle = clickedElementStyle.."_pressed"
       local configurationElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-configuration-flow"))
 
+      local color
       for _, assemblerElementIndex in pairs(configurationElement.children_names) do
         local colorElement = configurationElement[assemblerElementIndex]["statistics-builder-configuration-button-color"]
         if colorElement.style.name == clickedElementPressedStyle then
           -- found the selected one
 
-          local color = colorElement[colorElement.name].style.color
+          color = colorElement[colorElement.name].style.color
           color[string.sub(clickedElement.parent.name, -1)] = clickedElementValue/255
           colorElement[colorElement.name].style.color = color
 
           break -- no need to look further
         end
+      end
+
+      -- STEP4: update the entity preview
+      if color then
+        local entityRadius = 10
+        game.surfaces[self:getControllerSurfaceName()].find_entities_filtered{
+          name      = "straight-rail",
+          invert    = true,
+          position  = {x = 3*entityRadius*playerIndex,
+                       y = 0                         },
+          radius    = entityRadius,
+          limit     = 1,
+        }[1].color = {
+          r = color.r,
+          g = color.g,
+          b = color.b,
+          a = 127/255, -- hardcoded for vanilla trains
+        }
       end
 
     else -- invalid number
@@ -295,24 +424,48 @@ function Traincontroller.Gui:initClickHandlerData()
   clickHandlers["traincontroller-color-picker-slider"] = function(clickedElement, playerIndex)
     -- STEP 1: update the textfield
     local clickedElementValue = math.floor(.5 + clickedElement.slider_value)
-    clickedElement.parent["traincontroller-color-picker-textfield"].text = clickedElementValue
+    local textfieldElement = clickedElement.parent["traincontroller-color-picker-textfield"]
+    if tonumber(textfieldElement.text) ~= clickedElementValue then
+      textfieldElement.text = clickedElementValue
+    else
+      return -- no update required
+    end
 
     -- STEP 2: update the color button
     local clickedElementStyle        = "traincontroller_color_indicator_button_housing"
     local clickedElementPressedStyle = clickedElementStyle.."_pressed"
     local configurationElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-configuration-flow"))
 
+    local color
     for _, assemblerElementIndex in pairs(configurationElement.children_names) do
       local colorElement = configurationElement[assemblerElementIndex]["statistics-builder-configuration-button-color"]
       if colorElement.style.name == clickedElementPressedStyle then
         -- found the selected one
 
-        local color = colorElement[colorElement.name].style.color
+        color = colorElement[colorElement.name].style.color
         color[string.sub(clickedElement.parent.name, -1)] = clickedElementValue/255
         colorElement[colorElement.name].style.color = color
 
         break -- no need to look further
       end
+    end
+
+    -- STEP4: update the entity preview
+    if color then
+      local entityRadius = 10
+      game.surfaces[self:getControllerSurfaceName()].find_entities_filtered{
+        name      = "straight-rail",
+        invert    = true,
+        position  = {x = 3*entityRadius*playerIndex,
+                     y = 0                         },
+        radius    = entityRadius,
+        limit     = 1,
+      }[1].color = {
+        r = color.r,
+        g = color.g,
+        b = color.b,
+        a = 127/255, -- hardcoded for vanilla trains
+      }
     end
 
   end
@@ -363,6 +516,12 @@ end
 --------------------------------------------------------------------------------
 -- Getter functions to extract data from the data structure
 --------------------------------------------------------------------------------
+function Traincontroller.Gui:getControllerSurfaceName()
+  return global.TC_data.Gui["surfaceName"]
+end
+
+
+
 function Traincontroller.Gui:getControllerGuiLayout()
   return global.TC_data.Gui["prototypeData"]["trainControllerGui"]
 end
@@ -441,6 +600,12 @@ end
 
 
 function Traincontroller.Gui:destroyGui(playerIndex)
+  -- make sure the color picker is closed first
+  local colorPickerElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("traincontroller-color-picker"))
+  if colorPickerElement.visible then
+    -- simulate clicking discard
+    self:getClickHandler("traincontroller-color-picker-button-discard")(nil, playerIndex)
+  end
   return LSlib.gui.destroy(playerIndex, self:getControllerGuiLayout())
 end
 
@@ -559,6 +724,9 @@ function Traincontroller.Gui:updateGuiInfo(playerIndex)
   -- color picker --------------------------------------------------------------
   if LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("traincontroller-color-picker")).visible then
     game.print("update visible")
+    -- TODO: recolor the colorbutton as it changed back to its default value while this player is changing it
+    -- before clearing the button, we have to check where the selected index was, see if its still selected
+    -- if not, we have to delete this color picker (simulate discard), else set the color back to where we left off
   end
 
 end
@@ -604,8 +772,8 @@ end
 -- When a player opens/closes a gui
 function Traincontroller.Gui:onCloseEntity(openedGui, playerIndex)
   if openedGui and openedGui.valid and openedGui.name == self:getGuiName() then
-    self:setOpenedEntity(playerIndex, nil)
     game.players[playerIndex].opened = self:destroyGui(playerIndex)
+    self:setOpenedEntity(playerIndex, nil)
   end
 end
 
@@ -618,6 +786,13 @@ function Traincontroller.Gui:onClickElement(clickedElement, playerIndex)
     local clickHandler = self:getClickHandler(clickedElement.name)
     if clickHandler then clickHandler(clickedElement, playerIndex) end
   end
+end
+
+
+
+function Traincontroller.Gui:onPlayerCreated(playerIndex)
+  -- Called after the player was created.
+  self:initEntityPreviewPlayer(playerIndex)
 end
 
 

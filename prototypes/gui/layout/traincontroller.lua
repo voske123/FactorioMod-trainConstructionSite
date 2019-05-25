@@ -82,6 +82,7 @@ local stationIDflow = LSlib.gui.layout.addFlow(guiLayout, statistics, "statistic
 })
 LSlib.gui.layout.addLabel(guiLayout, stationIDflow, "statistics-station-id-value", {
   caption = {"gui-traindepot.unused-depot-name"},
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addSpriteButton(guiLayout, stationIDflow, "statistics-station-id-edit", {
   sprite = "utility/rename_icon_small",
@@ -95,19 +96,23 @@ LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-depot-request", {
 })
 LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-depot-request-value", {
   caption = "-999/999",
+  ignored_by_interaction = true,
 })
 
 -- controller status
 LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-builder-status", {
   caption = {"gui-traincontroller.builder-status"},
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-builder-status-value", {
   caption = "undefined status",
+  ignored_by_interaction = true,
 })
 
 -- controller configuration
 LSlib.gui.layout.addLabel(guiLayout, statistics, "statistics-builder-configuration", {
   caption = {"gui-traincontroller.builder-configuration"},
+  ignored_by_interaction = true,
 })
 local controllerFlow = LSlib.gui.layout.addScrollPane(guiLayout, guiTabContent1, "statistics-builder-configuration-flow-scrolling", {
   horizontal_scroll_policy = "always",
@@ -127,6 +132,10 @@ controllerFlow = LSlib.gui.layout.addFlow(guiLayout, controllerFlow, "statistics
 local colorPicker = LSlib.gui.layout.addFrame(guiLayout, guiFlow, "traincontroller-color-picker", "vertical", {
   visible = false
 })
+LSlib.gui.layout.addFrame(guiLayout, colorPicker, "traincontroller-color-picker-button-filler", "vertical", {
+  style = "LSlib_default_header_filler",
+  ignored_by_interaction = true,
+})
 
 for _,color in pairs{"red", "green", "blue"} do
   local colorName = "traincontroller-color-picker-%s"
@@ -136,6 +145,7 @@ for _,color in pairs{"red", "green", "blue"} do
   })
   LSlib.gui.layout.addLabel(guiLayout, colorPickerColorFlow, string.format(colorName, "label"), {
     caption = string.upper(string.sub(color, 1, 1)),
+    ignored_by_interaction = true,
   })
   LSlib.gui.layout.addSlider(guiLayout, colorPickerColorFlow, string.format(colorName, "slider"), {
     minimum_value = 0  ,
@@ -149,6 +159,10 @@ for _,color in pairs{"red", "green", "blue"} do
     style = "slider_value_textfield",
   })
 end
+LSlib.gui.layout.addEntityPreview(guiLayout, colorPicker, "traincontroller-color-picker-entity-preview", {
+  style = "traincontroller_color_picker_entity_preview",
+  ignored_by_interaction = true,
+})
 
 local colorPickerButtonFlow = LSlib.gui.layout.addFlow(guiLayout, colorPicker, "traincontroller-color-picker-button-flow", "horizontal", {
   style = "traincontroller_color_picker_button_flow",
@@ -158,8 +172,9 @@ LSlib.gui.layout.addButton(guiLayout, colorPickerButtonFlow, "traincontroller-co
   tooltip = {"discard-changes"},
   style = "red_back_button"
 })
-local colorPicker = LSlib.gui.layout.addFrame(guiLayout, colorPickerButtonFlow, "traincontroller-color-picker-button-filler", "vertical", {
-  style = "traincontroller_button_filler",
+LSlib.gui.layout.addFrame(guiLayout, colorPickerButtonFlow, "traincontroller-color-picker-button-filler", "vertical", {
+  style = "LSlib_default_footer_filler",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addButton(guiLayout, colorPickerButtonFlow, "traincontroller-color-picker-button-confirm", {
   caption = {"gui-traincontroller.confirm"},

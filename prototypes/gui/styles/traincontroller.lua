@@ -2,7 +2,7 @@ require "LSlib/lib"
 
 -- default styles --------------------------------------------------------------
 LSlib.styles.addTabStyle(LSlib.styles.getVanillaTabStyleSpecification())
-LSlib.styles.addFillerFrameStyle()
+LSlib.styles.addFillerFrameStyles()
 local guiStyles = data.raw["gui-style"]["default"]
 
 -- traincontroller custom styles -----------------------------------------------
@@ -53,6 +53,25 @@ guiStyles["traincontroller_configuration_flow"] = {
   parent = "traindepot_controller_minimap_flow",
 }
 
+-- Color picker custom styles --------------------------------------------------
+guiStyles["traincontroller_color_picker_entity_preview"] = {
+  type = "empty_widget_style",
+  parent = "empty_widget",
+
+  minimal_width  = guiStyles["entity_button_base"].size,
+  minimal_height = guiStyles["entity_button_base"].size,
+
+  horizontally_stretchable = "on",
+  vertically_stretchable = "on",
+
+  left_margin   = 0,
+  right_margin  = 4,
+  top_margin    = 8,
+  bottom_margin = 8,
+
+  graphical_set = guiStyles["scroll_pane"].graphical_set,
+}
+
 guiStyles["traincontroller_color_picker_button_flow"] = {
   type = "horizontal_flow_style"   ,
   parent = "centering_horizontal_flow",
@@ -83,14 +102,14 @@ guiStyles["traincontroller_color_indicator_button_color"] = {
     filename = "__core__/graphics/gui.png",
     position = {221, 0},
     size = {1, 1},
-    scale = 1
+    scale = 1,
   },
   bar_background =
   {
     filename = "__core__/graphics/gui.png",
     position = {225, 0},
     size = {1, 13},
-    scale = 1
+    scale = 1,
   },
 
   width=guiStyles["icon_button"].size - 2 * guiStyles["icon_button"].default_graphical_set.corner_size,
@@ -117,11 +136,4 @@ guiStyles["traincontroller_color_indicator_button_sprite"] = {
   rigth_padding  = math.floor(0.5 + .125 * guiStyles["traincontroller_color_indicator_button_color"].width ),
   top_padding    = math.floor(0.5 + .125 * guiStyles["traincontroller_color_indicator_button_color"].height),
   bottom_padding = math.floor(0.5 + .125 * guiStyles["traincontroller_color_indicator_button_color"].height),
-}
-
-guiStyles["traincontroller_button_filler"] = {
-  type = "frame_style",
-  parent = "LSlib_default_filler_frame",
-
-  height = guiStyles["dialog_button"].height,
 }

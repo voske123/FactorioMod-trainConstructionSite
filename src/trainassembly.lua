@@ -728,12 +728,14 @@ function Trainassembly:getTrainBuilderIterator(dir)
         end
         table.sort(orderedValues)
 
-        if dir == defines.direction.east or dir == defines.direction.south then
+        if dir == defines.direction.east  or
+           dir == defines.direction.south then
           -- invert order
           local i, j = 1, #orderedValues
           while i < j do
             orderedValues[i], orderedValues[j] = orderedValues[j], orderedValues[i]
-            i, j = i + 1, j - 1
+            i = i + 1
+            j = j - 1
           end
         end
 

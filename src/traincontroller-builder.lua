@@ -291,9 +291,19 @@ function Traincontroller.Builder:buildNextTrain(trainBuilderIndex)
             buildEntityType = buildEntityType[#buildEntityType]
             buildEntityType = buildEntityType:sub(1, buildEntityType:len()-1)
             if buildEntityType == "locomotive" then
+              -- insert fuel
               fuelInventory = createdEntity.get_fuel_inventory().insert{
                 name="trainassembly-trainfuel",
                 count=1,
+              }
+
+              -- give it some color
+              local createdEntityColor = Trainassembly:getMachineTint(machineEntity)
+              createdEntity.color = {
+                r = createdEntityColor.r,
+                g = createdEntityColor.g,
+                b = createdEntityColor.b,
+                a = 127/255, -- hardcoded for vanilla trains
               }
             end
 
