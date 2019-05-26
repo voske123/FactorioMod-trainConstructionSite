@@ -4,7 +4,7 @@ require "src.traindepot"
 require "src.trainassembly"
 require "src.traincontroller"
 
-Debug.enabled = true -- only when debugging
+--Debug.enabled = true -- only when debugging
 
 script.on_init(function(event)
   -- This is called once when a new save game is created or once

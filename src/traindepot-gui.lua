@@ -110,11 +110,11 @@ function Traindepot.Gui:initClickHandlerData()
   ------------------------------------------------------------------------------
   clickHandlers["statistics-station-id-edit"] = function(clickedElement, playerIndex)
     local tabToOpen = "traindepot-tab-selection"
-    clickHandlers[tabToOpen](LSlib.gui.getElement(playerIndex, self:getTabElementPath(tabToOpen)), playerIndex) -- mimic tab pressed
+    Traindepot.Gui:getClickHandler(tabToOpen)(LSlib.gui.getElement(playerIndex, Traindepot.Gui:getTabElementPath(tabToOpen)), playerIndex) -- mimic tab pressed
   end
 
   local builderRequestAmountHandler = function(playerIndex, changeAmount)
-    local depotEntity       = self:getOpenedEntity(playerIndex)
+    local depotEntity       = Traindepot.Gui:getOpenedEntity(playerIndex)
     local depotForceName    = depotEntity.force.name
     local depotSurfaceIndex = depotEntity.surface.index
     local depotName         = depotEntity.backer_name
@@ -124,7 +124,7 @@ function Traindepot.Gui:initClickHandlerData()
       Traindepot:getDepotRequestCount(depotForceName, depotSurfaceIndex, depotName) + changeAmount)
 
     -- update the gui element
-    LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-amount-value")).caption = string.format("%i/%i",
+    LSlib.gui.getElement(playerIndex, Traindepot.Gui:getUpdateElementPath("statistics-builder-amount-value")).caption = string.format("%i/%i",
       Traindepot:getDepotRequestCount(depotForceName, depotSurfaceIndex, depotName),
       Traindepot:getDepotStationCount(depotForceName, depotSurfaceIndex, depotName))
   end
@@ -146,7 +146,7 @@ function Traindepot.Gui:initClickHandlerData()
     }[1]
     if controllerEntity then
       -- destroy this depot UI
-      self:onCloseEntity(game.players[playerIndex].opened, playerIndex)
+      Traindepot.Gui:onCloseEntity(game.players[playerIndex].opened, playerIndex)
 
       -- open the controller UI
       Traincontroller.Gui:onOpenEntity(controllerEntity, playerIndex)
@@ -159,24 +159,24 @@ function Traindepot.Gui:initClickHandlerData()
   -- select train depot name
   ------------------------------------------------------------------------------
   clickHandlers["selected-depot-list"] = function(clickedElement, playerIndex)
-    local listboxElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("selected-depot-list"))
+    local listboxElement = LSlib.gui.getElement(playerIndex, Traindepot.Gui:getUpdateElementPath("selected-depot-list"))
 
-    LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("selected-depot-name")).text = listboxElement.get_item(listboxElement.selected_index)
+    LSlib.gui.getElement(playerIndex, Traindepot.Gui:getUpdateElementPath("selected-depot-name")).text = listboxElement.get_item(listboxElement.selected_index)
   end
 
   clickHandlers["selected-depot-enter"] = function(clickedElement, playerIndex)
-    local depotEntity  = self:getOpenedEntity(playerIndex)
+    local depotEntity  = Traindepot.Gui:getOpenedEntity(playerIndex)
     local oldDepotName = depotEntity.backer_name
-    local newDepotName = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("selected-depot-name")).text
+    local newDepotName = LSlib.gui.getElement(playerIndex, Traindepot.Gui:getUpdateElementPath("selected-depot-name")).text
 
     if newDepotName ~= oldDepotName then
       depotEntity.backer_name = newDepotName -- invokes the rename event which will update UI's
-      --self:updateGuiInfo(playerIndex)
+      --Traindepot.Gui:updateGuiInfo(playerIndex)
     end
 
     -- mimic tab pressed to go back to statistics tab
     local tabToOpen = "traindepot-tab-statistics"
-    clickHandlers[tabToOpen](LSlib.gui.getElement(playerIndex, self:getTabElementPath(tabToOpen)), playerIndex)
+    Traindepot.Gui:getClickHandler(tabToOpen)(LSlib.gui.getElement(playerIndex, Traindepot.Gui:getTabElementPath(tabToOpen)), playerIndex)
   end
 
 

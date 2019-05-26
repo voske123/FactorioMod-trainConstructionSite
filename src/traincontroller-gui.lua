@@ -77,37 +77,40 @@ end
 
 
 function Traincontroller.Gui:initEntityPreviewSurface()
-  game.create_surface(self:getControllerSurfaceName(), {
-    -- TERRAIN SPECIFICATION --
-    terrain_segmentation = 0,
-    water = 0, -- no water
-    width  = 0, -- infinite
-    height = 10,
+  if not game.surfaces[self:getControllerSurfaceName()] then
+    game.create_surface(self:getControllerSurfaceName(), {
+      -- TERRAIN SPECIFICATION --
+      terrain_segmentation = 0,
+      water = 0, -- no water
+      width  = 0, -- infinite
+      height = 10,
 
-    -- AUTOPLACE SETTINGS --
-    autoplace_controls = nil,
-    default_enable_all_autoplace_controls = false, -- autoplace not set, disallow to get default controls
-    autoplace_settings = nil,
-    cliff_settings = nil, -- no cliffs
-    seed   = 0, -- doesn't matter, just has to be something
+      -- AUTOPLACE SETTINGS --
+      autoplace_controls = nil,
+      default_enable_all_autoplace_controls = false, -- autoplace not set, disallow to get default controls
+      autoplace_settings = nil,
+      cliff_settings = nil, -- no cliffs
+      seed   = 0, -- doesn't matter, just has to be something
 
-    starting_area   = 0,    -- no starting area generation procedure
-    starting_points = {},   -- no starting points on this map
-    peaceful_mode   = true, -- doesn't mater, no biters are autoplaced
+      starting_area   = 0,    -- no starting area generation procedure
+      starting_points = {},   -- no starting points on this map
+      peaceful_mode   = true, -- doesn't mater, no biters are autoplaced
 
-    property_expression_names = {
-      ["moisture"            ] = 1,
-      ["aux"                 ] = .5,
-      ["temperature"         ] = -20,
-      ["elevation"           ] = 1,
-      ["cliffiness"          ] = 0,
-      ["enemy-base-intensity"] = 0,
-      ["enemy-base-frequency"] = 0,
-      ["enemy-base-radius"   ] = 0
-    },
-  })
-  for playerIndex,_ in pairs(game.players) do
-    self:initEntityPreviewPlayer(playerIndex)
+      property_expression_names = {
+        ["moisture"            ] = 1,
+        ["aux"                 ] = .5,
+        ["temperature"         ] = -20,
+        ["elevation"           ] = 1,
+        ["cliffiness"          ] = 0,
+        ["enemy-base-intensity"] = 0,
+        ["enemy-base-frequency"] = 0,
+        ["enemy-base-radius"   ] = 0
+      },
+    })
+
+    for playerIndex,_ in pairs(game.players) do
+      self:initEntityPreviewPlayer(playerIndex)
+    end
   end
 end
 
@@ -173,7 +176,7 @@ function Traincontroller.Gui:initClickHandlerData()
   ------------------------------------------------------------------------------
   clickHandlers["statistics-station-id-edit"] = function(clickedElement, playerIndex)
     local tabToOpen = "traincontroller-tab-selection"
-    clickHandlers[tabToOpen](LSlib.gui.getElement(playerIndex, self:getTabElementPath(tabToOpen)), playerIndex) -- mimic tab pressed
+    Traincontroller.Gui:getClickHandler(tabToOpen)(LSlib.gui.getElement(playerIndex, Traincontroller.Gui:getTabElementPath(tabToOpen)), playerIndex) -- mimic tab pressed
   end
 
 
@@ -181,11 +184,11 @@ function Traincontroller.Gui:initClickHandlerData()
   --[[clickHandlers["statistics-builder-configuration-button-recipe"] = function(clickedElement, playerIndex)
     local player = game.get_player(playerIndex)
     local recipeEntity =  player.surface.create_entity{
-      name     = self:getRecipeSelectorEntityName(),
+      name     = Traincontroller.Gui:getRecipeSelectorEntityName(),
       position = player.position,
       force    = player.force,
     }
-    self:setOpenedRecipeEntity(playerIndex, recipeEntity)
+    Traincontroller.Gui:setOpenedRecipeEntity(playerIndex, recipeEntity)
     player.opened = recipeEntity
   end]]
 
@@ -193,7 +196,7 @@ function Traincontroller.Gui:initClickHandlerData()
 
   clickHandlers["statistics-builder-configuration-button-rotate"] = function(clickedElement, playerIndex)
     -- get the trainbuilder
-    local trainBuilder = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(self:getOpenedControllerEntity(playerIndex)))
+    local trainBuilder = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(Traincontroller.Gui:getOpenedControllerEntity(playerIndex)))
     if not trainBuilder then return end
 
     -- get the assembler
@@ -215,12 +218,12 @@ function Traincontroller.Gui:initClickHandlerData()
 
   clickHandlers["statistics-builder-configuration-button-color"] = function(clickedElement, playerIndex)
     local clickedElementStyle = "traincontroller_color_indicator_button_housing"
-    local colorPickerFrame = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("traincontroller-color-picker"))
+    local colorPickerFrame = LSlib.gui.getElement(playerIndex, Traincontroller.Gui:getUpdateElementPath("traincontroller-color-picker"))
 
     if clickedElement.style.name == clickedElementStyle then
       if colorPickerFrame.visible then
         -- another picker is open, we simulate clicking the discard button
-        clickHandlers["traincontroller-color-picker-button-discard"](clickedElement, playerIndex)
+        Traincontroller.Gui:getClickHandler("traincontroller-color-picker-button-discard")(clickedElement, playerIndex)
       end
 
       -- set the button as selected
@@ -241,7 +244,7 @@ function Traincontroller.Gui:initClickHandlerData()
 
       -- set the entity-preview entity
       local entityRadius = 10
-      local entityPreviewEntity = game.surfaces[self:getControllerSurfaceName()].create_entity{
+      local entityPreviewEntity = game.surfaces[Traincontroller.Gui:getControllerSurfaceName()].create_entity{
         name      = string.sub(clickedElement.parent["statistics-builder-configuration-button-recipe"].sprite, 7, -7),
         position  = {x = 3*entityRadius*playerIndex,
                      y = 0                         },
@@ -256,7 +259,7 @@ function Traincontroller.Gui:initClickHandlerData()
         }
         entityPreviewEntity.color = {r=color.r, g=color.g, b=color.b, a = 127/255}
 
-        local previewElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("traincontroller-color-picker-entity-preview"))
+        local previewElement = LSlib.gui.getElement(playerIndex, Traincontroller.Gui:getUpdateElementPath("traincontroller-color-picker-entity-preview"))
         previewElement.entity = entityPreviewEntity
       else
         game.print(string.format("entity preview for %q could not be added at position {%i, %i}",
@@ -266,7 +269,7 @@ function Traincontroller.Gui:initClickHandlerData()
       end
     else
       -- simulate clicking the discard button
-      clickHandlers["traincontroller-color-picker-button-discard"](clickedElement, playerIndex)
+      Traincontroller.Gui:getClickHandler("traincontroller-color-picker-button-discard")(clickedElement, playerIndex)
     end
   end
 
@@ -278,11 +281,11 @@ function Traincontroller.Gui:initClickHandlerData()
   clickHandlers["traincontroller-color-picker-button-discard"] = function(clickedElement, playerIndex)
 
     -- STEP 1: set color picker hidden
-    LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("traincontroller-color-picker")).visible = false
+    LSlib.gui.getElement(playerIndex, Traincontroller.Gui:getUpdateElementPath("traincontroller-color-picker")).visible = false
 
     -- also remove the entity-preview entity
     local entityRadius = 10
-    game.surfaces[self:getControllerSurfaceName()].find_entities_filtered{
+    game.surfaces[Traincontroller.Gui:getControllerSurfaceName()].find_entities_filtered{
       name      = "straight-rail",
       invert    = true,
       position  = {x = 3*entityRadius*playerIndex,
@@ -294,7 +297,7 @@ function Traincontroller.Gui:initClickHandlerData()
     -- STEP 2: find the selected one
     local clickedElementStyle        = "traincontroller_color_indicator_button_housing"
     local clickedElementPressedStyle = clickedElementStyle.."_pressed"
-    local configurationElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-configuration-flow"))
+    local configurationElement = LSlib.gui.getElement(playerIndex, Traincontroller.Gui:getUpdateElementPath("statistics-builder-configuration-flow"))
 
     for _, assemblerElementIndex in pairs(configurationElement.children_names) do
       local colorElement = configurationElement[assemblerElementIndex]["statistics-builder-configuration-button-color"]
@@ -304,7 +307,7 @@ function Traincontroller.Gui:initClickHandlerData()
         -- STEP 3: reset the color button
         colorElement.style = clickedElementStyle
 
-        local trainBuilder = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(self:getOpenedControllerEntity(playerIndex)))
+        local trainBuilder = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(Traincontroller.Gui:getOpenedControllerEntity(playerIndex)))
         if trainBuilder then
           local trainAssemblerLocation = trainBuilder[tonumber(assemblerElementIndex)]
           colorElement[colorElement.name].style.color = Trainassembly:getMachineTint(Trainassembly:getMachineEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position))
@@ -320,11 +323,11 @@ function Traincontroller.Gui:initClickHandlerData()
   clickHandlers["traincontroller-color-picker-button-confirm"] = function(clickedElement, playerIndex)
 
     -- STEP 1: set color picker hidden
-    LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("traincontroller-color-picker")).visible = false
+    LSlib.gui.getElement(playerIndex, Traincontroller.Gui:getUpdateElementPath("traincontroller-color-picker")).visible = false
 
     -- also remove the entity-preview entity
     local entityRadius = 10
-    game.surfaces[self:getControllerSurfaceName()].find_entities_filtered{
+    game.surfaces[Traincontroller.Gui:getControllerSurfaceName()].find_entities_filtered{
       name      = "straight-rail",
       invert    = true,
       position  = {x = 3*entityRadius*playerIndex,
@@ -336,7 +339,7 @@ function Traincontroller.Gui:initClickHandlerData()
     -- STEP 2: find the selected one
     local clickedElementStyle        = "traincontroller_color_indicator_button_housing"
     local clickedElementPressedStyle = clickedElementStyle.."_pressed"
-    local configurationElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-configuration-flow"))
+    local configurationElement = LSlib.gui.getElement(playerIndex, Traincontroller.Gui:getUpdateElementPath("statistics-builder-configuration-flow"))
 
     for _, assemblerElementIndex in pairs(configurationElement.children_names) do
       local colorElement = configurationElement[assemblerElementIndex]["statistics-builder-configuration-button-color"]
@@ -347,7 +350,7 @@ function Traincontroller.Gui:initClickHandlerData()
         colorElement.style = clickedElementStyle
 
         -- STEP 4: save the machine tint
-        local trainAssemblerLocation = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(self:getOpenedControllerEntity(playerIndex)))[tonumber(assemblerElementIndex)]
+        local trainAssemblerLocation = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(Traincontroller.Gui:getOpenedControllerEntity(playerIndex)))[tonumber(assemblerElementIndex)]
         Trainassembly:setMachineTint(Trainassembly:getMachineEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position), colorElement[colorElement.name].style.color)
 
         break -- no need to look further
@@ -387,7 +390,7 @@ function Traincontroller.Gui:initClickHandlerData()
       -- STEP3: update the color button
       local clickedElementStyle        = "traincontroller_color_indicator_button_housing"
       local clickedElementPressedStyle = clickedElementStyle.."_pressed"
-      local configurationElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-configuration-flow"))
+      local configurationElement = LSlib.gui.getElement(playerIndex, Traincontroller.Gui:getUpdateElementPath("statistics-builder-configuration-flow"))
 
       local color
       for _, assemblerElementIndex in pairs(configurationElement.children_names) do
@@ -406,7 +409,7 @@ function Traincontroller.Gui:initClickHandlerData()
       -- STEP4: update the entity preview
       if color then
         local entityRadius = 10
-        game.surfaces[self:getControllerSurfaceName()].find_entities_filtered{
+        game.surfaces[Traincontroller.Gui:getControllerSurfaceName()].find_entities_filtered{
           name      = "straight-rail",
           invert    = true,
           position  = {x = 3*entityRadius*playerIndex,
@@ -442,7 +445,7 @@ function Traincontroller.Gui:initClickHandlerData()
     -- STEP 2: update the color button
     local clickedElementStyle        = "traincontroller_color_indicator_button_housing"
     local clickedElementPressedStyle = clickedElementStyle.."_pressed"
-    local configurationElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-configuration-flow"))
+    local configurationElement = LSlib.gui.getElement(playerIndex, Traincontroller.Gui:getUpdateElementPath("statistics-builder-configuration-flow"))
 
     local color
     for _, assemblerElementIndex in pairs(configurationElement.children_names) do
@@ -461,7 +464,7 @@ function Traincontroller.Gui:initClickHandlerData()
     -- STEP4: update the entity preview
     if color then
       local entityRadius = 10
-      game.surfaces[self:getControllerSurfaceName()].find_entities_filtered{
+      game.surfaces[Traincontroller.Gui:getControllerSurfaceName()].find_entities_filtered{
         name      = "straight-rail",
         invert    = true,
         position  = {x = 3*entityRadius*playerIndex,
@@ -484,26 +487,26 @@ function Traincontroller.Gui:initClickHandlerData()
   -- select train depot name
   ------------------------------------------------------------------------------
   clickHandlers["selected-depot-list"] = function(clickedElement, playerIndex)
-    local listboxElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("selected-depot-list"))
+    local listboxElement = LSlib.gui.getElement(playerIndex, Traincontroller.Gui:getUpdateElementPath("selected-depot-list"))
 
-    LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("selected-depot-name")).caption = listboxElement.get_item(listboxElement.selected_index)
+    LSlib.gui.getElement(playerIndex, Traincontroller.Gui:getUpdateElementPath("selected-depot-name")).caption = listboxElement.get_item(listboxElement.selected_index)
   end
 
 
 
   clickHandlers["selected-depot-enter"] = function(clickedElement, playerIndex)
-    local controllerEntity  = self:getOpenedControllerEntity(playerIndex)
+    local controllerEntity  = Traincontroller.Gui:getOpenedControllerEntity(playerIndex)
     local oldControllerName = controllerEntity.backer_name
-    local newControllerName = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("selected-depot-name")).caption
+    local newControllerName = LSlib.gui.getElement(playerIndex, Traincontroller.Gui:getUpdateElementPath("selected-depot-name")).caption
 
     if newControllerName ~= oldControllerName then
       controllerEntity.backer_name = newControllerName -- invokes the rename event which will update UI's
-      --self:updateGuiInfo(playerIndex)
+      --Traincontroller.Gui:updateGuiInfo(playerIndex)
     end
 
     -- mimic tab pressed to go back to statistics tab
     local tabToOpen = "traincontroller-tab-statistics"
-    clickHandlers[tabToOpen](LSlib.gui.getElement(playerIndex, self:getTabElementPath(tabToOpen)), playerIndex)
+    Traincontroller.Gui:getClickHandler(tabToOpen)(LSlib.gui.getElement(playerIndex, Traincontroller.Gui:getTabElementPath(tabToOpen)), playerIndex)
   end
 
 
@@ -891,7 +894,7 @@ end
 
 
 
-function Traindepot.Gui:onPlayerLeftGame(playerIndex)
+function Traincontroller.Gui:onPlayerLeftGame(playerIndex)
   -- Called after a player leaves the game.
   if self:hasOpenedGui(playerIndex) then
     self:onCloseEntity(game.players[playerIndex].opened, playerIndex)

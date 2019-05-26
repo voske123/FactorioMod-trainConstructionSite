@@ -81,8 +81,10 @@ function Traincontroller:createControllerForces()
   for _,forceName in pairs(forcesToCreate) do
     -- create the force and set it friendly
     local friendlyForceName = self:getControllerForceName(forceName)
-    game.create_force(friendlyForceName)
-        .set_friend(forceName, true)
+    if not game.forces[friendlyForceName] then
+      game.create_force(friendlyForceName)
+          .set_friend(forceName, true)
+    end
 
     -- save the created force in the data structure
     global.TC_data["trainControllerForces"][friendlyForceName] = forceName
