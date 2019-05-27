@@ -510,7 +510,7 @@ function Traincontroller:getHiddenEntityData(position, direction)
 
   -- STEP 2: Return the list with hidden entities
   return {
-    { -- signal on the same side of the track
+    [1] = { -- signal on the same side of the track
       name     = self:getControllerSignalEntityName(),
       position = {
         x = position.x + offsetX * 1,
@@ -518,7 +518,7 @@ function Traincontroller:getHiddenEntityData(position, direction)
       },
       direction = LSlib.utils.directions.oposite(direction)
     },
-    { -- signal on the other side of the track
+    [2] = { -- signal on the other side of the track
       name     = self:getControllerSignalEntityName(),
       position = {
         x = position.x + offsetX * 3,

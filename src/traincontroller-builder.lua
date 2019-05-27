@@ -193,8 +193,15 @@ function Traincontroller.Builder:canBuildNextTrain(trainBuilderIndex, trainBuild
 
   -- STEP 1: Check if the train block is emtpy with the rail signal
   --         index 2: rail signal on other side of the track
+  --                  => checking trainblock where the builder is
   local signalEntity = Traincontroller:getTrainHiddenEntity(trainBuilderController, 2)
   if signalEntity.signal_state ~= defines.signal_state.open then return false end
+
+  --         index 1: rail signal on this side of the track
+  --                  => checking trainblock in front of the builder
+  signalEntity = Traincontroller:getTrainHiddenEntity(trainBuilderController, 1)
+  if signalEntity.signal_state ~= defines.signal_state.open then return false end
+
   --game.print("signal was green!")
 
   -- STEP 2: Check if each building can place the train
