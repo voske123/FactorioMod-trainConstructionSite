@@ -142,12 +142,8 @@ function Traincontroller.Gui:initClickHandlerData()
   ------------------------------------------------------------------------------
   -- tab button handler
   ------------------------------------------------------------------------------
-  local tabButtonNames = {
-    "traincontroller-tab-selection" ,
-    "traincontroller-tab-statistics",
-  }
-
   local tabButtonHandler = function(clickedTabButton, playerIndex)
+
     -- Get the flow with all the buttons
     if clickedTabButton.type ~= "button" then return end -- clicked on content
     local tabButtonFlow = clickedTabButton.parent
@@ -159,13 +155,19 @@ function Traincontroller.Gui:initClickHandlerData()
 
     -- For each button in the flow, set the new style and set the tabs
     local clickedTabButtonName = clickedTabButton.name
-    for _,tabButtonName in pairs(tabButtonNames) do
+    for _,tabButtonName in pairs{
+      "traincontroller-tab-selection" ,
+      "traincontroller-tab-statistics",
+    } do
       tabButtonFlow[tabButtonName].style = (tabButtonName == clickedTabButtonName and "LSlib_default_tab_button_selected" or "LSlib_default_tab_button")
       tabContentFlow[tabButtonName].visible = (tabButtonName == clickedTabButtonName)
     end
   end
 
-  for _,tabButtonName in pairs(tabButtonNames) do
+  for _,tabButtonName in pairs{
+    "traincontroller-tab-selection" ,
+    "traincontroller-tab-statistics",
+  } do
     clickHandlers[tabButtonName] = tabButtonHandler
   end
 

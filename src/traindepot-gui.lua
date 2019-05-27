@@ -76,12 +76,8 @@ function Traindepot.Gui:initClickHandlerData()
   ------------------------------------------------------------------------------
   -- tab button handler
   ------------------------------------------------------------------------------
-  local tabButtonNames = {
-    "traindepot-tab-selection" ,
-    "traindepot-tab-statistics",
-  }
-
   local tabButtonHandler = function(clickedTabButton, playerIndex)
+
     -- Get the flow with all the buttons
     if clickedTabButton.type ~= "button" then return end -- clicked on content
     local tabButtonFlow = clickedTabButton.parent
@@ -93,13 +89,19 @@ function Traindepot.Gui:initClickHandlerData()
 
     -- For each button in the flow, set the new style and set the tabs
     local clickedTabButtonName = clickedTabButton.name
-    for _,tabButtonName in pairs(tabButtonNames) do
+    for _,tabButtonName in pairs{
+      "traindepot-tab-selection" ,
+      "traindepot-tab-statistics",
+    } do
       tabButtonFlow[tabButtonName].style = (tabButtonName == clickedTabButtonName and "LSlib_default_tab_button_selected" or "LSlib_default_tab_button")
       tabContentFlow[tabButtonName].visible = (tabButtonName == clickedTabButtonName)
     end
   end
 
-  for _,tabButtonName in pairs(tabButtonNames) do
+  for _,tabButtonName in pairs{
+    "traindepot-tab-selection" ,
+    "traindepot-tab-statistics",
+  } do
     clickHandlers[tabButtonName] = tabButtonHandler
   end
 
@@ -113,7 +115,7 @@ function Traindepot.Gui:initClickHandlerData()
     Traindepot.Gui:getClickHandler(tabToOpen)(LSlib.gui.getElement(playerIndex, Traindepot.Gui:getTabElementPath(tabToOpen)), playerIndex) -- mimic tab pressed
   end
 
-  local builderRequestAmountHandler = function(playerIndex, changeAmount)
+  clickHandlers["statistics-builder-amount-value-"] = function(clickedElement, playerIndex)
     local depotEntity       = Traindepot.Gui:getOpenedEntity(playerIndex)
     local depotForceName    = depotEntity.force.name
     local depotSurfaceIndex = depotEntity.surface.index
@@ -121,7 +123,7 @@ function Traindepot.Gui:initClickHandlerData()
 
     -- update the data
     Traindepot:setDepotRequestCount(depotForceName, depotSurfaceIndex, depotName,
-      Traindepot:getDepotRequestCount(depotForceName, depotSurfaceIndex, depotName) + changeAmount)
+      Traindepot:getDepotRequestCount(depotForceName, depotSurfaceIndex, depotName) - 1)
 
     -- update the gui element
     LSlib.gui.getElement(playerIndex, Traindepot.Gui:getUpdateElementPath("statistics-builder-amount-value")).caption = string.format("%i/%i",
@@ -129,12 +131,20 @@ function Traindepot.Gui:initClickHandlerData()
       Traindepot:getDepotStationCount(depotForceName, depotSurfaceIndex, depotName))
   end
 
-  clickHandlers["statistics-builder-amount-value-"] = function(clickedElement, playerIndex)
-    builderRequestAmountHandler(playerIndex, -1)
-  end
-
   clickHandlers["statistics-builder-amount-value+"] = function(clickedElement, playerIndex)
-    builderRequestAmountHandler(playerIndex, 1)
+    local depotEntity       = Traindepot.Gui:getOpenedEntity(playerIndex)
+    local depotForceName    = depotEntity.force.name
+    local depotSurfaceIndex = depotEntity.surface.index
+    local depotName         = depotEntity.backer_name
+
+    -- update the data
+    Traindepot:setDepotRequestCount(depotForceName, depotSurfaceIndex, depotName,
+      Traindepot:getDepotRequestCount(depotForceName, depotSurfaceIndex, depotName) + 1)
+
+    -- update the gui element
+    LSlib.gui.getElement(playerIndex, Traindepot.Gui:getUpdateElementPath("statistics-builder-amount-value")).caption = string.format("%i/%i",
+      Traindepot:getDepotRequestCount(depotForceName, depotSurfaceIndex, depotName),
+      Traindepot:getDepotStationCount(depotForceName, depotSurfaceIndex, depotName))
   end
 
   clickHandlers["statistics-builder-list-button"] = function(clickedElement, playerIndex)
