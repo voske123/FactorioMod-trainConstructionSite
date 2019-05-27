@@ -60,12 +60,12 @@ if data.raw["item-with-entity-data"]["locomotive-manual-build"] then
     type = "recipe",
     name = "locomotive-manual-build",
     category = "manual-crafting",
-    always_show_made_in = true,
     expensive = nil,
     normal =
     {
       enabled = false,
       energy_required = 5,
+      always_show_made_in = true,
       ingredients =
       {
         {"locomotive", 1},
