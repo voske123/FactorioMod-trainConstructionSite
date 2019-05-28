@@ -7,6 +7,9 @@
   "homepage": "https://mods.factorio.com/mod/trainConstructionSite",
   "description": "A nice, automated way of creating trains",
   "dependencies": [
-        "base >= 0.17.41"
+        "base >= 0.17.41",
+
+        "? angelsaddons-petrotrain",
+        "? angelsaddons-smeltingtrain"
   ]
 }
