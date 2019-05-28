@@ -10,6 +10,24 @@ locomotiveManualBuild.order = "a"
 -- don't want the player to place down the train manualy. We have to remove the
 -- place_result on the entity.
 
+local itemOrder = { -- ordening of the items
+  -- vanilla
+  ["locomotive"     ] = "a[base]-a",
+  ["cargo-wagon"    ] = "a[base]-b",
+  ["fluid-wagon"    ] = "a[base]-c",
+  ["artillery-wagon"] = "a[base]-d",
+
+  -- angels petro train
+  ["petro-locomotive-1"] = "y[angel]-b[petro]",
+  ["petro-tank1"       ] = "y[angel]-b[petro]",
+  ["petro-tank2"       ] = "y[angel]-b[petro]",
+
+  -- angels smelting train
+  ["smelting-locomotive-1"     ] = "y[angel]-a[smelt]",
+  ["smelting-locomotive-tender"] = "y[angel]-a[smelt]",
+  ["smelting-wagon-1"          ] = "y[angel]-a[smelt]",
+}
+
 -- For each train type like item we want to change the place_result
 -- To accuire all the itemnames, we have to iterate over the entities
 -- becose those have different types as the items are all type = "item".
@@ -35,6 +53,8 @@ for _, trainType in pairs{
       item.place_result =  nil
 
       item.localised_name = {"item-name.trainparts", trainEntity.name}
+      item.subgroup       = "transport"
+      item.order          = (itemOrder[item.name] and itemOrder[item.name].."-" or "") .. itemOrder[item.name]
 
 
     end
