@@ -168,6 +168,23 @@ trainassembly.animation =
   },
 }
 
+-- split the rendering from the machine
+for _,orientation in pairs{"north", "east", "south", "west"} do
+  data:extend{{
+    type = "animation",
+    name = trainassembly.name .. "-" .. orientation,
+    layers = util.table.deepcopy(trainassembly.animation[orientation].layers),
+  }}
+  trainassembly.animation[orientation] =
+  {
+    filename = "__core__/graphics/empty.png",
+    priorit = "very-low",
+    width = 1,
+    height = 1,
+    frame_count = 1,
+  }
+end
+
 data:extend{
   util.table.deepcopy(trainassembly),
 }

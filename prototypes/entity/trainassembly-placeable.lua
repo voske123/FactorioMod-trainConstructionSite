@@ -111,7 +111,7 @@ trainassembly.pictures =
       ]]--
       hr_version = nil,
     },
-    {
+    --[[{
       width = 82,
       height = 82,
       direction_count = 4,
@@ -128,9 +128,10 @@ trainassembly.pictures =
         "__trainConstructionSite__/graphics/placeholders/direction_south.png",
         "__trainConstructionSite__/graphics/placeholders/direction_west.png",
       },
-      ]]--
+      ]]--[[
       hr_version = nil,
     },
+    ]]--
   },
 }
 

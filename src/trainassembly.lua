@@ -49,7 +49,7 @@ end
 -- Setter functions to alter data into the data structure
 --------------------------------------------------------------------------------
 -- Save a new trainassembly to our data structure
-function Trainassembly:saveNewStructure(machineEntity)
+function Trainassembly:saveNewStructure(machineEntity, machineRenderID)
   -- With this function we save all the data we want about a trainassembly.
   -- To index all machines we need a (unique) way of storing all the data,
   -- here we chose to index it by its location, since only 1 building can
@@ -82,6 +82,7 @@ function Trainassembly:saveNewStructure(machineEntity)
   global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] =
   {
     ["entity"           ] = machineEntity,           -- the entity
+    ["renderID"         ] = machineRenderID,         -- the render of the building
     ["direction"        ] = machineEntity.direction, -- the direction its facing
     ["trainColor"       ] = LSlib.utils.table.convertRGBA{r = 234, g = 17, b = 0}, -- the color of the train entity when it will be created
     ["createdEntity"    ] = nil,                     -- the created train entity from this building
@@ -616,6 +617,34 @@ end
 
 
 
+function Trainassembly:getMachineRenderID(machineEntity)
+  -- STEP 1: If the machineEntity isn't valid, its position isn't valid either
+  if not (machineEntity and machineEntity.valid) then
+    return nil
+  end
+
+  -- STEP 2: If we don't have a trainBuilder saved on that surface, or not
+  --         on that y position or on that x position, it means that we don't
+  --         have a direction available for that machine.
+  local machineSurface = machineEntity.surface
+  if not global.TA_data["trainAssemblers"][machineSurface.index] then
+    return nil
+  end
+  local machinePosition = machineEntity.position
+  if not global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y] then
+    return nil
+  end
+  if not global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] then
+    return nil
+  end
+
+  -- STEP 3: In step 2 we checked for an invalid data structure. So now we
+  --         can return the direction the machine is/was facing.
+  return global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["renderID"]
+end
+
+
+
 function Trainassembly:getMachineTint(machineEntity)
   -- STEP 1: If the machineEntity isn't valid, its position isn't valid either
   if not (machineEntity and machineEntity.valid) then
@@ -923,11 +952,21 @@ function Trainassembly:onBuildEntity(createdEntity, playerIndex)
         railEntity.minable      = false -- entity can't be mined
       end
 
+      local machineRenderID = rendering.draw_animation{
+        animation = machineEntity.name .. "-" .. LSlib.utils.directions.toString(machineEntity.direction),
+        -- @Bilka said:
+        -- "item-in-inserter-hand" = 134
+        -- "higher-object-above"   = 132
+        render_layer = 133,
+        target = machineEntity,
+        surface = machineEntity.surface,
+      }
+
       -- STEP 4: delete the locomotive that was build.
       createdEntity.destroy()
 
       -- STEP 5: Save the newly made trainassembly to our data structure so we can keep track of it
-      self:saveNewStructure(machineEntity)
+      self:saveNewStructure(machineEntity, machineRenderID)
     end
 
   elseif createdEntity.name == "straight-rail" then
@@ -990,6 +1029,7 @@ function Trainassembly:onPlayerRotatedEntity(rotatedEntity)
 
     -- STEP 2: set the new rotated direction
     rotatedEntity.direction = newDirection
+    rendering.set_animation(self:getMachineRenderID(rotatedEntity), rotatedEntity.name .. "-" .. LSlib.utils.directions.toString(newDirection))
 
     -- STEP 3: save the state to the data structure
     self:updateMachineDirection(rotatedEntity)
