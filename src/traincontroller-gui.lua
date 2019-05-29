@@ -714,6 +714,18 @@ function Traincontroller.Gui:updateGuiInfo(playerIndex)
   end
 
   configurationElement.clear()
+  configurationElement.add{
+    type      = "flow",
+    name      = "0-traincontroller",
+    direction = "vertical",
+    style     = "traincontroller_configuration_flow",
+  }.add{
+    type    = "sprite-button",
+    name    = "statistics-builder-configuration-button-recipe",
+    tooltip = {"item-name.traincontroller", {"item-name.trainassembly"}},
+    sprite  = string.format("item/%s", Traincontroller:getControllerItemName()),
+    enabled = false,
+  }
   for trainAssemblerIndex,trainAssemblerLocation in trainBuilderIterator(trainBuilder) do
     local trainAssembler = Trainassembly:getMachineEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position)
     if trainAssembler and trainAssembler.valid then
