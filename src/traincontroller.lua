@@ -57,8 +57,9 @@ end
 function Traincontroller:initPrototypeData()
   return
   {
-    ["trainControllerName"]       = "traincontroller",        -- item and entity have same name
-    ["trainControllerSignalName"] = "traincontroller-signal", -- hidden signals
+    ["trainControllerName"       ] = "traincontroller",        -- item and entity have same name
+    ["trainControllerSignalName" ] = "traincontroller-signal", -- hidden signals
+    ["trainControllerMapviewName"] = "traincontroller-mapview",-- simple entity
 
     ["trainControllerForce"]      = "-trainControllerForce",  -- force for the traincontrollers
   }
@@ -84,6 +85,7 @@ function Traincontroller:createControllerForces()
     if not game.forces[friendlyForceName] then
       game.create_force(friendlyForceName)
           .set_friend(forceName, true)
+      --game.forces[forceName].set_friend(friendlyForceName, true)
     end
 
     -- save the created force in the data structure
@@ -208,7 +210,7 @@ end
 
 
 function Traincontroller:deleteController(controllerEntity)
-  -- STEP 1: make sure we can index the table
+  -- STEP 1a: make sure we can index the table
   --local controllerSurface = controllerEntity.surface
   local controllerSurfaceIndex = controllerEntity.surface.index
   local controllerPosition = controllerEntity.position
@@ -217,6 +219,14 @@ function Traincontroller:deleteController(controllerEntity)
   end
   if not global.TC_data["trainControllers"][controllerSurfaceIndex][controllerPosition.y] then
     return
+  end
+  if not global.TC_data["trainControllers"][controllerSurfaceIndex][controllerPosition.y][controllerPosition.x] then
+    return
+  end
+
+  -- STEP 1b: destroy the hidden entities
+  for _, entity in pairs(global.TC_data["trainControllers"][controllerSurfaceIndex][controllerPosition.y][controllerPosition.x]["entity-hidden"] or {}) do
+    entity.destroy()
   end
 
   -- STEP 2: remove this controller from the list
@@ -376,6 +386,12 @@ end
 
 
 
+function Traincontroller:getControllerMapviewEntityName()
+  return global.TC_data.prototypeData.trainControllerMapviewName
+end
+
+
+
 function Traincontroller:getControllerSignalEntityName()
   return global.TC_data.prototypeData.trainControllerSignalName
 end
@@ -516,7 +532,7 @@ function Traincontroller:getHiddenEntityData(position, direction)
         x = position.x + offsetX * 1,
         y = position.y + offsetY * 1,
       },
-      direction = LSlib.utils.directions.oposite(direction)
+      direction = LSlib.utils.directions.oposite(direction),
     },
     [2] = { -- signal on the other side of the track
       name     = self:getControllerSignalEntityName(),
@@ -524,8 +540,13 @@ function Traincontroller:getHiddenEntityData(position, direction)
         x = position.x + offsetX * 3,
         y = position.y + offsetY * 3,
       },
-      direction = direction
+      direction = direction,
     },
+    [3] = { -- simple entity to show on map
+      name      = self:getControllerMapviewEntityName(),
+      position  = position,
+      direction = direction,
+    }
   }
 end
 
