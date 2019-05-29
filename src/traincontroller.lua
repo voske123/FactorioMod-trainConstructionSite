@@ -507,21 +507,31 @@ function Traincontroller:getHiddenEntityData(position, direction)
   -- create a list for all hidden entities that needs to be created
 
   -- STEP 1: Get the orientation offset depending on the orientation
-  local offsetX = 0
-  local offsetY = 0
+  local signalOffsetX = 0
+  local signalOffsetY = 0
+  local mapviewOffsetX = 0
+  local mapviewOffsetY = 0
 
   if direction == defines.direction.north then
-    offsetX = -1
-    --offsetY = 0
+    signalOffsetX = -1
+    --signalOffsetY = 0
+    --mapviewOffsetX = 0
+    --mapviewOffsetY = 0
   elseif direction == defines.direction.east then
-    --offsetX = 0
-    offsetY = -1
+    --signalOffsetX = 0
+    signalOffsetY = -1
+    --mapviewOffsetX = 0
+    --mapviewOffsetY = 0
   elseif direction == defines.direction.south then
-    offsetX = 1
-    --offsetY = 0
+    signalOffsetX = 1
+    --signalOffsetY = 0
+    --mapviewOffsetX = 0
+    --mapviewOffsetY = 0
   elseif direction == defines.direction.west then
-    --offsetX = 0
-    offsetY = 1
+    --signalOffsetX = 0
+    signalOffsetY = 1
+    --mapviewOffsetX = 0
+    --mapviewOffsetY = 0
   end
 
   -- STEP 2: Return the list with hidden entities
@@ -529,22 +539,25 @@ function Traincontroller:getHiddenEntityData(position, direction)
     [1] = { -- signal on the same side of the track
       name     = self:getControllerSignalEntityName(),
       position = {
-        x = position.x + offsetX * 1,
-        y = position.y + offsetY * 1,
+        x = position.x + signalOffsetX * 1,
+        y = position.y + signalOffsetY * 1,
       },
       direction = LSlib.utils.directions.oposite(direction),
     },
     [2] = { -- signal on the other side of the track
       name     = self:getControllerSignalEntityName(),
       position = {
-        x = position.x + offsetX * 3,
-        y = position.y + offsetY * 3,
+        x = position.x + signalOffsetX * 3,
+        y = position.y + signalOffsetY * 3,
       },
       direction = direction,
     },
     [3] = { -- simple entity to show on map
       name      = self:getControllerMapviewEntityName(),
-      position  = position,
+      position = position --[[{
+        x = position.x + mapviewOffsetX,
+        y = position.y + mapviewOffsetY,
+      },]]
       direction = direction,
     }
   }

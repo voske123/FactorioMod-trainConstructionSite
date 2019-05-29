@@ -141,14 +141,13 @@ local traincontrollerMapview = {
   },
 
   selection_box  = nil,
-  collision_box  = traincontroller.collision_box,
+  collision_box  = {{-1,-1},{1,1}},
   collision_mask = {},
 
   map_color          = data.raw["utility-constants"]["default"].chart.default_friendly_color,
   friendly_map_color = data.raw["utility-constants"]["default"].chart.default_friendly_color,
   enemy_map_color    = data.raw["utility-constants"]["default"].chart.default_enemy_color,
 }
-log(serpent.block(traincontrollerMapview))
 
 data:extend{
   traincontroller,
