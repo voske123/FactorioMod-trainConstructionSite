@@ -554,7 +554,7 @@ function Traincontroller:getHiddenEntityData(position, direction)
     },
     [3] = { -- simple entity to show on map
       name      = self:getControllerMapviewEntityName(),
-      position = position --[[{
+      position = position, --[[{
         x = position.x + mapviewOffsetX,
         y = position.y + mapviewOffsetY,
       },]]

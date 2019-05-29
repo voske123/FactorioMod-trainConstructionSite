@@ -6,9 +6,27 @@ local guiFlow = LSlib.gui.layout.addFlow(guiLayout, "root", "traincontroller-gui
   style = "traincontroller_contentFlow", -- no padding
 })
 
-local guiFrame = LSlib.gui.layout.addFrame(guiLayout, guiFlow, "traincontroller-mainframe", "horizontal", {
-  caption = {"item-name.traincontroller", {[1] = "item-name.trainassembly"}},
+local guiFrame = LSlib.gui.layout.addFrame(guiLayout, guiFlow, "traincontroller-mainframe", "vertical", {
+  --caption = {"item-name.traincontroller", {[1] = "item-name.trainassembly"}},
   style   = "frame_without_footer"       ,
+})
+
+local guiFrameHeaderFlow = LSlib.gui.layout.addFlow(guiLayout, guiFrame, "traincontroller-mainframe-gui-header", "horizontal", {
+  style = "LSlib_default_header",
+})
+
+LSlib.gui.layout.addLabel(guiLayout, guiFrameHeaderFlow, "traincontroller-mainframe-gui-header-title", {
+  caption = {"item-name.traincontroller", {[1] = "item-name.trainassembly"}},
+  style   = "LSlib_default_frame_title",
+  ignored_by_interaction = true,
+})
+LSlib.gui.layout.addFrame(guiLayout, guiFrameHeaderFlow, "traincontroller-mainframe-gui-header-filler", "vertical", {
+  style = "LSlib_default_header_filler",
+  ignored_by_interaction = true,
+})
+LSlib.gui.layout.addSpriteButton(guiLayout, guiFrameHeaderFlow, "traincontroller-help", {
+  sprite = "utility/questionmark"      ,
+  style = "LSlib_default_header_button",
 })
 
 local guiTabContent = LSlib.gui.layout.addTabs(guiLayout, guiFrame, "traincontroller-tab", {

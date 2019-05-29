@@ -2,9 +2,27 @@ require "LSlib.lib"
 
 local guiLayout = LSlib.gui.layout.create("center")
 
-local guiFrame = LSlib.gui.layout.addFrame(guiLayout, "root", "traindepot-gui", "horizontal", {
-  caption = {"item-name.traindepot"},
+local guiFrame = LSlib.gui.layout.addFrame(guiLayout, "root", "traindepot-gui", "vertical", {
+  --caption = {"item-name.traindepot"},
   style   = "frame_without_footer"  ,
+})
+
+local guiFrameHeaderFlow = LSlib.gui.layout.addFlow(guiLayout, guiFrame, "traindepot-gui-header", "horizontal", {
+  style = "LSlib_default_header",
+})
+
+LSlib.gui.layout.addLabel(guiLayout, guiFrameHeaderFlow, "traindepot-gui-header-title", {
+  caption = {"item-name.traindepot"},
+  style   = "LSlib_default_frame_title",
+  ignored_by_interaction = true,
+})
+LSlib.gui.layout.addFrame(guiLayout, guiFrameHeaderFlow, "traindepot-gui-header-filler", "vertical", {
+  style = "LSlib_default_header_filler",
+  ignored_by_interaction = true,
+})
+LSlib.gui.layout.addSpriteButton(guiLayout, guiFrameHeaderFlow, "traindepot-help", {
+  sprite = "utility/questionmark"      ,
+  style = "LSlib_default_header_button",
 })
 
 local guiTabContent = LSlib.gui.layout.addTabs(guiLayout, guiFrame, "traindepot-tab", {
