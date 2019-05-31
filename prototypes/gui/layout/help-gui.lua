@@ -81,31 +81,38 @@ local introduction = LSlib.gui.layout.addScrollPane(guiLayout, introductionFrame
 LSlib.gui.layout.addLabel(guiLayout, introduction, introductionName.."-label1", {
   caption = {"gui-help.introduction-1"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, introduction, introductionName.."-label2", {
   caption = {"gui-help.introduction-2"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, introduction, introductionName.."-label3", {
   caption = {"gui-help.introduction-3"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addSprite(guiLayout, introduction, introductionName.."-sprite1", {
   sprite = introductionName.."-sprite1",
   style  = introductionName.."-sprite1",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, introduction, introductionName.."-label4", {
   caption = {"gui-help.introduction-4"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, introduction, introductionName.."-label5", {
   caption = {"gui-help.introduction-5"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 --[[LSlib.gui.layout.addLabel(guiLayout, introduction, introductionName.."-label6", {
   --TODO: add checkbox to disable button in top left corner
   caption = {"gui-help.introduction-6"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })]]
 
 
@@ -136,48 +143,59 @@ local traindepot = LSlib.gui.layout.addScrollPane(guiLayout, traindepotFrame, tr
 LSlib.gui.layout.addLabel(guiLayout, traindepot, traindepotName.."-title1", {
   caption = {"gui-help.traindepot-h1"},
   style = "trainConstructionSite_help_contentHeader",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, traindepot, traindepotName.."-lbl1", {
   caption = {"gui-help.traindepot-1"},
   style = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addSprite(guiLayout, traindepot, traindepotName.."-sprite1", {
   sprite = traindepotName.."-sprite1",
   style  = traindepotName.."-sprite1",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, traindepot, traindepotName.."-lbl2", {
   caption = {"gui-help.traindepot-2"},
   style = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 
 LSlib.gui.layout.addLabel(guiLayout, traindepot, traindepotName.."-title2", {
   caption = {"gui-help.traindepot-h2"},
   style = "trainConstructionSite_help_contentHeader",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, traindepot, traindepotName.."-lbl3", {
   caption = {"gui-help.traindepot-3"},
   style = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, traindepot, traindepotName.."-lbl4", {
   caption = {"gui-help.traindepot-4"},
   style = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, traindepot, traindepotName.."-lbl5", {
   caption = {"gui-help.traindepot-5"},
   style = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 
 LSlib.gui.layout.addLabel(guiLayout, traindepot, traindepotName.."-title3", {
   caption = {"gui-help.traindepot-h3"},
   style = "trainConstructionSite_help_contentHeader",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, traindepot, traindepotName.."-lbl6", {
   caption = {"gui-help.traindepot-6"},
   style = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, traindepot, traindepotName.."-lbl7", {
   caption = {"gui-help.traindepot-7"},
   style = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 
 
@@ -208,60 +226,74 @@ local trainbuilder = LSlib.gui.layout.addScrollPane(guiLayout, trainbuilderFrame
 LSlib.gui.layout.addLabel(guiLayout, trainbuilder, trainbuilderName.."-title1", {
   caption = {"gui-help.trainassembly-h1"},
   style = "trainConstructionSite_help_contentHeader",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, trainbuilder, trainbuilderName.."-lbl1", {
   caption = {"gui-help.trainassembly-1"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 
 LSlib.gui.layout.addLabel(guiLayout, trainbuilder, trainbuilderName.."-title2", {
   caption = {"gui-help.trainassembly-h2"},
   style = "trainConstructionSite_help_contentHeader",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, trainbuilder, trainbuilderName.."-lbl2", {
   caption = {"gui-help.trainassembly-2"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addSprite(guiLayout, trainbuilder, trainbuilderName.."-sprite1", {
   sprite = trainbuilderName.."-sprite1",
   style  = trainbuilderName.."-sprite1",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, trainbuilder, trainbuilderName.."-lbl3", {
   caption = {"gui-help.trainassembly-3"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, trainbuilder, trainbuilderName.."-lbl4", {
   caption = {"gui-help.trainassembly-4"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 
 LSlib.gui.layout.addLabel(guiLayout, trainbuilder, trainbuilderName.."-title3", {
   caption = {"gui-help.trainassembly-h3"},
   style = "trainConstructionSite_help_contentHeader",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, trainbuilder, trainbuilderName.."-lbl5", {
   caption = {"gui-help.trainassembly-5"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, trainbuilder, trainbuilderName.."-lbl6", {
   caption = {"gui-help.trainassembly-6"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, trainbuilder, trainbuilderName.."-lbl7", {
   caption = {"gui-help.trainassembly-7"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addSprite(guiLayout, trainbuilder, trainbuilderName.."-sprite2", {
   sprite = trainbuilderName.."-sprite2",
   style  = trainbuilderName.."-sprite2",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, trainbuilder, trainbuilderName.."-lbl8", {
   caption = {"gui-help.trainassembly-8"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, trainbuilder, trainbuilderName.."-lbl9", {
   caption = {"gui-help.trainassembly-9"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 
 
@@ -292,56 +324,69 @@ local traincontroller = LSlib.gui.layout.addScrollPane(guiLayout, traincontrolle
 LSlib.gui.layout.addLabel(guiLayout, traincontroller, traincontrollerName.."-title1", {
   caption = {"gui-help.traincontroller-h1"},
   style = "trainConstructionSite_help_contentHeader",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, traincontroller, traincontrollerName.."-lbl1", {
   caption = {"gui-help.traincontroller-1"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addSprite(guiLayout, traincontroller, traincontrollerName.."-sprite1", {
   sprite = traincontrollerName.."-sprite1",
   style  = traincontrollerName.."-sprite1",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, traincontroller, traincontrollerName.."-lbl2", {
   caption = {"gui-help.traincontroller-2"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 
 LSlib.gui.layout.addLabel(guiLayout, traincontroller, traincontrollerName.."-title2", {
   caption = {"gui-help.traincontroller-h2"},
   style = "trainConstructionSite_help_contentHeader",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, traincontroller, traincontrollerName.."-lbl3", {
   caption = {"gui-help.traincontroller-3"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, traincontroller, traincontrollerName.."-lbl4", {
   caption = {"gui-help.traincontroller-4"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, traincontroller, traincontrollerName.."-lbl5", {
   caption = {"gui-help.traincontroller-5"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, traincontroller, traincontrollerName.."-lbl6", {
   caption = {"gui-help.traincontroller-6"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 
 LSlib.gui.layout.addLabel(guiLayout, traincontroller, traincontrollerName.."-title3", {
   caption = {"gui-help.traincontroller-h3"},
   style = "trainConstructionSite_help_contentHeader",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, traincontroller, traincontrollerName.."-lbl7", {
   caption = {"gui-help.traincontroller-7"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addSprite(guiLayout, traincontroller, traincontrollerName.."-sprite2", {
   sprite = traincontrollerName.."-sprite2",
   style  = traincontrollerName.."-sprite2",
+  ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, traincontroller, traincontrollerName.."-lbl8", {
   caption = {"gui-help.traincontroller-8"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
 })
 
 

@@ -43,6 +43,12 @@ function Help.Gui:initPrototypeData()
       tabElementPath[tabElementName] = LSlib.gui.layout.getElementPath(helpGui, tabElementName)
     end
   end
+  for _, elementName in pairs{
+    "trainConstructionSite-help-toc"    ,
+    "trainConstructionSite-help-content",
+  } do
+    tabElementPath[elementName] = LSlib.gui.layout.getElementPath(helpGui, elementName)
+  end
 
   return {
     -- gui layout
@@ -51,7 +57,7 @@ function Help.Gui:initPrototypeData()
     ["helpGui-ContentName"] = "trainConstructionSite-help-content",
 
     -- gui element paths (derived from layout)
-    ["tabElementPath"] = tabElementPath,
+    ["tabElementPath"     ] = tabElementPath                      ,
   }
 end
 
@@ -109,6 +115,55 @@ function Help.Gui:initClickHandlerData()
     "traincontroller",
   } do
     clickHandlers[string.format(tabButton, tabButtonName)] = tabButtonHandler
+  end
+
+
+
+  ------------------------------------------------------------------------------
+  -- previous/next buttons
+  ------------------------------------------------------------------------------
+  clickHandlers["trainConstructionSite-help-content-previous"] = function(clickedElementName, playerIndex)
+    local tocElement = LSlib.gui.getElement(playerIndex, Help.Gui:getTabElementPath(string.sub(Help.Gui:getToCName(""), 1, -2)))
+
+    -- find the selected index
+    local previousTabName = nil
+    local foundPrevious = false
+    for tabIndex, tabElementName in pairs(tocElement.children_names) do
+      if string.sub(tocElement[tabElementName].style.name,-8) == "_pressed" then
+        foundPrevious = true
+        break
+      end
+      previousTabName = tabElementName
+    end
+
+    -- switch tab by simulating pressing previous tab button in ToC
+    if foundPrevious then
+      Help.Gui:getClickHandler(previousTabName)(tocElement[previousTabName], playerIndex)
+    end
+  end
+
+
+
+  clickHandlers["trainConstructionSite-help-content-next"] = function(clickedElementName, playerIndex)
+    local tocElement = LSlib.gui.getElement(playerIndex, Help.Gui:getTabElementPath(string.sub(Help.Gui:getToCName(""), 1, -2)))
+
+    -- find the selected index
+    local nextTabName = nil
+    local foundCurrent = false
+    for tabIndex, tabElementName in pairs(tocElement.children_names) do
+      if string.sub(tocElement[tabElementName].style.name,-8) == "_pressed" then
+        foundCurrent = true
+
+      elseif foundCurrent then
+        nextTabName = tabElementName
+        break
+      end
+    end
+
+    -- switch tab by simulating pressing next tab button in ToC
+    if nextTabName then
+      Help.Gui:getClickHandler(nextTabName)(tocElement[nextTabName], playerIndex)
+    end
   end
 
 
@@ -196,7 +251,7 @@ function Help.Gui:openGui(playerIndex)
   local openGui = self:createGui(playerIndex)
   local introductionTabName = self:getToCName("introduction")
   self:getClickHandler(introductionTabName)(LSlib.gui.getElement(playerIndex, self:getTabElementPath(introductionTabName)))
-  
+
   self:setOpenedGui(playerIndex, openGui)
   game.players[playerIndex].opened = openGui
 end
