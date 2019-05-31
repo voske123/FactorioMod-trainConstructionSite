@@ -148,7 +148,7 @@ function Traincontroller.Gui:initClickHandlerData()
     Traincontroller.Gui:setOpenedControllerEntity(playerIndex, nil)
 
     -- open the new UI
-    game.players[playerIndex].opened = HelpGui:createGui(playerIndex)
+    Help.Gui:openGui(playerIndex)
   end
 
 

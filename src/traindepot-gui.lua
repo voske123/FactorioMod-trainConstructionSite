@@ -82,7 +82,7 @@ function Traindepot.Gui:initClickHandlerData()
     game.players[playerIndex].opened = Traindepot.Gui:destroyGui(playerIndex)
 
     -- open the new UI
-    game.players[playerIndex].opened = HelpGui:createGui(playerIndex)
+    Help.Gui:openGui(playerIndex)
   end
 
 

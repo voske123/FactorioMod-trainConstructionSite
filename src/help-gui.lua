@@ -2,21 +2,21 @@ require 'util'
 require "LSlib/lib"
 
 -- Create class
-HelpGui = {}
+Help.Gui = {}
 
 --------------------------------------------------------------------------------
 -- Initiation of the class
 --------------------------------------------------------------------------------
-function HelpGui:onInit()
-  if not global.HG_data then
-    global.HG_data = self:initGlobalData()
+function Help.Gui:onInit()
+  if not global.H_data.Gui then
+    global.H_data.Gui = self:initGlobalData()
   end
 end
 
 
 
 -- Initiation of the global data
-function HelpGui:initGlobalData()
+function Help.Gui:initGlobalData()
   local gui = {
     ["version"      ] = 1, -- version of the global data
     ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
@@ -30,7 +30,7 @@ end
 
 
 local helpGui = require "prototypes.gui.layout.help-gui"
-function HelpGui:initPrototypeData()
+function Help.Gui:initPrototypeData()
   -- tabButtonPath
   local tabButtonPath = {}
   for _,tabButtonName in pairs{
@@ -51,7 +51,7 @@ end
 
 
 
-function HelpGui:initClickHandlerData()
+function Help.Gui:initClickHandlerData()
   local clickHandlers = {}
 
   ------------------------------------------------------------------------------
@@ -88,8 +88,8 @@ end
 --------------------------------------------------------------------------------
 -- Setter functions to alter data into the data structure
 --------------------------------------------------------------------------------
-function HelpGui:setOpenedGui(playerIndex, openedHelpGui)
-  global.HG_data["openedGui"][playerIndex] = openedHelpGui
+function Help.Gui:setOpenedGui(playerIndex, openedHelpGui)
+  global.H_data.Gui["openedGui"][playerIndex] = openedHelpGui
 end
 
 
@@ -97,32 +97,32 @@ end
 --------------------------------------------------------------------------------
 -- Getter functions to extract data from the data structure
 --------------------------------------------------------------------------------
-function HelpGui:getHelpGuiLayout()
-  return global.HG_data["prototypeData"]["helpGui"]
+function Help.Gui:getHelpGuiLayout()
+  return global.H_data.Gui["prototypeData"]["helpGui"]
 end
 
 
 
-function HelpGui:getTabElementPath(guiElementName)
-  return global.HG_data["prototypeData"]["tabButtonPath"][guiElementName]
+function Help.Gui:getTabElementPath(guiElementName)
+  return global.H_data.Gui["prototypeData"]["tabButtonPath"][guiElementName]
 end
 
 
 
-function HelpGui:getClickHandler(guiElementName)
-  return global.HG_data["clickHandler"][guiElementName]
+function Help.Gui:getClickHandler(guiElementName)
+  return global.H_data.Gui["clickHandler"][guiElementName]
 end
 
 
 
-function HelpGui:getGuiName()
+function Help.Gui:getGuiName()
   return LSlib.gui.getRootElementName(self:getHelpGuiLayout())
 end
 
 
 
-function HelpGui:hasOpenedGui(playerIndex)
-  return global.HG_data["openedGui"][playerIndex] and true or false
+function Help.Gui:hasOpenedGui(playerIndex)
+  return global.H_data.Gui["openedGui"][playerIndex] and true or false
 end
 
 
@@ -130,13 +130,13 @@ end
 --------------------------------------------------------------------------------
 -- Gui functions
 --------------------------------------------------------------------------------
-function HelpGui:createGui(playerIndex)
+function Help.Gui:createGui(playerIndex)
   return LSlib.gui.create(playerIndex, self:getHelpGuiLayout())
 end
 
 
 
-function HelpGui:destroyGui(playerIndex)
+function Help.Gui:destroyGui(playerIndex)
   return LSlib.gui.destroy(playerIndex, self:getHelpGuiLayout())
 end
 
@@ -145,8 +145,16 @@ end
 --------------------------------------------------------------------------------
 -- Behaviour functions, mostly event handlers
 --------------------------------------------------------------------------------
--- When a player opens/closes a gui
-function HelpGui:onCloseEntity(openedGui, playerIndex)
+-- When a player opens a gui
+function Help.Gui:openGui(playerIndex)
+  self:setOpenedGui(playerIndex, nil)
+  game.players[playerIndex].opened = self:createGui(playerIndex)
+end
+
+
+
+-- When a player closes a gui/entity
+function Help.Gui:onCloseEntity(openedGui, playerIndex)
   if openedGui and openedGui.valid and openedGui.name == self:getGuiName() then
     self:setOpenedGui(playerIndex, nil)
     game.players[playerIndex].opened = self:destroyGui(playerIndex)
@@ -156,7 +164,7 @@ end
 
 
 -- When a player clicks on the gui
-function HelpGui:onClickElement(clickedElement, playerIndex)
+function Help.Gui:onClickElement(clickedElement, playerIndex)
   if self:hasOpenedGui(playerIndex) then
     if not clickedElement.valid then return end
     local clickHandler = self:getClickHandler(clickedElement.name)
@@ -167,7 +175,7 @@ end
 
 
 -- Called after a player leaves the game.
-function HelpGui:onPlayerLeftGame(playerIndex)
+function Help.Gui:onPlayerLeftGame(playerIndex)
   if self:hasOpenedGui(playerIndex) then
     self:onCloseEntity(game.players[playerIndex].opened, playerIndex)
   end
