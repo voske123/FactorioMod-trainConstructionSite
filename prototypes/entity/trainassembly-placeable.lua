@@ -143,13 +143,23 @@ end
 --add collision mask to belts
 for _, beltType in pairs({
   "transport-belt",
+}) do
+  for _, beltEntity in pairs(data.raw[beltType]) do
+
+    if not beltEntity.collision_mask then -- add default layers
+      beltEntity.collision_mask = {"floor-layer", "object-layer", "water-tile"}
+    end
+    table.insert(data.raw[beltType][beltEntity.name].collision_mask, extraLayer)
+  end
+end
+for _, beltType in pairs({
   "underground-belt",
   "splitter",
 }) do
   for _, beltEntity in pairs(data.raw[beltType]) do
 
     if not beltEntity.collision_mask then -- add default layers
-      beltEntity.collision_mask = {--[["item-layer",]] "object-layer", "water-tile"}
+      beltEntity.collision_mask = {"item-layer", "object-layer", "water-tile"}
     end
     table.insert(data.raw[beltType][beltEntity.name].collision_mask, extraLayer)
   end
