@@ -1,15 +1,17 @@
 require "LSlib.lib"
 require "src.debug"
+require "src.help-gui"
 require "src.traindepot"
 require "src.trainassembly"
 require "src.traincontroller"
 
---Debug.enabled = true -- only when debugging
+Debug.enabled = true -- only when debugging
 
 script.on_init(function(event)
   -- This is called once when a new save game is created or once
   -- when a save file is loaded that previously didn't contain the mod.
   Debug          :onInit()
+  HelpGui        :onInit()
   Traindepot     :onInit()
   Trainassembly  :onInit()
   Traincontroller:onInit()
@@ -40,6 +42,7 @@ end)
 
 script.on_event(defines.events.on_player_left_game, function(event)
   -- Called after a player leaves the game.
+  HelpGui            :onPlayerLeftGame(event.player_index)
   Traindepot     .Gui:onPlayerLeftGame(event.player_index)
   Traincontroller.Gui:onPlayerLeftGame(event.player_index)
 end)
@@ -113,6 +116,7 @@ end)
 
 script.on_event(defines.events.on_gui_closed, function(event)
   -- Called when the player closes a GUI.
+  HelpGui            :onCloseEntity(event.element, event.player_index)
   Traindepot     .Gui:onCloseEntity(event.element, event.player_index)
   Traincontroller.Gui:onCloseEntity(event.element, event.player_index)
   --Traincontroller.Gui:onCloseEntity(event.entity , event.player_index)
@@ -126,6 +130,7 @@ script.on_event({--defines.events.on_gui_elem_changed           , -- Called when
                  defines.events.on_gui_selection_state_changed, -- Called when selection state is changed (dropdown/listbox)
                  defines.events.on_gui_click                  }, function(event)
   -- Called when the player clicks on a GUI.
+  HelpGui            :onClickElement(event.element, event.player_index)
   Traindepot     .Gui:onClickElement(event.element, event.player_index)
   Traincontroller.Gui:onClickElement(event.element, event.player_index)
 end)

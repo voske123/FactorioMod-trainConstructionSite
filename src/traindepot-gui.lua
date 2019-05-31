@@ -74,6 +74,20 @@ function Traindepot.Gui:initClickHandlerData()
   local clickHandlers = {}
 
   ------------------------------------------------------------------------------
+  -- help button handler
+  ------------------------------------------------------------------------------
+  clickHandlers["traindepot-help"] = function(clickedElement, playerIndex)
+    -- close this UI
+    Traindepot.Gui:setOpenedEntity(playerIndex, nil)
+    game.players[playerIndex].opened = Traindepot.Gui:destroyGui(playerIndex)
+
+    -- open the new UI
+    game.players[playerIndex].opened = HelpGui:createGui(playerIndex)
+  end
+
+
+
+  ------------------------------------------------------------------------------
   -- tab button handler
   ------------------------------------------------------------------------------
   local tabButtonHandler = function(clickedTabButton, playerIndex)

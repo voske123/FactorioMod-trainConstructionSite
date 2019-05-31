@@ -1,4 +1,3 @@
-local createUtilityDirectionSprites = require "prototypes.gui.sprites.trainassembly-resultFluid"
 
 -- For each train type like item we want to make an equal fluid
 -- To accuire all the itemnames, we have to iterate over the entities
@@ -32,10 +31,6 @@ for _,trainType in pairs({
         data:extend{
           itemFluid,
         }
-
-        -- create the utility sprites
-        --createUtilityDirectionSprites(itemFluid.name, trainType == "locomotive" or trainType == "artillery-wagon")
-
 
     end
   end
