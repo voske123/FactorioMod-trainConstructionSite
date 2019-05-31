@@ -32,6 +32,13 @@ guiStyles["trainConstructionSite_help_tocButton"] = {
   horizontally_stretchable = "on",
 }
 
+guiStyles["trainConstructionSite_help_tocButton_pressed"] = {
+  type = "button_style",
+  parent = "trainConstructionSite_help_tocButton",
+
+  default_graphical_set = guiStyles["button"].clicked_graphical_set,
+}
+
 guiStyles["trainConstructionSite_help_ToC_footer_flow"] = {
   type = "horizontal_flow_style"   ,
   parent = "LSlib_default_footer",

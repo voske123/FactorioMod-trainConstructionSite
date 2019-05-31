@@ -108,7 +108,6 @@ end)
 
 script.on_event(defines.events.on_mod_item_opened, function(event)
   -- Called when the player opens a GUI.
-  game.print("fired")
   Help:onOpenItem(event.item, event.player_index)
 end)
 

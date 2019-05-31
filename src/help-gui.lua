@@ -31,21 +31,27 @@ end
 
 local helpGui = require "prototypes.gui.layout.help-gui"
 function Help.Gui:initPrototypeData()
-  -- tabButtonPath
-  local tabButtonPath = {}
-  for _,tabButtonName in pairs{
-    --"traindepot-tab-selection" ,
-    --"traindepot-tab-statistics",
+  -- tabElementPath
+  local tabElementPath = {}
+  for _,tabName in pairs{
+    "introduction"
   } do
-    tabButtonPath[tabButtonName] = LSlib.gui.layout.getElementPath(trainDepotGui, tabButtonName)
+    for _,tabElementName in pairs{
+      string.format("trainConstructionSite-help-toc-%s"    , tabName),
+      string.format("trainConstructionSite-help-content-%s", tabName),
+    } do
+      tabElementPath[tabElementName] = LSlib.gui.layout.getElementPath(helpGui, tabElementName)
+    end
   end
 
   return {
     -- gui layout
-    ["helpGui"      ] = helpGui      ,
+    ["helpGui"            ] = helpGui                             ,
+    ["helpGui-ToCName"    ] = "trainConstructionSite-help-toc"    ,
+    ["helpGui-ContentName"] = "trainConstructionSite-help-content",
 
     -- gui element paths (derived from layout)
-    ["tabButtonPath"] = tabButtonPath,
+    ["tabElementPath"] = tabElementPath,
   }
 end
 
@@ -57,8 +63,9 @@ function Help.Gui:initClickHandlerData()
   ------------------------------------------------------------------------------
   -- close button handler
   ------------------------------------------------------------------------------
-  clickHandlers["traindepot-help"] = function(clickedElement, playerIndex)
-
+  clickHandlers["trainConstructionSite-help-gui-quit"] = function(clickedElement, playerIndex)
+    Help.Gui:setOpenedGui(playerIndex, nil)
+    game.players[playerIndex].opened = Help.Gui:destroyGui(playerIndex)
   end
 
 
@@ -67,14 +74,41 @@ function Help.Gui:initClickHandlerData()
   -- tab button handler
   ------------------------------------------------------------------------------
   local tabButtonHandler = function(clickedTabButton, playerIndex)
+    local tocElement = clickedTabButton.parent
 
+    -- set the style of the clicked buttons in ToC
+    local clickedElementName = clickedTabButton.name
+    for _,childName in pairs(tocElement.children_names) do
+      tocElement[childName].style = childName == clickedElementName and "trainConstructionSite_help_tocButton_pressed" or "trainConstructionSite_help_tocButton"
+    end
+
+    -- extract the contentFrameName
+    local clickedElementNameSeperated = LSlib.utils.string.split(clickedElementName, "-")
+    clickedElementName = ""
+    for namePartIndex, namePart in pairs(clickedElementNameSeperated) do
+      if namePartIndex > 3 then
+        clickedElementName = string.format("%s-%s", clickedElementName, namePart)
+      end
+    end
+    clickedElementName = Help.Gui:getContentName(string.sub(clickedElementName, 2))
+
+    -- set the correct frame
+    local helpGuiMain = tocElement.parent.parent
+    for _,childName in pairs(helpGuiMain.children_names) do
+      if childName ~= "trainConstructionSite-help-toc-frame" then
+        helpGuiMain[childName].visible = childName == clickedElementName
+      end
+    end
   end
 
+  local tabButton = "trainConstructionSite-help-toc-%s"
   for _,tabButtonName in pairs{
-    --"traindepot-tab-selection" ,
-    --"traindepot-tab-statistics",
+    "introduction"   ,
+    "traindepot"     ,
+    "trainbuilder"   ,
+    "traincontroller",
   } do
-    clickHandlers[tabButtonName] = tabButtonHandler
+    clickHandlers[string.format(tabButton, tabButtonName)] = tabButtonHandler
   end
 
 
@@ -103,8 +137,20 @@ end
 
 
 
+function Help.Gui:getToCName(pageName)
+  return string.format("%s-%s", global.H_data.Gui["prototypeData"]["helpGui-ToCName"], pageName)
+end
+
+
+
+function Help.Gui:getContentName(pageName)
+  return string.format("%s-%s", global.H_data.Gui["prototypeData"]["helpGui-ContentName"], pageName)
+end
+
+
+
 function Help.Gui:getTabElementPath(guiElementName)
-  return global.H_data.Gui["prototypeData"]["tabButtonPath"][guiElementName]
+  return global.H_data.Gui["prototypeData"]["tabElementPath"][guiElementName]
 end
 
 
@@ -147,8 +193,12 @@ end
 --------------------------------------------------------------------------------
 -- When a player opens a gui
 function Help.Gui:openGui(playerIndex)
-  self:setOpenedGui(playerIndex, nil)
-  game.players[playerIndex].opened = self:createGui(playerIndex)
+  local openGui = self:createGui(playerIndex)
+  local introductionTabName = self:getToCName("introduction")
+  self:getClickHandler(introductionTabName)(LSlib.gui.getElement(playerIndex, self:getTabElementPath(introductionTabName)))
+  
+  self:setOpenedGui(playerIndex, openGui)
+  game.players[playerIndex].opened = openGui
 end
 
 

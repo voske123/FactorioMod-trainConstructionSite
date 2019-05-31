@@ -71,7 +71,7 @@ local introductionFrame = LSlib.gui.layout.addFrame(guiLayout, guiFlow, introduc
   caption = {"gui-help.introduction"},
   style   = "frame_without_footer",
 })
-local introduction = LSlib.gui.layout.addScrollPane(guiLayout, introductionFrame, introductionName, {
+local introduction = LSlib.gui.layout.addScrollPane(guiLayout, introductionFrame, introductionName.."-scrollPane", {
   style = "trainConstructionSite_help_scrollpane",
   horizontal_scroll_policy = "never",
   vertical_scroll_policy   = "always",
@@ -126,7 +126,7 @@ local traindepotFrame = LSlib.gui.layout.addFrame(guiLayout, guiFlow, traindepot
   caption = {"item-name.traindepot"},
   style   = "frame_without_footer",
 })
-local traindepot = LSlib.gui.layout.addScrollPane(guiLayout, traindepotFrame, traindepotName, {
+local traindepot = LSlib.gui.layout.addScrollPane(guiLayout, traindepotFrame, traindepotName.."-scrollPane", {
  style = "trainConstructionSite_help_scrollpane",
  horizontal_scroll_policy = "never",
  vertical_scroll_policy   = "always",
@@ -198,7 +198,7 @@ local trainbuilderFrame = LSlib.gui.layout.addFrame(guiLayout, guiFlow, trainbui
   caption = {"item-name.trainassembly"},
   style   = "frame_without_footer",
 })
-local trainbuilder = LSlib.gui.layout.addScrollPane(guiLayout, trainbuilderFrame, trainbuilderName, {
+local trainbuilder = LSlib.gui.layout.addScrollPane(guiLayout, trainbuilderFrame, trainbuilderName.."-scrollPane", {
  style = "trainConstructionSite_help_scrollpane",
  horizontal_scroll_policy = "never",
  vertical_scroll_policy   = "always",
@@ -282,7 +282,7 @@ local traincontrollerFrame = LSlib.gui.layout.addFrame(guiLayout, guiFlow, train
   caption = {"item-name.traincontroller", {"item-name.trainassembly"}},
   style   = "frame_without_footer",
 })
-local traincontroller = LSlib.gui.layout.addScrollPane(guiLayout, traincontrollerFrame, traincontrollerName, {
+local traincontroller = LSlib.gui.layout.addScrollPane(guiLayout, traincontrollerFrame, traincontrollerName.."-scrollPane", {
  style = "trainConstructionSite_help_scrollpane",
  horizontal_scroll_policy = "never",
  vertical_scroll_policy   = "always",
