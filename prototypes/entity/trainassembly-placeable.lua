@@ -25,33 +25,13 @@ trainassembly.selection_box = {{-3, -3}, {3, 3}} -- when train is facing north
 trainassembly.vertical_selection_shift = 0 -- correction for vertical tracks
 
 -- collision masks
-local extraLayer = "layer-13"
+local extraLayer = "layer-12"
 trainassembly.collision_mask =
 {
   "train-layer", "player-layer", -- default layers
   extraLayer, -- extra collision layer
 }
 trainassembly.collision_box = {{-2.95, -3.9}, {2.95, 3.9}} -- when train is facing north
-
---add collision mask to curved rails
-local defaultRailMask = {"object-layer", "item-layer", "floor-layer", "water-tile"}
-for railName,_ in pairs(data.raw["curved-rail"]) do
-  if not data.raw["curved-rail"][railName].collision_mask then
-    data.raw["curved-rail"][railName].collision_mask = util.table.deepcopy(defaultRailMask)
-  end
-  table.insert(data.raw["curved-rail"][railName].collision_mask, extraLayer)
-end
-
---add collision mask to signals
-local defaultSignalMask = {"object-layer", "item-layer", "floor-layer", "water-tile"}
-for _, signalType in pairs({"rail-signal", "rail-chain-signal"}) do
-  for signalName,_ in pairs(data.raw[signalType]) do
-    if not data.raw[signalType][signalName].collision_mask then
-      data.raw[signalType][signalName].collision_mask = util.table.deepcopy(defaultSignalMask)
-    end
-    table.insert(data.raw[signalType][signalName].collision_mask, extraLayer)
-  end
-end
 
 trainassembly.fast_replaceable_group = nil
 trainassembly.max_health = data.raw["assembling-machine"]["assembling-machine-2"].max_health
@@ -136,6 +116,31 @@ trainassembly.pictures =
   },
 }
 
+data:extend{
+  trainassembly,
+}
+
+--add collision mask to curved rails
+for railName,_ in pairs(data.raw["curved-rail"]) do
+
+  if not data.raw["curved-rail"][railName].collision_mask then -- add default layers
+    data.raw["curved-rail"][railName].collision_mask = {"object-layer", "item-layer", "floor-layer", "water-tile"}
+  end
+  table.insert(data.raw["curved-rail"][railName].collision_mask, extraLayer)
+end
+
+--add collision mask to signals
+for _, signalType in pairs({"rail-signal", "rail-chain-signal"}) do
+  for signalName,_ in pairs(data.raw[signalType]) do
+
+    if not data.raw[signalType][signalName].collision_mask then -- add default layers
+      data.raw[signalType][signalName].collision_mask = {"object-layer", "item-layer", "floor-layer", "water-tile"}
+    end
+    table.insert(data.raw[signalType][signalName].collision_mask, extraLayer)
+  end
+end
+
+--add collision mask to belts
 for _, beltType in pairs({
   "transport-belt",
   "underground-belt",
@@ -143,15 +148,9 @@ for _, beltType in pairs({
 }) do
   for _, beltEntity in pairs(data.raw[beltType]) do
 
-    if not beltEntity.collision_mask then
-      beltEntity.collision_mask = {"item-layer", "object-layer", "water-tile"} -- default layers of a transport belt
+    if not beltEntity.collision_mask then -- add default layers
+      beltEntity.collision_mask = {--[["item-layer",]] "object-layer", "water-tile"}
     end
-    --table.insert(data.raw[beltType][beltEntity.name].collision_mask, extraLayer)
-    table.insert(data.raw[beltType][beltEntity.name].collision_mask, "train-layer")
+    table.insert(data.raw[beltType][beltEntity.name].collision_mask, extraLayer)
   end
 end
-
-
-data:extend{
-  trainassembly,
-}
