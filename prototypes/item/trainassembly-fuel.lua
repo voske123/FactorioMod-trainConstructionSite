@@ -29,7 +29,11 @@ trainassemblyRecipefuel.fuel_top_speed_multiplier     = nil
 trainassemblyRecipefuel.fuel_glow_color               = nil
 trainassemblyRecipefuel.fuel_emission_multiplier      = nil
 
--- STEP 3: add both items to the game
+-- STEP 3: make sure the player only can see the recipefuel
+trainassemblyTrainfuel.flags = trainassemblyTrainfuel.flags or {}
+table.insert(trainassemblyTrainfuel.flags, "hidden")
+
+-- STEP 4: add both items to the game
 data:extend{
   trainassemblyTrainfuel,
   trainassemblyRecipefuel,

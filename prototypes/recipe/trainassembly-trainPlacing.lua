@@ -20,7 +20,7 @@ for _, trainType in pairs({
       data:extend{
         {
           type = "recipe",
-          name = itemName .. "-fluid[" .. trainType .. "]",
+          name = trainEntity.name .. "-fluid[" .. trainType .. "]",
           category = "trainassembling",
           expensive = nil,
           normal =
@@ -56,21 +56,21 @@ end
 
 
 if data.raw["item-with-entity-data"]["locomotive-manual-build"] then
-  data:extend{
+  data:extend{{
+    type = "recipe",
+    name = "locomotive-manual-build",
+    category = "manual-crafting",
+    expensive = nil,
+    normal =
     {
-      type = "recipe",
-      name = "locomotive-manual-build",
-      expensive = nil,
-      normal =
+      enabled = false,
+      energy_required = 5,
+      always_show_made_in = true,
+      ingredients =
       {
-        enabled = false,
-        energy_required = 5,
-        ingredients =
-        {
-          {"locomotive", 1},
-        },
-        result = "locomotive-manual-build",
+        {"locomotive", 1},
       },
+      result = "locomotive-manual-build",
     },
-  }
+  }}
 end

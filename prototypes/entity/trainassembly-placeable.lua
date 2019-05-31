@@ -25,10 +25,11 @@ trainassembly.selection_box = {{-3, -3}, {3, 3}} -- when train is facing north
 trainassembly.vertical_selection_shift = 0 -- correction for vertical tracks
 
 -- collision masks
+local extraLayer = "layer-13"
 trainassembly.collision_mask =
 {
   "train-layer", "player-layer", -- default layers
-  "layer-13", -- curved rails
+  extraLayer, -- extra collision layer
 }
 trainassembly.collision_box = {{-2.95, -3.9}, {2.95, 3.9}} -- when train is facing north
 
@@ -38,7 +39,7 @@ for railName,_ in pairs(data.raw["curved-rail"]) do
   if not data.raw["curved-rail"][railName].collision_mask then
     data.raw["curved-rail"][railName].collision_mask = util.table.deepcopy(defaultRailMask)
   end
-  table.insert(data.raw["curved-rail"][railName].collision_mask, "layer-13")
+  table.insert(data.raw["curved-rail"][railName].collision_mask, extraLayer)
 end
 
 --add collision mask to signals
@@ -48,7 +49,7 @@ for _, signalType in pairs({"rail-signal", "rail-chain-signal"}) do
     if not data.raw[signalType][signalName].collision_mask then
       data.raw[signalType][signalName].collision_mask = util.table.deepcopy(defaultSignalMask)
     end
-    table.insert(data.raw[signalType][signalName].collision_mask, "layer-13")
+    table.insert(data.raw[signalType][signalName].collision_mask, extraLayer)
   end
 end
 
@@ -111,7 +112,7 @@ trainassembly.pictures =
       ]]--
       hr_version = nil,
     },
-    {
+    --[[{
       width = 82,
       height = 82,
       direction_count = 4,
@@ -128,9 +129,10 @@ trainassembly.pictures =
         "__trainConstructionSite__/graphics/placeholders/direction_south.png",
         "__trainConstructionSite__/graphics/placeholders/direction_west.png",
       },
-      ]]--
+      ]]--[[
       hr_version = nil,
     },
+    ]]--
   },
 }
 
@@ -144,7 +146,8 @@ for _, beltType in pairs({
     if not beltEntity.collision_mask then
       beltEntity.collision_mask = {"item-layer", "object-layer", "water-tile"} -- default layers of a transport belt
     end
-    table.insert(data.raw[beltType][beltEntity.name].collision_mask, "layer-13")
+    --table.insert(data.raw[beltType][beltEntity.name].collision_mask, extraLayer)
+    table.insert(data.raw[beltType][beltEntity.name].collision_mask, "train-layer")
   end
 end
 

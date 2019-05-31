@@ -4,6 +4,7 @@ require "LSlib/lib"
 -- Create class
 Traincontroller = {}
 require 'src.traincontroller-builder'
+require 'src.traincontroller-gui'
 
 --------------------------------------------------------------------------------
 -- Initiation of the class
@@ -15,6 +16,7 @@ function Traincontroller:onInit()
   end
   self:createControllerForces()
   self.Builder:onInit()
+  self.Gui    :onInit()
 end
 
 
@@ -36,12 +38,13 @@ end
 -- Initiation of the global data
 function Traincontroller:initGlobalData()
   local TC_data = {
-    ["version"]       = 1, -- version of the global data
-    ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
+    ["version"                   ]       = 1, -- version of the global data
+    ["prototypeData"             ] = self:initPrototypeData(), -- data storing info about the prototypes
 
-    ["trainControllerForces"] = {}, -- keep track of the created forces
+    ["trainControllerForces"     ] = {},  -- keep track of the created forces
+    ["trainControllerNamesCount" ] = {},  -- keep track of the depos the controllers are using
 
-    ["trainControllers"]           = {},  -- keep track of all controllers
+    ["trainControllers"          ] = {},  -- keep track of all controllers
     ["nextTrainControllerIterate"] = nil, -- next controller to iterate over
   }
 
@@ -54,8 +57,9 @@ end
 function Traincontroller:initPrototypeData()
   return
   {
-    ["trainControllerName"]       = "traincontroller",        -- item and entity have same name
-    ["trainControllerSignalName"] = "traincontroller-signal", -- hidden signals
+    ["trainControllerName"       ] = "traincontroller",        -- item and entity have same name
+    ["trainControllerSignalName" ] = "traincontroller-signal", -- hidden signals
+    ["trainControllerMapviewName"] = "traincontroller-mapview",-- simple entity
 
     ["trainControllerForce"]      = "-trainControllerForce",  -- force for the traincontrollers
   }
@@ -77,9 +81,12 @@ function Traincontroller:createControllerForces()
    -- create all the forces
   for _,forceName in pairs(forcesToCreate) do
     -- create the force and set it friendly
-    local friendlyForceName = forceName..self:getControllerForceName()
-    game.create_force(friendlyForceName)
-        .set_friend(forceName, true)
+    local friendlyForceName = self:getControllerForceName(forceName)
+    if not game.forces[friendlyForceName] then
+      game.create_force(friendlyForceName)
+          .set_friend(forceName, true)
+      --game.forces[forceName].set_friend(friendlyForceName, true)
+    end
 
     -- save the created force in the data structure
     global.TC_data["trainControllerForces"][friendlyForceName] = forceName
@@ -120,7 +127,7 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuilderIndex)
     ["entity-hidden"]    = {}, -- the hidden entities
 
     ["trainBuilderIndex"] = trainBuilderIndex, -- the trainbuilder it controls
-    ["controllerStatus"] = global.TC_data.Builder["builderStates"]["idle"], -- status
+    ["controllerStatus"] = global.TC_data.Builder["builderStates"]["initialState"], -- status
 
     -- list data
     ["prevController"]   = nil, -- the previous controller
@@ -140,7 +147,7 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuilderIndex)
     global.TC_data["trainControllers"][thisController["surfaceIndex"]][thisController["position"].y][thisController["position"].x]["nextController"] = util.table.deepcopy(thisController)
 
     -- STEP 2b: start on_tick events becose we need to start iterating
-    Traincontroller.Builder:activateOnTick()
+    self.Builder:activateOnTick()
   else
     -- when we've added it to the list, we know there is at least one in front
     -- of us. This one has a prev set. We add it inbetween.
@@ -177,7 +184,8 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuilderIndex)
 
   -- STEP 3b:The controller needs to be on another (friendly) force. This way
   --         the controller wont show up on the train menu.
-  controllerEntity.force = controllerEntity.force.name .. self:getControllerForceName()
+  local controllerForceName = self:getControllerForceName(controllerEntity.force.name)
+  controllerEntity.force = controllerForceName
 
   -- STEP 3c:The controller needs to be disabled. This way the trains won't path
   --         to this stop. To get this behaviour, we connect it to the logistics
@@ -185,30 +193,51 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuilderIndex)
   self:setTrainstopControlBehaviour(controllerEntity)
 
   --game.print(serpent.block(global.TC_data["trainControllers"]))
+
+  -- STEP 3c:Keep track how many controllers are connected to a depot
+  if not global.TC_data["trainControllerNamesCount"][controllerForceName] then
+    global.TC_data["trainControllerNamesCount"][controllerForceName] = {}
+  end
+  if not global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurface.index] then
+    global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurface.index] = {}
+  end
+
+  local stationName = controllerEntity.backer_name
+  local stationAmount = global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurface.index][stationName] or 0
+  global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurface.index][stationName] = stationAmount + 1
 end
 
 
 
 function Traincontroller:deleteController(controllerEntity)
-  -- STEP 1: make sure we can index the table
-  local controllerSurface  = controllerEntity.surface
+  -- STEP 1a: make sure we can index the table
+  --local controllerSurface = controllerEntity.surface
+  local controllerSurfaceIndex = controllerEntity.surface.index
   local controllerPosition = controllerEntity.position
-  if not global.TC_data["trainControllers"][controllerSurface.index] then
+  if not global.TC_data["trainControllers"][controllerSurfaceIndex] then
     return
   end
-  if not global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y] then
+  if not global.TC_data["trainControllers"][controllerSurfaceIndex][controllerPosition.y] then
     return
+  end
+  if not global.TC_data["trainControllers"][controllerSurfaceIndex][controllerPosition.y][controllerPosition.x] then
+    return
+  end
+
+  -- STEP 1b: destroy the hidden entities
+  for _, entity in pairs(global.TC_data["trainControllers"][controllerSurfaceIndex][controllerPosition.y][controllerPosition.x]["entity-hidden"] or {}) do
+    entity.destroy()
   end
 
   -- STEP 2: remove this controller from the list
   local thisController = {
-    ["surfaceIndex"] = controllerSurface.index,
+    ["surfaceIndex"] = controllerSurfaceIndex,
     ["position"]     = controllerPosition,
   }
 
   -- STEP 2a: extract the previous and next controller
-  local prevController = global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y][controllerPosition.x]["prevController"]
-  local nextController = global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y][controllerPosition.x]["nextController"]
+  local prevController = global.TC_data["trainControllers"][controllerSurfaceIndex][controllerPosition.y][controllerPosition.x]["prevController"]
+  local nextController = global.TC_data["trainControllers"][controllerSurfaceIndex][controllerPosition.y][controllerPosition.x]["nextController"]
 
   -- STEP 2b: adapt the prevController
   global.TC_data["trainControllers"][prevController["surfaceIndex"]][prevController["position"].y][prevController["position"].x]["nextController"] = util.table.deepcopy(nextController)
@@ -222,23 +251,49 @@ function Traincontroller:deleteController(controllerEntity)
     if LSlib.utils.table.areEqual(thisController, nextController) then
       global.TC_data["nextTrainControllerIterate"] = nil
       -- this is the last one, no need to keep iterating on_tick
-      Traincontroller.Builder:deactivateOnTick()
+      self.Builder:deactivateOnTick()
     else
       global.TC_data["nextTrainControllerIterate"] = util.table.deepcopy(nextController)
     end
   end
 
   -- STEP 2e: Delete this controller
-  global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y][controllerPosition.x] = nil
+  global.TC_data["trainControllers"][controllerSurfaceIndex][controllerPosition.y][controllerPosition.x] = nil
 
-  if LSlib.utils.table.isEmpty(global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y]) then
-    global.TC_data["trainControllers"][controllerSurface.index][controllerPosition.y] = nil
+  if LSlib.utils.table.isEmpty(global.TC_data["trainControllers"][controllerSurfaceIndex][controllerPosition.y]) then
+    global.TC_data["trainControllers"][controllerSurfaceIndex][controllerPosition.y] = nil
   end
-  if LSlib.utils.table.isEmpty(global.TC_data["trainControllers"][controllerSurface.index]) then
-    global.TC_data["trainControllers"][controllerSurface.index] = nil
+  if LSlib.utils.table.isEmpty(global.TC_data["trainControllers"][controllerSurfaceIndex]) then
+    global.TC_data["trainControllers"][controllerSurfaceIndex] = nil
   end
-
   --game.print(serpent.block(global.TC_data["trainControllers"]))
+
+
+  -- STEP 3: remove this controller from the depot list
+  local controllerForceName = controllerEntity.force.name
+
+  local stationName = controllerEntity.backer_name
+  local stationAmount = global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex][stationName]
+
+  if stationAmount then
+    if stationAmount > 1 then
+      global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex][stationName] = stationAmount - 1
+    else
+      global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex][stationName] = nil
+
+      if LSlib.utils.table.isEmpty(global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex]) then
+        global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex] = nil
+
+        if LSlib.utils.table.isEmpty(global.TC_data["trainControllerNamesCount"][controllerForceName]) then
+          global.TC_data["trainControllerNamesCount"][controllerForceName] = nil
+        end
+      end
+    end
+  end
+
+  -- Update the UI
+  controllerEntity.health = 0 -- set health to 0, otherwise it's not working
+  self.Gui:updateOpenedGuis(controllerEntity)
 end
 
 
@@ -286,6 +341,36 @@ end
 
 
 
+function Traincontroller:renameBuilding(controllerEntity, oldName)
+  local stationName = controllerEntity.backer_name
+  if oldName ~= stationName then -- checking to make sure it is actualy changed
+
+    local controllerForceName = controllerEntity.force.name
+    local controllerSurfaceIndex = controllerEntity.surface.index
+
+    -- remove the old one
+    local stationAmount = global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex][oldName]
+    if stationAmount then
+      if stationAmount > 1 then
+        global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex][oldName] = stationAmount - 1
+      else
+        global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex][oldName] = nil
+        -- no need to delete empty tables, since we'll be adding one to it again
+      end
+    end
+
+    -- add the new one
+    stationAmount = global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex][stationName] or 0
+    global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex][stationName] = stationAmount + 1
+
+    -- update the ui
+    Traindepot.Gui:updateOpenedGuis(oldName)
+    self.Gui:updateOpenedGuis(controllerEntity)
+  end
+end
+
+
+
 --------------------------------------------------------------------------------
 -- Getter functions to extract data from the data structure
 --------------------------------------------------------------------------------
@@ -301,14 +386,26 @@ end
 
 
 
+function Traincontroller:getControllerMapviewEntityName()
+  return global.TC_data.prototypeData.trainControllerMapviewName
+end
+
+
+
 function Traincontroller:getControllerSignalEntityName()
   return global.TC_data.prototypeData.trainControllerSignalName
 end
 
 
 
-function Traincontroller:getControllerForceName()
-  return global.TC_data.prototypeData.trainControllerForce
+function Traincontroller:getControllerForceName(depotForceName)
+  return depotForceName .. global.TC_data.prototypeData.trainControllerForce
+end
+
+
+
+function Traincontroller:getDepotForceName(controllerForceName)
+  return controllerForceName:sub(1, - (global.TC_data.prototypeData.trainControllerForce:len() + 1))
 end
 
 
@@ -328,6 +425,26 @@ function Traincontroller:getTrainController(trainBuilderIndex)
   end
 
   return nil
+end
+
+
+
+function Traincontroller:getAllTrainControllers(surfaceIndex, controllerName)
+  if not global.TC_data["trainControllers"][surfaceIndex] then return {} end
+
+  local entities = {}
+  local entityIndex = 1
+  for posY,posYdata in pairs(global.TC_data["trainControllers"][surfaceIndex]) do
+    for posX,trainController in pairs(posYdata) do
+      local entity = trainController["entity"]
+      if entity.backer_name == controllerName then
+        entities[entityIndex] = entity
+        entityIndex = entityIndex + 1
+      end
+    end
+  end
+
+  return entities
 end
 
 
@@ -353,6 +470,33 @@ end
 
 
 
+function Traincontroller:hasTrainBuilderEntities(controllerForceName, controllerSurfaceIndex)
+  -- returns true if at least one depot has been build on the force on that surface
+  if global.TC_data["trainControllerNamesCount"][controllerForceName]                         and
+     global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex] then
+    return not LSlib.utils.table.isEmpty(global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex])
+  end
+  return false
+end
+
+
+
+function Traincontroller:getTrainBuilderNames(controllerForceName, controllerSurfaceIndex)
+  if self:hasTrainBuilderEntities(controllerForceName, controllerSurfaceIndex) then
+    return global.TC_data["trainControllerNamesCount"][controllerForceName][controllerSurfaceIndex]
+  else
+    return {}
+  end
+end
+
+
+
+function Traincontroller:getTrainBuilderCount(controllerForceName, controllerSurfaceIndex, controllerName)
+  return self:getTrainBuilderNames(controllerForceName, controllerSurfaceIndex)[controllerName] or 0
+end
+
+
+
 function Traincontroller:getTrainHiddenEntity(controllerEntity, hiddenEntityIndex)
   return global.TC_data["trainControllers"][controllerEntity.surface.index][controllerEntity.position.y][controllerEntity.position.x]["entity-hidden"][hiddenEntityIndex]
 end
@@ -363,41 +507,59 @@ function Traincontroller:getHiddenEntityData(position, direction)
   -- create a list for all hidden entities that needs to be created
 
   -- STEP 1: Get the orientation offset depending on the orientation
-  local offsetX = 0
-  local offsetY = 0
+  local signalOffsetX = 0
+  local signalOffsetY = 0
+  local mapviewOffsetX = 0
+  local mapviewOffsetY = 0
 
   if direction == defines.direction.north then
-    offsetX = -1
-    --offsetY = 0
+    signalOffsetX = -1
+    --signalOffsetY = 0
+    --mapviewOffsetX = 0
+    --mapviewOffsetY = 0
   elseif direction == defines.direction.east then
-    --offsetX = 0
-    offsetY = -1
+    --signalOffsetX = 0
+    signalOffsetY = -1
+    --mapviewOffsetX = 0
+    --mapviewOffsetY = 0
   elseif direction == defines.direction.south then
-    offsetX = 1
-    --offsetY = 0
+    signalOffsetX = 1
+    --signalOffsetY = 0
+    --mapviewOffsetX = 0
+    --mapviewOffsetY = 0
   elseif direction == defines.direction.west then
-    --offsetX = 0
-    offsetY = 1
+    --signalOffsetX = 0
+    signalOffsetY = 1
+    --mapviewOffsetX = 0
+    --mapviewOffsetY = 0
   end
 
   -- STEP 2: Return the list with hidden entities
   return {
-    { -- signal on the same side of the track
+    [1] = { -- signal on the same side of the track
       name     = self:getControllerSignalEntityName(),
       position = {
-        x = position.x + offsetX * 1,
-        y = position.y + offsetY * 1,
+        x = position.x + signalOffsetX * 1,
+        y = position.y + signalOffsetY * 1,
       },
-      direction = LSlib.utils.directions.oposite(direction)
+      direction = LSlib.utils.directions.oposite(direction),
     },
-    { -- signal on the other side of the track
+    [2] = { -- signal on the other side of the track
       name     = self:getControllerSignalEntityName(),
       position = {
-        x = position.x + offsetX * 3,
-        y = position.y + offsetY * 3,
+        x = position.x + signalOffsetX * 3,
+        y = position.y + signalOffsetY * 3,
       },
-      direction = direction
+      direction = direction,
     },
+    [3] = { -- simple entity to show on map
+      name      = self:getControllerMapviewEntityName(),
+      position = position, --[[{
+        x = position.x + mapviewOffsetX,
+        y = position.y + mapviewOffsetY,
+      },]]
+      direction = direction,
+    }
   }
 end
 
@@ -445,7 +607,7 @@ function Traincontroller:checkValidAftherChanges(alteredEntity, playerIndex)
         self:deleteController(trainController)
 
         -- Destroy the placed item
-        trainController.destroy()
+        trainController.destroy{raise_destroy = true}
         return false
       end
 
@@ -487,6 +649,7 @@ function Traincontroller:checkValidAftherChanges(alteredEntity, playerIndex)
         }
       end
 
+      self.Gui:updateOpenedGuis(trainController)
       return true
     end
 
@@ -505,12 +668,17 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
 
   -- this is the actual force of the player, not the friendly force
   local createdEntityForceName = global.TC_data["trainControllerForces"][createdEntity.force.name] or createdEntity.force.name
+  local entityPosition = createdEntity.position
 
   local notValid = function(localisedMessage)
     -- Try return the item to the player (or drop it)
     if playerIndex then -- return if possible
       local player = game.players[playerIndex]
-      player.print(localisedMessage)
+      --player.print(localisedMessage)
+      player.create_local_flying_text{
+        text = localisedMessage,
+        position = entityPosition,
+      }
       player.insert{
         name = self:getControllerItemName(),
         count = 1,
@@ -536,12 +704,12 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
     return false, -1
   end
 
-  -- STEP 1: Check if at least one train depo has been placed, if not, the
+  -- STEP 1: Check if at least one train depot has been placed, if not, the
   --         trainbuilder can't let trains drive off.
-  if not Traindepo:hasDepoEntities(createdEntityForceName, createdEntity.surface.index) then
-    return notValid{"traincontroller-message.noTraindepoFound",
+  if not Traindepot:hasDepotEntities(createdEntityForceName, createdEntity.surface.index) then
+    return notValid{"traincontroller-message.noTraindepotFound",
       --[[1]]{"item-name.traincontroller", {"item-name.trainassembly"}},
-      --[[2]]{"item-name.traindepo"},
+      --[[2]]{"item-name.traindepot"},
     }
   end
 
@@ -559,7 +727,6 @@ function Traincontroller:checkValidPlacement(createdEntity, playerIndex)
   elseif entityDirection == defines.direction.south then
     entitySearchDirection.y = -1
   end
-  local entityPosition = createdEntity.position
   local entitySurface = createdEntity.surface
   local entitySurfaceIndex = entitySurface.index
 
@@ -648,7 +815,9 @@ function Traincontroller:onBuildEntity(createdEntity, playerIndex)
     local validPlacement, trainBuilderIndex = self:checkValidPlacement(createdEntity, playerIndex)
     if validPlacement then -- It is valid, now we have to add the entity to the list
       self:saveNewStructure(createdEntity, trainBuilderIndex)
-      --TODO: name the stop
+
+      -- after structure is saved, we rename it, this will trigger Traincontroller:onRenameEntity as well
+      createdEntity.backer_name = "Unused Trainbuilder"
     end
   end
 end
@@ -680,7 +849,7 @@ function Traincontroller:onPlayerRotatedEntity(rotatedEntity, playerIndex)
   -- The player rotated the machine entity, we need to make sure the controller
   -- is still valid.
   if rotatedEntity.name == Trainassembly:getMachineEntityName() then
-    Traincontroller:checkValidAftherChanges(rotatedEntity, playerIndex)
+    self:checkValidAftherChanges(rotatedEntity, playerIndex)
   end
 end
 
@@ -693,9 +862,20 @@ function Traincontroller:onPlayerChangedSettings(pastedEntity, playerIndex)
   if pastedEntity and pastedEntity.valid then
     if pastedEntity.name == Trainassembly:getMachineEntityName() then
       self:checkValidAftherChanges(pastedEntity, playerIndex)
+
     elseif pastedEntity.name == self:getControllerEntityName() then
       self:setTrainstopControlBehaviour(pastedEntity)
+
     end
+  end
+end
+
+
+
+-- When a player/script renames an entity
+function Traincontroller:onRenameEntity(renamedEntity, oldName)
+  if renamedEntity.name == self:getControllerEntityName() then
+    self:renameBuilding(renamedEntity, oldName)
   end
 end
 
@@ -726,6 +906,6 @@ function Traincontroller:onTrainbuilderAltered(trainBuilderIndex)
     }
     droppedItem.to_be_looted = true
     droppedItem.order_deconstruction(trainController.force)
-    trainController.destroy()
+    trainController.destroy{raise_destroy = true}
   end
 end

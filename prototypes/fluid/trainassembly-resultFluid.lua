@@ -2,10 +2,10 @@
 -- For each train type like item we want to make an equal fluid
 -- To accuire all the itemnames, we have to iterate over the entities
 -- becose those have different types as the items are all type = "item".
-for _, trainType in pairs({
-    "locomotive",
-    "cargo-wagon",
-    "fluid-wagon",
+for _,trainType in pairs({
+    "locomotive"     ,
+    "cargo-wagon"    ,
+    "fluid-wagon"    ,
     "artillery-wagon",
 }) do
   -- For each type, we get all the different entities (ex: locomotive mk1, mk2, ...)
@@ -31,9 +31,6 @@ for _, trainType in pairs({
         data:extend{
           itemFluid,
         }
-
-
-
 
     end
   end

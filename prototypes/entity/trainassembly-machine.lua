@@ -41,9 +41,7 @@ trainassembly.fast_replaceable_group = nil
 
 trainassembly.fluid_boxes = -- give it an output pipe so it has a direction
 {
-  off_when_no_fluid_recipe = false, -- makes sure it is showing the arrow
-  {
-    -- NOTE: This output is always on a train track, so no worries that a pipe
+  { -- NOTE: This output is always on a train track, so no worries that a pipe
     --       would empty the fluid that is comming out of this.
     production_type = "output",
     pipe_picture = nil,
@@ -53,6 +51,7 @@ trainassembly.fluid_boxes = -- give it an output pipe so it has a direction
     pipe_connections = {{ type="output", position = {0, -3.5} }}, -- output on the north side
     --secondary_draw_orders = { north = -1 }
   },
+  off_when_no_fluid_recipe = false, -- makes sure it is showing the arrow
 }
 
 trainassembly.max_health = data.raw["locomotive"]["trainassembly-placeable"].max_health
@@ -81,7 +80,7 @@ trainassembly.animation =
         --shift = util.by_pixel(0, 4),
         hr_version = nil,
       },
-      {
+      --[[{
         filename = "__trainConstructionSite__/graphics/placeholders/direction_north.png",
         width = 82,
         height = 82,
@@ -89,7 +88,7 @@ trainassembly.animation =
         line_length = 1,
         shift = util.by_pixel(0, -32*1.25),
         hr_version = nil,
-      },
+      },]]
     },
   },
   east =
@@ -106,7 +105,7 @@ trainassembly.animation =
         --shift = util.by_pixel(0, 4),
         hr_version = nil,
       },
-      {
+      --[[{
         filename = "__trainConstructionSite__/graphics/placeholders/direction_east.png",
         width = 82,
         height = 82,
@@ -114,7 +113,7 @@ trainassembly.animation =
         line_length = 1,
         shift = util.by_pixel(0, -32*1.25),
         hr_version = nil,
-      },
+      },]]
     },
   },
   south =
@@ -131,7 +130,7 @@ trainassembly.animation =
         --shift = util.by_pixel(0, 4),
         hr_version = nil,
       },
-      {
+      --[[{
         filename = "__trainConstructionSite__/graphics/placeholders/direction_south.png",
         width = 82,
         height = 82,
@@ -139,7 +138,7 @@ trainassembly.animation =
         line_length = 1,
         shift = util.by_pixel(0, -32*1.25),
         hr_version = nil,
-      },
+      },]]
     },
   },
   west =
@@ -156,7 +155,7 @@ trainassembly.animation =
         --shift = util.by_pixel(0, 4),
         hr_version = nil,
       },
-      {
+      --[[{
         filename = "__trainConstructionSite__/graphics/placeholders/direction_west.png",
         width = 82,
         height = 82,
@@ -164,12 +163,78 @@ trainassembly.animation =
         line_length = 1,
         shift = util.by_pixel(0, -32*1.25),
         hr_version = nil,
-      },
+      },]]
     },
   },
 }
 
+-- split the rendering from the machine
+for _,orientation in pairs{"north", "east", "south", "west"} do
+  data:extend{{
+    type = "animation",
+    name = trainassembly.name .. "-" .. orientation,
+    layers = util.table.deepcopy(trainassembly.animation[orientation].layers),
+  }}
+  trainassembly.animation[orientation] =
+  {
+    filename = "__core__/graphics/empty.png",
+    priorit = "very-low",
+    width = 1,
+    height = 1,
+    frame_count = 1,
+  }
+end
 
+data:extend{
+  util.table.deepcopy(trainassembly),
+}
+
+-- now create the selector
+trainassembly.name = trainassembly.name .. "-recipe-selector"
+
+for _,flag in pairs{
+  "player-creation"  ,
+  "placeable-enemy"  ,
+  "placeable-neutral",
+  "placeable-player" ,
+} do
+  for flagIndex,f in pairs(trainassembly.flags) do
+    if flag == f then
+      table.remove(trainassembly.flags, flagIndex)
+    end
+  end
+end
+for _,flag in pairs{
+  "hidden"                     ,
+  "hide-alt-info"              ,
+  "not-blueprintable"          ,
+  "not-deconstructable"        ,
+  "no-copy-paste"              ,
+  "not-selectable-in-game"     ,
+  "not-upgradable"             ,
+  "not-flammable"              ,
+  "no-automated-item-insertion",
+} do
+  table.insert(trainassembly.flags, flag)
+end
+
+trainassembly.selection_box = nil
+trainassembly.collision_mask = {}
+trainassembly.collision_box = {{-.49, -.49}, {.49, .49}}
+
+trainassembly.fluid_boxes[1].pipe_connections[1].position = {0, -1}
+
+trainassembly.energy_source.render_no_power_icon = false
+trainassembly.energy_source.render_no_network_icon = false
+
+trainassembly.animation =
+{
+  filename = "__core__/graphics/empty.png",
+  priorit = "very-low",
+  width = 1,
+  height = 1,
+  frame_count = 1,
+}
 
 data:extend{
   trainassembly,

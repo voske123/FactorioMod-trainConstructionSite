@@ -49,7 +49,7 @@ end
 -- Setter functions to alter data into the data structure
 --------------------------------------------------------------------------------
 -- Save a new trainassembly to our data structure
-function Trainassembly:saveNewStructure(machineEntity)
+function Trainassembly:saveNewStructure(machineEntity, machineRenderID)
   -- With this function we save all the data we want about a trainassembly.
   -- To index all machines we need a (unique) way of storing all the data,
   -- here we chose to index it by its location, since only 1 building can
@@ -81,9 +81,11 @@ function Trainassembly:saveNewStructure(machineEntity)
   --         Now we can store our wanted data at this position
   global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] =
   {
-    ["entity"]            = machineEntity,           -- the entity
-    ["direction"]         = machineEntity.direction, -- the direction its facing
-    ["createdEntity"]     = nil,                     -- the created train entity from this building
+    ["entity"           ] = machineEntity,           -- the entity
+    ["renderID"         ] = machineRenderID,         -- the render of the building
+    ["direction"        ] = machineEntity.direction, -- the direction its facing
+    ["trainColor"       ] = LSlib.utils.table.convertRGBA{r = 234, g = 17, b = 0}, -- the color of the train entity when it will be created
+    ["createdEntity"    ] = nil,                     -- the created train entity from this building
     ["trainBuilderIndex"] = nil,                     -- the trainBuilder it belongs to (see further down)
   }
 
@@ -485,6 +487,33 @@ end
 
 
 
+function Trainassembly:setMachineTint(machineEntity, tintColor)
+
+  if not (machineEntity and machineEntity.valid) then
+    return nil
+  end
+  local machineSurface  = machineEntity.surface
+  if not global.TA_data["trainAssemblers"][machineSurface.index] then
+    return nil
+  end
+  local machinePosition = machineEntity.position
+  if not global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y] then
+    return nil
+  end
+  if not global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] then
+    return nil
+  end
+
+  global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainColor"] = {
+    r = tintColor.r or 0,
+    g = tintColor.g or 0,
+    b = tintColor.b or 0,
+  }
+
+end
+
+
+
 function Trainassembly:setCreatedEntity(machineSurfaceIndex, machinePosition, createdEntity)
   -- STEP 1: If we don't have a trainBuilder saved on that surface, or not
   --         on that y position or on that x position, it means that we don't
@@ -588,6 +617,62 @@ end
 
 
 
+function Trainassembly:getMachineRenderID(machineEntity)
+  -- STEP 1: If the machineEntity isn't valid, its position isn't valid either
+  if not (machineEntity and machineEntity.valid) then
+    return nil
+  end
+
+  -- STEP 2: If we don't have a trainBuilder saved on that surface, or not
+  --         on that y position or on that x position, it means that we don't
+  --         have a direction available for that machine.
+  local machineSurface = machineEntity.surface
+  if not global.TA_data["trainAssemblers"][machineSurface.index] then
+    return nil
+  end
+  local machinePosition = machineEntity.position
+  if not global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y] then
+    return nil
+  end
+  if not global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] then
+    return nil
+  end
+
+  -- STEP 3: In step 2 we checked for an invalid data structure. So now we
+  --         can return the direction the machine is/was facing.
+  return global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["renderID"]
+end
+
+
+
+function Trainassembly:getMachineTint(machineEntity)
+  -- STEP 1: If the machineEntity isn't valid, its position isn't valid either
+  if not (machineEntity and machineEntity.valid) then
+    return nil
+  end
+
+  -- STEP 2: If we don't have a trainBuilder saved on that surface, or not
+  --         on that y position or on that x position, it means that we don't
+  --         have a direction available for that machine.
+  local machineSurface = machineEntity.surface
+  if not global.TA_data["trainAssemblers"][machineSurface.index] then
+    return nil
+  end
+  local machinePosition = machineEntity.position
+  if not global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y] then
+    return nil
+  end
+  if not global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] then
+    return nil
+  end
+
+  -- STEP 3: In step 2 we checked for an invalid data structure. So now we
+  --         can return the direction the machine is/was facing.
+  return global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainColor"]
+end
+
+
+
 function Trainassembly:getCreatedEntity(machineSurfaceIndex, machinePosition)
   -- STEP 1: If we don't have a trainBuilder saved on that surface, or not
   --         on that y position or on that x position, it means that we don't
@@ -639,12 +724,92 @@ end
 
 function Trainassembly:getTrainBuilder(trainBuilderIndex)
   --step 1: Make sure there is a valid index
-  if not trainBuilderIndex then
-    return nil
-  end
+  if not trainBuilderIndex then return nil end
 
   --step 2: In this step we return the trainBuilders with the trainBuilderIndex.
   return global.TA_data["trainBuilders"][trainBuilderIndex]
+end
+
+
+
+function Trainassembly:getTrainBuilderIterator(dir)
+  return function(t)
+    -- Ordered table iterator, allow to iterate in the order that the trainBuilder
+    -- connects the train together. Equivalent of the pairs() function on tables.
+    -- Allows to iterate in order.
+
+    local function iteratorNext(t, state)
+      -- Equivalent of the next function, but returns the keys in order that the
+      -- trainbuilder will build. We use a temporary ordered key table that is
+      -- stored in the table being iterated.
+
+      local function __genIteratorIndex(t)
+        -- generate the index
+        local pos = (dir == defines.direction.east or dir == defines.direction.west) and "x" or "y"
+
+        -- first sort the values
+        local orderedValues = {}
+        local orderedValuesIndex = 1
+        for _,val in pairs(t) do
+          -- table.insert(orderedIndex, key)
+          orderedValues[orderedValuesIndex] = val.position[pos]
+          orderedValuesIndex = orderedValuesIndex + 1
+        end
+        table.sort(orderedValues)
+
+        if dir == defines.direction.east  or
+           dir == defines.direction.south then
+          -- invert order
+          local i, j = 1, #orderedValues
+          while i < j do
+            orderedValues[i], orderedValues[j] = orderedValues[j], orderedValues[i]
+            i = i + 1
+            j = j - 1
+          end
+        end
+
+        -- now that we know the order of the values, we can remap these values to there keys
+        local orderedIndex = {}
+        for orderedIdexIndex, orderedValue in pairs(orderedValues) do
+          local orderedValueFound = false
+          for key,val in pairs(t) do -- obtain the key that is linked to this orderedValue
+            if (not orderedValueFound) and (val.position[pos] == orderedValue) then
+              orderedIndex[orderedIdexIndex] = key
+              orderedValueFound = true
+            end
+          end
+        end
+
+        -- now the values are ordened and we got an ordened list of these keys
+        return orderedIndex
+      end
+
+      local key = nil
+      --print("iteratorNext: state = "..tostring(state) )
+      if state == nil then
+        -- the first time, generate the index
+        t.__iteratorIndex = __genIteratorIndex(t)
+        key = t.__iteratorIndex[1]
+      else
+        -- fetch the next value
+        for i = 1, #t.__iteratorIndex do
+          if t.__iteratorIndex[i] == state then
+            key = t.__iteratorIndex[i+1]
+          end
+        end
+      end
+
+      if key then
+        return key, t[key]
+      end
+
+      -- no more value to return, cleanup
+      t.__iteratorIndex = nil
+      return
+    end
+
+    return iteratorNext, t, nil
+  end
 end
 
 
@@ -654,12 +819,17 @@ function Trainassembly:checkValidPlacement(createdEntity, playerIndex)
   -- it will inform the player with the corresponding message and return the
   -- trainassembler to the player. If no player is found, it will drop the
   -- trainassembler on the ground where the trainassembler was placed.
+  local entityPosition = createdEntity.position
 
   local notValid = function(localisedMessage)
     -- Try return the item to the player (or drop it)
     if playerIndex then -- return if possible
       local player = game.players[playerIndex]
-      player.print(localisedMessage)
+      --player.print(localisedMessage)
+      player.create_local_flying_text{
+        text = localisedMessage,
+        position = entityPosition,
+      }
       player.insert{
         name = self:getItemName(),
         count = 1,
@@ -686,7 +856,6 @@ function Trainassembly:checkValidPlacement(createdEntity, playerIndex)
   end
 
   local entitySurface = createdEntity.surface
-  local entityPosition = createdEntity.position
   local entityDirection = LSlib.utils.directions.orientationTo4WayDirection(createdEntity.orientation)
   local entityOpositeDirection = LSlib.utils.directions.oposite(entityDirection)
 
@@ -783,11 +952,21 @@ function Trainassembly:onBuildEntity(createdEntity, playerIndex)
         railEntity.minable      = false -- entity can't be mined
       end
 
+      local machineRenderID = rendering.draw_animation{
+        animation = machineEntity.name .. "-" .. LSlib.utils.directions.toString(machineEntity.direction),
+        -- @Bilka said:
+        -- "item-in-inserter-hand" = 134
+        -- "higher-object-above"   = 132
+        render_layer = 133,
+        target = machineEntity,
+        surface = machineEntity.surface,
+      }
+
       -- STEP 4: delete the locomotive that was build.
       createdEntity.destroy()
 
       -- STEP 5: Save the newly made trainassembly to our data structure so we can keep track of it
-      self:saveNewStructure(machineEntity)
+      self:saveNewStructure(machineEntity, machineRenderID)
     end
 
   elseif createdEntity.name == "straight-rail" then
@@ -837,6 +1016,7 @@ function Trainassembly:onRemoveEntity(removedEntity)
 end
 
 
+
 -- When a player rotates an entity
 function Trainassembly:onPlayerRotatedEntity(rotatedEntity)
   -- The player rotated the machine entity +/-90 degrees, the building can only be
@@ -849,6 +1029,7 @@ function Trainassembly:onPlayerRotatedEntity(rotatedEntity)
 
     -- STEP 2: set the new rotated direction
     rotatedEntity.direction = newDirection
+    rendering.set_animation(self:getMachineRenderID(rotatedEntity), rotatedEntity.name .. "-" .. LSlib.utils.directions.toString(newDirection))
 
     -- STEP 3: save the state to the data structure
     self:updateMachineDirection(rotatedEntity)
@@ -858,5 +1039,14 @@ function Trainassembly:onPlayerRotatedEntity(rotatedEntity)
     if createdTrainEntity and createdTrainEntity.valid then
       createdTrainEntity.rotate()
     end
+  end
+end
+
+
+
+function Trainassembly:onPlayerChangedSettings(sourceEntity, destinationEntity)
+  if sourceEntity     .name == self:getMachineEntityName() and
+     destinationEntity.name == self:getMachineEntityName() then
+    self:setMachineTint(destinationEntity, self:getMachineTint(sourceEntity))
   end
 end

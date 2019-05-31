@@ -12,6 +12,14 @@ traincontroller.icon = data.raw["item"][traincontroller.minable.result].icon
 traincontroller.icon_size = data.raw["item"][traincontroller.minable.result].icon_size
 traincontroller.icons = util.table.deepcopy(data.raw["item"][traincontroller.minable.result].icons)
 
+--traincontroller.map_color          = data.raw["utility-constants"]["default"].chart.default_friendly_color
+--traincontroller.friendly_map_color = traincontroller.map_color
+--traincontroller.enemy_map_color    = data.raw["utility-constants"]["default"].chart.default_enemy_color
+traincontroller.chart_name = false
+
+traincontroller.flags = traincontroller.flags or {}
+table.insert(traincontroller.flags, "not-on-map")
+
 traincontroller.rail_overlay_animations = {
   filename = "__core__/graphics/empty.png",
   width = 1,
@@ -88,6 +96,7 @@ traincontrollerSignal.selection_box  = nil
 traincontrollerSignal.flags = {
   "not-blueprintable",
   "not-deconstructable",
+  "not-on-map",
 }
 
 traincontrollerSignal.fast_replaceable_group = nil
@@ -112,14 +121,36 @@ traincontrollerSignal.rail_piece = {
   axially_symmetrical = false,
   hr_version = nil,
 }
+
 traincontrollerSignal.green_light.intensity = 0
 traincontrollerSignal.orange_light.intensity = 0
 traincontrollerSignal.red_light.intensity = 0
+
 traincontrollerSignal.circuit_wire_connection_points = {circuit_connector_definitions["rail-signal"].points[1]}
 traincontrollerSignal.circuit_connector_sprites  = {circuit_connector_definitions["rail-signal"].sprites[1]}
 
+local traincontrollerMapview = {
+  type = "simple-entity-with-force",
+  name = traincontroller.name .. "-mapview",
+
+  picture = {
+    filename = "__core__/graphics/empty.png",
+    width = 1,
+    height = 1,
+    priority = "low",
+  },
+
+  selection_box  = nil,
+  collision_box  = {{-1,-1},{1,1}},
+  collision_mask = {},
+
+  map_color          = data.raw["utility-constants"]["default"].chart.default_friendly_color,
+  friendly_map_color = data.raw["utility-constants"]["default"].chart.default_friendly_color,
+  enemy_map_color    = data.raw["utility-constants"]["default"].chart.default_enemy_color,
+}
 
 data:extend{
   traincontroller,
   traincontrollerSignal,
+  traincontrollerMapview,
 }

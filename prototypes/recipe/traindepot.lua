@@ -1,7 +1,7 @@
 data:extend{
   {
     type = "recipe",
-    name = "traindepo",
+    name = "traindepot",
     normal =
     {
       enabled = false,
@@ -17,7 +17,7 @@ data:extend{
       {
         {
           type    = "item",
-          name    = "traindepo",
+          name    = "traindepot",
           amount  = 1,
         },
       },
