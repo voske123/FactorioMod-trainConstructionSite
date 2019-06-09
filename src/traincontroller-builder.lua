@@ -312,11 +312,17 @@ function Traincontroller.Builder:buildNextTrain(trainBuilderIndex)
                 b = createdEntityColor.b,
                 a = 127/255, -- hardcoded for vanilla trains
               }
+
             end
 
             -- now substract one result from the assembler
             machineOutput.amount = machineOutput.amount - 1
             machineEntity.fluidbox[1] = machineOutput.amount > 0 and machineOutput or nil
+
+            -- now that we finised this one, we can raise the event for other mods
+            script.raise_event(defines.events.script_raised_built, {
+              entity = createdEntity
+            })
           else
             -- if the entity could not be created, the build is not finished yet
             finishTrainBuild = false
