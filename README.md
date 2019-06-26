@@ -20,7 +20,7 @@ Lovely_santa and Voske_123
 The depot is used to store freshly made trains. Ofcourse you can also send other trains that are out of use to these stations.
 ![Preview depot](https://github.com/voske123/FactorioMod-trainConstructionSite/blob/master/graphics/screenshots/traindepot-creation.png)
 
-When you are in need for more train, you can take trains out of the depot and put them to use. You can even do this from the mapview without needing to be close to the depot!
+When you are in need for more trains, they can be taken from the depot and put them to use. You can even do this from the mapview without needing to be close to the depot!
 
 ### Depot statistics
 When you open the depot entity, you can see some basic information about the depot.
@@ -41,10 +41,10 @@ You can't place trains everywhere, they must be placed on rails. This means the 
 
 Trains are 6 tiles wide, with one tile inbetween each train. The building is also 6 tiles wide, the same length of trains themself. In order to link multiple Trainbuilders together, the buildings must be spaced one tile apart.
 
-Assembling a train requires heavy duty tools, so you must provide some power to the building. They are quite power hungry, but they support Efficiency moduless to be put inside. Because of safety reasons we cannot allow Speed modules and obviously Productivity modules make no sence.
+Assembling a train requires heavy duty tools, so you must provide some power to the building. They are quite power hungry, but they support Efficiency moduless to be put inside. Because of safety reasons we cannot allow Speed modules and obviously Productivity modules make no sense at all.
 
 ### Recipe requirements
-Each train requires parts to be build. These parts can be seperatly be made with the same ingredients as you would make a train without this mod present.
+Each train requires parts to be build. These parts can be made seperatly with the same ingredients as you would make a train without this mod present.
 
 The train needs to be able to drive away, which means the locomotives require fuel. As we didn't want to limit your fuel options, we chose to make a generic fuel item that can be made out of all other fueling items.
 
@@ -62,7 +62,7 @@ For those that like to express trainconfigurations as numbers, this would be a 1
 
 # Trainbuilder controller
 ### Placement requirements
-The controller must be placed in front of the Trainbuilders so it can control them. They are placed in the same way a Train stop is placed:
+The controller must be placed in front of the Trainbuilders so it can control them. They are placed the same way as a Train stop:
   - On the right side of the track
   - In the direction the train will approach it (yellow arrows).
 ![Placement preview](https://github.com/voske123/FactorioMod-trainConstructionSite/blob/master/graphics/screenshots/traincontroller-placement.png)
