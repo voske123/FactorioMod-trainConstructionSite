@@ -174,13 +174,21 @@ function Traincontroller.Builder:updateController(surfaceIndex, position)
   end
 
 
-  -- save changes to the global data before any gui updates
-  global.TC_data["trainControllers"][surfaceIndex][position.y][position.x]["controllerStatus"] = controllerStatus
+  -- the controller could have been removed
+  if global.TC_data["trainControllers"] and
+     global.TC_data["trainControllers"][surfaceIndex] and
+     global.TC_data["trainControllers"][surfaceIndex][position.y] and
+     global.TC_data["trainControllers"][surfaceIndex][position.y][position.x] then
 
-  -- update the gui if needed
-  if controllerStatus ~= oldControllerStatus then
-    Traincontroller.Gui:updateOpenedGuis(controllerEntity)
+    -- save changes to the global data before any gui updates
+    global.TC_data["trainControllers"][surfaceIndex][position.y][position.x]["controllerStatus"] = controllerStatus
+
+    -- update the gui if needed
+    if controllerStatus ~= oldControllerStatus then
+      Traincontroller.Gui:updateOpenedGuis(controllerEntity)
+    end
   end
+
 end
 
 
@@ -209,6 +217,10 @@ function Traincontroller.Builder:canBuildNextTrain(trainBuilderIndex, trainBuild
     local machineEntity = Trainassembly:getMachineEntity(builderLocation["surfaceIndex"], builderLocation["position"])
     if machineEntity and machineEntity.valid then
       local machineRecipe = machineEntity.get_recipe()
+      if not machineRecipe then
+        Traincontroller:checkValidAftherChanges(machineEntity, nil)
+        return false
+      end
       local buildEntityName = LSlib.utils.string.split(machineRecipe.name, "[")[1]
       local buildEntityName = buildEntityName:sub(1, buildEntityName:len()-6)
 
@@ -246,7 +258,10 @@ function Traincontroller.Builder:buildNextTrain(trainBuilderIndex)
     if machineEntity and machineEntity.valid then
       -- get the building entity out of the name
       local machineRecipe = machineEntity.get_recipe()
-      if not machineRecipe then return false end
+      if not machineRecipe then
+        Traincontroller:checkValidAftherChanges(machineEntity, nil)
+        return false
+      end
       local buildEntityName = LSlib.utils.string.split(machineRecipe.name, "[")[1]
       buildEntityName = buildEntityName:sub(1, buildEntityName:len()-6)
 
@@ -430,13 +445,16 @@ function Traincontroller.Builder:onTick(event)
   local surfaceIndex = controller.surfaceIndex
   local position     = controller.position
 
+  -- extract the next controller
+  local nextController = util.table.deepcopy(
+    global.TC_data["trainControllers"][surfaceIndex][position.y][position.x]["nextController"]
+  )
+
   -- Update the controller
   self:updateController(surfaceIndex, position)
 
   -- Increment the nextController
-  global.TC_data["nextTrainControllerIterate"] = util.table.deepcopy(
-    global.TC_data["trainControllers"][surfaceIndex][position.y][position.x]["nextController"]
-  )
+  global.TC_data["nextTrainControllerIterate"] = nextController
 end
 
 
