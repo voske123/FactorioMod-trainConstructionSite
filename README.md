@@ -12,7 +12,8 @@ You can find this information by opening the ingame manual as well.
 
 If you find any bugs or find anything unclear, feel free to contact us on the mod portal, in the discussion section or make a bug report on github.
 
-Kind regards and have fun playing,\nLovely_santa and Voske_123
+Kind regards and have fun playing,
+Lovely_santa and Voske_123
 
 # Traindepot
 ### Usability
@@ -29,8 +30,6 @@ When you open the depot entity, you can see some basic information about the dep
 ### Depot configuration settings
   - Requested amount: In the depot menu you can set the amount of trains you want to have in the depot. When the amount of trains that is present in the depot is lower than the requested amount, the connected builders will create more trains until the request is fullfilled.
   - Connected trainbuilders: The trainbuilders that are connected to this depot to fullfill the requests. This also shows a list of all the controllers which you can access from here.
-
-
 
 # Trainbuilder
 ### Functionality
@@ -61,8 +60,6 @@ In the picture above, the Trainbuilder will create a train (left to right) that 
 
 For those that like to express trainconfigurations as numbers, this would be a 1-4-1 train (1 locomotive facing the front, 4 carriages, 1 locomotive facing the rear).
 
-
-
 # Trainbuilder controller
 ### Placement requirements
 The controller must be placed in front of the Trainbuilders so it can control them. They are placed in the same way a Train stop is placed:
@@ -80,7 +77,8 @@ When you open the controller entity, you can see some basic information about th
     - Constructing a train
     - Waiting for a request
     - Dispatching the train
-  The controller will start placing carriages on the tracks as soon as one is done building. When the train is traveling to the depot, the builder will instantly start creating a new train.
+
+The controller will start placing carriages on the tracks as soon as one is done building. When the train is traveling to the depot, the builder will instantly start creating a new train.
 
 ### Trainbuilder interface
 The traincontroller also has some features about the trainbuilder configuration as shown in the image below.

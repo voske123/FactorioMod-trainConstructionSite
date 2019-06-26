@@ -1,0 +1,10 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.1.0 - Test release
+Date: 26. 6. 2019
+  Major Features:
+    - Initial test release
+    - Traindepot
+    - Trainbuilder + controller
+    - Manual with info about each entity
+  Minor Features:
+    - Manual build early game locomotive
