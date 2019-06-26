@@ -103,7 +103,7 @@ function Traindepot:deleteBuilding(depotEntity)
 
   -- STEP3: Update the UI
   self.Gui:updateOpenedGuis(depotName)
-  
+
   local trainControllers = Traincontroller:getAllTrainControllers(depotSurfaceIndex, depotName)
   for _,trainController in pairs(trainControllers) do
     Traincontroller.Gui:updateOpenedGuis(trainController, false)
@@ -173,6 +173,8 @@ function Traindepot:setStationAmount(depotForceName, depotSurfaceIndex, depotNam
   end
 end
 
+
+
 function Traindepot:setDepotRequestCount(depotForceName, depotSurfaceIndex, depotName, newStationRequestAmount)
   local depotData = self:getDepotData(depotForceName, depotSurfaceIndex)[depotName]
   if not depotData then return end
@@ -187,6 +189,16 @@ function Traindepot:setDepotRequestCount(depotForceName, depotSurfaceIndex, depo
 
   -- update the data
   global.TD_data["depotStatistics"][depotForceName][depotSurfaceIndex][depotName] = depotData
+end
+
+
+
+function Traindepot:setTrainstopControlBehaviour(trainStopEntity)
+  local stationBehaviour = trainStopEntity.get_or_create_control_behavior()
+
+  stationBehaviour.enable_disable = false              -- circuit network
+  stationBehaviour.connect_to_logistic_network = false -- logistic network
+
 end
 
 
@@ -306,6 +318,7 @@ end
 function Traindepot:onBuildEntity(createdEntity)
   if createdEntity.name == self:getDepotEntityName() then
     self:saveNewStructure(createdEntity)
+    self:setTrainstopControlBehaviour(createdEntity)
 
     -- after structure is saved, we rename it, this will trigger Traindepot:onRenameEntity as well
     createdEntity.backer_name = "Unused Traindepot"
@@ -327,5 +340,13 @@ end
 function Traindepot:onRenameEntity(renamedEntity, oldName)
   if renamedEntity.name == self:getDepotEntityName() then
     self:renameBuilding(renamedEntity, oldName)
+  end
+end
+
+
+
+function Traindepot:onPlayerChangedSettings(pastedEntity)
+  if pastedEntity.name == self:getDepotEntityName() then
+    self:setTrainstopControlBehaviour(pastedEntity)
   end
 end

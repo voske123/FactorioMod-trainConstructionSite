@@ -366,8 +366,12 @@ function Traincontroller.Gui:initClickHandlerData()
         colorElement.style = clickedElementStyle
 
         -- STEP 4: save the machine tint
-        local trainAssemblerLocation = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(Traincontroller.Gui:getOpenedControllerEntity(playerIndex)))[tonumber(assemblerElementIndex)]
+        local controllerEntity = Traincontroller.Gui:getOpenedControllerEntity(playerIndex)
+        local trainAssemblerLocation = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(controllerEntity))[tonumber(assemblerElementIndex)]
         Trainassembly:setMachineTint(Trainassembly:getMachineEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position), colorElement[colorElement.name].style.color)
+
+        -- STEP 5: update opened UI's
+        Traincontroller.Gui:updateOpenedGuis(controllerEntity)
 
         break -- no need to look further
       end

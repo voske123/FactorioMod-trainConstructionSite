@@ -592,7 +592,7 @@ function Traincontroller:checkValidAftherChanges(alteredEntity, playerIndex)
               count = 1,
             },
             position = trainController.position,
-            force = global.TC_data["trainControllerForces"][createdEntity.force.name] or createdEntity.force,
+            force = global.TC_data["trainControllerForces"][trainController.force.name] or trainController.force,
             fast_replace = true,
             spill = false, -- delete excess items (only if fast_replace = true)
           }

@@ -25,11 +25,12 @@ trainassembly.selection_box = {{-3, -3}, {3, 3}} -- when train is facing north
 trainassembly.vertical_selection_shift = 0 -- correction for vertical tracks
 
 -- collision masks
-local extraLayer = "layer-12"
+local extraLayer1 = "layer-15" -- for rails
+local extraLayer2 = "layer-12" -- for belts
 trainassembly.collision_mask =
 {
   "train-layer", "player-layer", -- default layers
-  extraLayer, -- extra collision layer
+  extraLayer1, extraLayer2,      -- extra collision layers
 }
 trainassembly.collision_box = {{-2.95, -3.9}, {2.95, 3.9}} -- when train is facing north
 
@@ -126,7 +127,7 @@ for railName,_ in pairs(data.raw["curved-rail"]) do
   if not data.raw["curved-rail"][railName].collision_mask then -- add default layers
     data.raw["curved-rail"][railName].collision_mask = {"object-layer", "item-layer", "floor-layer", "water-tile"}
   end
-  table.insert(data.raw["curved-rail"][railName].collision_mask, extraLayer)
+  table.insert(data.raw["curved-rail"][railName].collision_mask, extraLayer1)
 end
 
 --add collision mask to signals
@@ -136,7 +137,7 @@ for _, signalType in pairs({"rail-signal", "rail-chain-signal"}) do
     if not data.raw[signalType][signalName].collision_mask then -- add default layers
       data.raw[signalType][signalName].collision_mask = {"object-layer", "item-layer", "floor-layer", "water-tile"}
     end
-    table.insert(data.raw[signalType][signalName].collision_mask, extraLayer)
+    table.insert(data.raw[signalType][signalName].collision_mask, extraLayer1)
   end
 end
 
@@ -149,7 +150,7 @@ for _, beltType in pairs({
     if not beltEntity.collision_mask then -- add default layers
       beltEntity.collision_mask = {"floor-layer", "object-layer", "water-tile"}
     end
-    table.insert(data.raw[beltType][beltEntity.name].collision_mask, extraLayer)
+    table.insert(data.raw[beltType][beltEntity.name].collision_mask, extraLayer2)
   end
 end
 for _, beltType in pairs({
@@ -161,6 +162,6 @@ for _, beltType in pairs({
     if not beltEntity.collision_mask then -- add default layers
       beltEntity.collision_mask = {"item-layer", "object-layer", "water-tile"}
     end
-    table.insert(data.raw[beltType][beltEntity.name].collision_mask, extraLayer)
+    table.insert(data.raw[beltType][beltEntity.name].collision_mask, extraLayer2)
   end
 end
