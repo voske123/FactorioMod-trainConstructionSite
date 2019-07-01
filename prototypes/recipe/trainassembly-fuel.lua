@@ -1,44 +1,11 @@
+require "LSlib.lib"
 
 local function createRecipeIcons(itemPrototypeName)
-  local function getItemIcons(itemPrototypeName, layerScale, layerShift)
-    local itemIcon = data.raw["item"][itemPrototypeName].icon
-
-    if itemIcon then
-      return { -- icons table
-        { -- single layer
-          ["icon"     ] = itemIcon,
-          ["icon_size"] = data.raw["item"][itemPrototypeName].icon_size,
-          ["tint"     ] = nil, -- icon couldn't have a tint, so no tint here.
-          ["scale"    ] = layerScale,
-          ["shift"    ] = layerShift,
-        }
-      }
-    else
-
-      local itemIconSize = data.raw["item"][itemPrototypeName].icon_size
-
-      local itemIcons = {}
-      for iconLayerIndex, iconLayer in pairs(data.raw["item"][itemPrototypeName].icons) do
-        itemIcons[iconLayerIndex] = {
-          ["icon"     ] = iconLayer.icon,
-          ["icon_size"] = iconLayer.icon_size or itemIconSize, -- itemIconSize if not icon_size specified in layer
-          ["tint"     ] = iconLayer.tint,
-          ["scale"    ] = (iconLayer.scale or 1) * layerScale, -- 1            if not scale     specified in layer
-          ["shift"    ] = {
-            (iconLayer.shift or {0, 0})[1] * layerShift[1],    -- {0,0}        if not shift     specified in layer
-            (iconLayer.shift or {0, 0})[2] * layerShift[2],
-          },
-        }
-      end
-      return itemIcons
-
-    end
-  end
-
-  local recipeIcons = util.table.deepcopy(getItemIcons("trainassembly-recipefuel", 1, {0,0}))
+  local recipeIcons = LSlib.item.getIcons("item", "trainassembly-recipefuel")
   local recipeIconsLength = #recipeIcons -- number of layers to offset the existing layers
 
-  for layerIndex,layerData in pairs(getItemIcons(itemPrototypeName, 0.48, {9, -9})) do
+  local extraScale = recipeIcons[1].icon_size / LSlib.item.getIconSize("item", itemPrototypeName)[1]
+  for layerIndex,layerData in pairs(LSlib.item.getIcons("item", itemPrototypeName, 0.48 * extraScale, {9, -9})) do
     recipeIcons[recipeIconsLength + layerIndex] = layerData -- add layer to recipelayer
   end
   return recipeIcons
