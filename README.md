@@ -8,7 +8,7 @@ Here you can find some basic information about the setup and workings of the con
 
 You can find this information by opening the ingame manual as well.
 
-![Preview image](https://github.com/voske123/FactorioMod-trainConstructionSite/blob/master/graphics/screenshots/introduction-preview.png)
+![Preview image](https://raw.githubusercontent.com/voske123/FactorioMod-trainConstructionSite/master/graphics/screenshots/introduction-preview.png)
 
 If you find any bugs or find anything unclear, feel free to contact us on the mod portal, in the discussion section or make a bug report on github.
 
@@ -18,7 +18,7 @@ Lovely_santa and Voske_123
 # Traindepot
 ### Usability
 The depot is used to store freshly made trains. Ofcourse you can also send other trains that are out of use to these stations.
-![Preview depot](https://github.com/voske123/FactorioMod-trainConstructionSite/blob/master/graphics/screenshots/traindepot-creation.png)
+![Preview depot](https://raw.githubusercontent.com/voske123/FactorioMod-trainConstructionSite/master/graphics/screenshots/traindepot-creation.png)
 
 When you are in need for more trains, they can be taken from the depot and put them to use. You can even do this from the mapview without needing to be close to the depot!
 
@@ -37,7 +37,7 @@ The Trainbuilder will assemble the trainparts together to functional train wagon
 
 ### Building requirements
 You can't place trains everywhere, they must be placed on rails. This means the building must also be placed on (straight) rails. This way, the building will assemble the trains onto the tracks directly.
-![Placement preview](https://github.com/voske123/FactorioMod-trainConstructionSite/blob/master/graphics/screenshots/trainassembly-placement.png)
+![Placement preview](https://raw.githubusercontent.com/voske123/FactorioMod-trainConstructionSite/master/graphics/screenshots/trainassembly-placement.png)
 
 Trains are 6 tiles wide, with one tile inbetween each train. The building is also 6 tiles wide, the same length of trains themself. In order to link multiple Trainbuilders together, the buildings must be spaced one tile apart.
 
@@ -49,7 +49,7 @@ Each train requires parts to be build. These parts can be made seperatly with th
 The train needs to be able to drive away, which means the locomotives require fuel. As we didn't want to limit your fuel options, we chose to make a generic fuel item that can be made out of all other fueling items.
 
 The Trainbuilder has a blue arrow, showing the direction of the building. This is usefull when building trains carriages where the orientation matters (for example the Locomotive or Artillery Wagon).
-![Direction preview](https://github.com/voske123/FactorioMod-trainConstructionSite/blob/master/graphics/screenshots/trainassembly-direction.png)
+![Direction preview](https://raw.githubusercontent.com/voske123/FactorioMod-trainConstructionSite/master/graphics/screenshots/trainassembly-direction.png)
 In the picture above, the Trainbuilder will create a train (left to right) that is made of:
   - Locomotive facing west
   - Cargo wagon facing west (direction doesn't matter)
@@ -65,7 +65,7 @@ For those that like to express trainconfigurations as numbers, this would be a 1
 The controller must be placed in front of the Trainbuilders so it can control them. They are placed the same way as a Train stop:
   - On the right side of the track
   - In the direction the train will approach it (yellow arrows).
-![Placement preview](https://github.com/voske123/FactorioMod-trainConstructionSite/blob/master/graphics/screenshots/traincontroller-placement.png)
+![Placement preview](https://raw.githubusercontent.com/voske123/FactorioMod-trainConstructionSite/master/graphics/screenshots/traincontroller-placement.png)
 
 Because the train exits automaticaly, at least one locomotive must be facing this direction so the train can drive away. In order to make sure your train can go somewhere, we force you to place at least one Traindepot on your map, before you can place any controller.
 
@@ -82,7 +82,7 @@ The controller will start placing carriages on the tracks as soon as one is done
 
 ### Trainbuilder interface
 The traincontroller also has some features about the trainbuilder configuration as shown in the image below.
-![Configuration preview](https://github.com/voske123/FactorioMod-trainConstructionSite/blob/master/graphics/screenshots/traincontroller-configuration.png)
+![Configuration preview](https://raw.githubusercontent.com/voske123/FactorioMod-trainConstructionSite/master/graphics/screenshots/traincontroller-configuration.png)
 
 Instead of having to go around and rotate your Trainbuilder entities manualy, you can do this inside the interface by pressing the arrow buttons to change the orientation. For Locomotives you can also choose the color in the color picker menu by pressing the color picker button.
 
