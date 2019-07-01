@@ -46,7 +46,7 @@ for _, trainType in pairs{
       -- the place_result, the entity will be delinked from the item. This means
       -- the entity will not have an order defined. To solve this issue we copy
       -- the order string over from the item to the entity.
-      local item = data.raw["item-with-entity-data"][trainEntity.minable.result]
+      local item = data.raw["item-with-entity-data"][trainEntity.minable.result] or data.raw["item"][trainEntity.minable.result]
       data.raw[trainType][item.place_result].order = item.order
 
       -- And finaly remove the place_result.
@@ -54,7 +54,7 @@ for _, trainType in pairs{
 
       item.localised_name = {"item-name.trainparts", trainEntity.name}
       item.subgroup       = "transport"
-      item.order          = (itemOrder[item.name] and itemOrder[item.name].."-" or "") .. itemOrder[item.name]
+      item.order          = (itemOrder[item.name] and itemOrder[item.name].."-" or "") .. item.order
 
 
     end

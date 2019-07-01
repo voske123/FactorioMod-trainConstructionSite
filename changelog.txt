@@ -1,6 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.1
+Date: 1. 7. 2019
+  Fixes:
+    - Fix crash when playing with creative mod
+---------------------------------------------------------------------------------------------------
 Version: 0.1.0 - Test release
-Date: 26. 6. 2019
+Date: 1. 7. 2019
   Major Features:
     - Initial test release
     - Traindepot
