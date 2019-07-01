@@ -1,13 +1,11 @@
 require "LSlib.lib"
 
 local function createRecipeIcons(itemPrototypeName)
-  local extraScale = {
-    ["coal"] = 0.5
-  }
   local recipeIcons = LSlib.item.getIcons("item", "trainassembly-recipefuel")
   local recipeIconsLength = #recipeIcons -- number of layers to offset the existing layers
 
-  for layerIndex,layerData in pairs(LSlib.item.getIcons("item", itemPrototypeName, 0.48 * (extraScale[itemPrototypeName] or 1), {9, -9})) do
+  local extraScale = recipeIcons[1].icon_size / LSlib.item.getIconSize("item", itemPrototypeName)[1]
+  for layerIndex,layerData in pairs(LSlib.item.getIcons("item", itemPrototypeName, 0.48 * extraScale, {9, -9})) do
     recipeIcons[recipeIconsLength + layerIndex] = layerData -- add layer to recipelayer
   end
   return recipeIcons
