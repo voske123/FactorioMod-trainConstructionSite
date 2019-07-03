@@ -1,15 +1,22 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.2
+Date: 3. 7. 2019
+  Features:
+    - Added support for modded trains from "TrainOverhaul"
+    - Added support for modded trains from "Realistic_Electric_Trains"
+  Bugfixes:
+    - Ignoring the ships from "cargo-ships"
+    - Ignoring the cheat cargo wagons from "creative-mod"
+---------------------------------------------------------------------------------------------------
 Version: 0.1.1
 Date: 1. 7. 2019
-  Fixes:
+  Bugfixes:
     - Fix crash when playing with creative mod
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.0 - Test release
 Date: 1. 7. 2019
-  Major Features:
-    - Initial test release
+  Features:
     - Traindepot
     - Trainbuilder + controller
     - Manual with info about each entity
-  Minor Features:
-    - Manual build early game locomotive
+    - Manual placed early game locomotive

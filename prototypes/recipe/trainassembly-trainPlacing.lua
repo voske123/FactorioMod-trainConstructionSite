@@ -3,6 +3,7 @@
 -- our trainbuilding to make an actual train on the tracks. To get the fluidname
 -- we require the itemname. To aquire the itemname we get the entity.minable.result.
 -- For this we start to iterate over all tine train types
+local trainsToIgnore = require("prototypes/modded-trains-to-ignore")
 for _, trainType in pairs({
   "locomotive",
   "cargo-wagon",
@@ -12,7 +13,7 @@ for _, trainType in pairs({
   -- For each type, we get all the different entities (ex: locomotive mk1, mk2, ...)
   for _, trainEntity in pairs(data.raw[trainType]) do
     -- For each entity, we get the item name. The item name is stored in minable.result
-    if trainEntity.minable and trainEntity.minable.result then
+    if (not trainsToIgnore[trainType][trainEntity.name]) and trainEntity.minable and trainEntity.minable.result then
 
       local itemName = trainEntity.minable.result
 

@@ -281,19 +281,21 @@ function Traincontroller.Builder:buildNextTrain(trainBuilderIndex)
 
           -- the recipe made a result, now we can place it
           createdEntity = game.surfaces[builderLocation["surfaceIndex"]].create_entity{
-            name             = buildEntityName,
-            position         = builderLocation["position"],
-            direction        = machineDirection,
-            force            = machineEntity.force
+            name               = buildEntityName,
+            position           = builderLocation["position"],
+            direction          = machineDirection,
+            force              = machineEntity.force,
+            snap_to_train_stop = false,
           }
           if createdEntity and (not LSlib.utils.table.areEqual(createdEntity.position, builderLocation["position"])) then
             -- it snapped to a train stop probably, so let us build it in reverse first
             createdEntity.destroy()
             createdEntity = game.surfaces[builderLocation["surfaceIndex"]].create_entity{
-              name             = buildEntityName,
-              position         = builderLocation["position"],
-              direction        = LSlib.utils.directions.oposite(machineDirection),
-              force            = machineEntity.force
+              name               = buildEntityName,
+              position           = builderLocation["position"],
+              direction          = LSlib.utils.directions.oposite(machineDirection),
+              force              = machineEntity.force,
+              snap_to_train_stop = false,
             }
             -- and afther creating it in reverse, we rotate it back
             if not (createdEntity and createdEntity.rotate()) then

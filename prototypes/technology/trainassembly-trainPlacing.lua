@@ -10,6 +10,7 @@ local recipesToIgnore = {
 }
 
 -- for mod compatibility we have to add these fluid recipe unlocks to the tech tree
+local trainsToIgnore = require("prototypes/modded-trains-to-ignore")
 for _, trainType in pairs({
   "locomotive",
   "cargo-wagon",
@@ -19,7 +20,7 @@ for _, trainType in pairs({
   -- For each type, we get all the different entities (ex: locomotive mk1, mk2, ...)
   for _, trainEntity in pairs(data.raw[trainType]) do
     -- For each entity, we get the item name. The item name is stored in minable.result
-    if trainEntity.minable and trainEntity.minable.result then
+    if (not trainsToIgnore[trainType][trainEntity.name]) and trainEntity.minable and trainEntity.minable.result then
 
       local itemName        = trainEntity.minable.result
       local recipeName      = itemName -- assume the recipeName is the same as the item (for now)
