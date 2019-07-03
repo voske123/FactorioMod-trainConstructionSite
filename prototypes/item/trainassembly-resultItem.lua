@@ -33,7 +33,7 @@ for _, trainType in pairs{
       -- the order string over from the item to the entity.
       local item = data.raw["item-with-entity-data"][trainEntity.minable.result] or data.raw["item"][trainEntity.minable.result]
       if item then
-        log(string.format("Creating train parts: %s (%s)", trainEntity.name, trainType))
+        --log(string.format("Creating train parts: %s (%s)", trainEntity.name, trainType))
         data.raw[trainType][item.place_result].order = item.order
 
         -- And finaly remove the place_result.
