@@ -93,14 +93,14 @@ LSlib.gui.layout.addLabel(guiLayout, introduction, introductionName.."-label3", 
   style   = "trainConstructionSite_help_contentText",
   ignored_by_interaction = true,
 })
-LSlib.gui.layout.addSprite(guiLayout, introduction, introductionName.."-sprite1", {
-  sprite = introductionName.."-sprite1",
-  style  = introductionName.."-sprite1",
-  ignored_by_interaction = true,
-})
 LSlib.gui.layout.addLabel(guiLayout, introduction, introductionName.."-label4", {
   caption = {"gui-help.introduction-4"},
   style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
+})
+LSlib.gui.layout.addSprite(guiLayout, introduction, introductionName.."-sprite1", {
+  sprite = introductionName.."-sprite1",
+  style  = introductionName.."-sprite1",
   ignored_by_interaction = true,
 })
 LSlib.gui.layout.addLabel(guiLayout, introduction, introductionName.."-label5", {
@@ -108,9 +108,14 @@ LSlib.gui.layout.addLabel(guiLayout, introduction, introductionName.."-label5", 
   style   = "trainConstructionSite_help_contentText",
   ignored_by_interaction = true,
 })
---[[LSlib.gui.layout.addLabel(guiLayout, introduction, introductionName.."-label6", {
-  --TODO: add checkbox to disable button in top left corner
+LSlib.gui.layout.addLabel(guiLayout, introduction, introductionName.."-label6", {
   caption = {"gui-help.introduction-6"},
+  style   = "trainConstructionSite_help_contentText",
+  ignored_by_interaction = true,
+})
+--[[LSlib.gui.layout.addLabel(guiLayout, introduction, introductionName.."-label7", {
+  --TODO: add checkbox to disable button in top left corner
+  caption = {"gui-help.introduction-7"},
   style   = "trainConstructionSite_help_contentText",
   ignored_by_interaction = true,
 })]]
