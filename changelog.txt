@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.3
+Date: 9. 7. 2019
+  Features:
+    - Added support for modded trains from "boblogistics"
+  Bugfixes:
+    - Fixed modded belts did not have the same collision mask
+---------------------------------------------------------------------------------------------------
 Version: 0.1.2
 Date: 3. 7. 2019
   Features:

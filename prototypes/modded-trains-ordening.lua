@@ -57,22 +57,47 @@ if mods["angelsaddons-smeltingtrain"] then
   }
 end
 
-if mods["TrainOverhaul"] then
+if mods["boblogistics"] then
   createOrdering{
     ["locomotive"] = {
-      ["heavy-locomotive"  ] = "b[TrainOverhaul]-a[heavy]-a[locomotive]",
-      ["express-locomotive"] = "b[TrainOverhaul]-b[express]-a[locomotive]",
-      ["nuclear-locomotive"] = "b[TrainOverhaul]-c[nuclear]-a[locomotive]",
+      ["bob-locomotive-2"         ] = "b[boblogistics]-a[regular-mk2]-a[locomotive]",
+      ["bob-locomotive-3"         ] = "b[boblogistics]-b[regular-mk3]-a[locomotive]",
+      ["bob-armoured-locomotive"  ] = "b[boblogistics]-c[armoured-mk1]-a[locomotive]",
+      ["bob-armoured-locomotive-2"] = "b[boblogistics]-d[armoured-mk2]-a[locomotive]",
     },
 
     ["cargo-wagon"] = {
-      ["heavy-cargo-wagon"  ] = "b[TrainOverhaul]-a[heavy]-b[cargo-wagon]",
-      ["express-cargo-wagon"] = "b[TrainOverhaul]-b[express]-b[cargo-wagon]",
+      ["bob-cargo-wagon-2"         ] = "b[boblogistics]-a[regular-mk2]-b[cargo-wagon]",
+      ["bob-cargo-wagon-3"         ] = "b[boblogistics]-b[regular-mk3]-b[cargo-wagon]",
+      ["bob-armoured-cargo-wagon"  ] = "b[boblogistics]-c[armoured-mk1]-b[cargo-wagon]",
+      ["bob-armoured-cargo-wagon-2"] = "b[boblogistics]-d[armoured-mk2]-b[cargo-wagon]",
+    },
+    
+    ["fluid-wagon"] = {
+      ["bob-fluid-wagon-2"         ] = "b[boblogistics]-a[regular-mk2]-c[fluid-wagon]",
+      ["bob-fluid-wagon-3"         ] = "b[boblogistics]-b[regular-mk3]-c[fluid-wagon]",
+      ["bob-armoured-fluid-wagon"  ] = "b[boblogistics]-c[armoured-mk1]-c[fluid-wagon]",
+      ["bob-armoured-fluid-wagon-2"] = "b[boblogistics]-d[armoured-mk2]-c[fluid-wagon]",
+    },
+  }
+end
+
+if mods["TrainOverhaul"] then
+  createOrdering{
+    ["locomotive"] = {
+      ["heavy-locomotive"  ] = "c[TrainOverhaul]-a[heavy]-a[locomotive]",
+      ["express-locomotive"] = "c[TrainOverhaul]-b[express]-a[locomotive]",
+      ["nuclear-locomotive"] = "c[TrainOverhaul]-c[nuclear]-a[locomotive]",
+    },
+
+    ["cargo-wagon"] = {
+      ["heavy-cargo-wagon"  ] = "c[TrainOverhaul]-a[heavy]-b[cargo-wagon]",
+      ["express-cargo-wagon"] = "c[TrainOverhaul]-b[express]-b[cargo-wagon]",
     },
 
     ["fluid-wagon"] = {
-      ["heavy-fluid-wagon"  ] = "b[TrainOverhaul]-a[heavy]-c[fluid-wagon]",
-      ["express-fluid-wagon"] = "b[TrainOverhaul]-b[express]-c[fluid-wagon]",
+      ["heavy-fluid-wagon"  ] = "c[TrainOverhaul]-a[heavy]-c[fluid-wagon]",
+      ["express-fluid-wagon"] = "c[TrainOverhaul]-b[express]-c[fluid-wagon]",
     },
   }
 end
@@ -80,9 +105,9 @@ end
 if mods["Realistic_Electric_Trains"] then
   createOrdering{
     ["locomotive"] = {
-      ["ret-electric-locomotive"    ] = "c[Realistic_Electric_Trains]-a[electric-locomotive]-a",
-      ["ret-electric-locomotive-mk2"] = "c[Realistic_Electric_Trains]-a[electric-locomotive]-b",
-      ["ret-modular-locomotive"     ] = "c[Realistic_Electric_Trains]-b[modular-locomotive]-a",
+      ["ret-electric-locomotive"    ] = "z[Realistic_Electric_Trains]-a[electric-locomotive]-a",
+      ["ret-electric-locomotive-mk2"] = "z[Realistic_Electric_Trains]-a[electric-locomotive]-b",
+      ["ret-modular-locomotive"     ] = "z[Realistic_Electric_Trains]-b[modular-locomotive]-a",
     },
   }
 end

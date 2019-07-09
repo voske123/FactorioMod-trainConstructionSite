@@ -121,6 +121,8 @@ data:extend{
   trainassembly,
 }
 
+--[[ Moved to data-updates
+
 --add collision mask to curved rails
 for railName,_ in pairs(data.raw["curved-rail"]) do
 
@@ -165,3 +167,5 @@ for _, beltType in pairs({
     table.insert(data.raw[beltType][beltEntity.name].collision_mask, extraLayer2)
   end
 end
+
+]]--

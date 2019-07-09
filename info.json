@@ -1,6 +1,6 @@
 {
   "name": "trainConstructionSite",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "factorio_version": "0.17",
   "title": "Train construction site",
   "author": "voske_123 & lovely_santa",
@@ -11,6 +11,7 @@
 
         "? angelsaddons-petrotrain",
         "? angelsaddons-smeltingtrain",
+        "? boblogistics",
         "? TrainOverhaul",
         "? Realistic_Electric_Trains",
 
