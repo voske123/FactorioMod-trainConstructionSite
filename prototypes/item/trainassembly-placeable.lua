@@ -11,7 +11,7 @@ trainassembly.icons = nil
 trainassembly.icon_size = 32
 
 trainassembly.subgroup = "transport-railway"
-trainassembly.order = trainassembly.order .. "-tb[trainbuilding]-b[builder]"
+trainassembly.order = "d[trainbuilder]-b[builder]"
 
 trainassembly.place_result = "trainassembly-placeable" -- the name of the placable entity
 

@@ -105,9 +105,42 @@ end
 if mods["Realistic_Electric_Trains"] then
   createOrdering{
     ["locomotive"] = {
-      ["ret-electric-locomotive"    ] = "z[Realistic_Electric_Trains]-a[electric-locomotive]-a",
-      ["ret-electric-locomotive-mk2"] = "z[Realistic_Electric_Trains]-a[electric-locomotive]-b",
+      ["ret-electric-locomotive"    ] = "z[Realistic_Electric_Trains]-a[electric-locomotive]-a[mk1]",
+      ["ret-electric-locomotive-mk2"] = "z[Realistic_Electric_Trains]-a[electric-locomotive]-b[mk2]",
       ["ret-modular-locomotive"     ] = "z[Realistic_Electric_Trains]-b[modular-locomotive]-a",
+    },
+  }
+end
+
+if mods["accumulator-wagon"] then
+  createOrdering{
+    ["fluid-wagon"] = {
+      ["accumulator-wagon"] = "z[accumulator-wagon]-a[accumulator]-a",
+    },
+  }
+end
+
+if mods["Armored-train"] then
+  createOrdering{
+    ["locomotive"] = {
+      ["armored-locomotive-mk1"] = "y[Armored-train]-a[armored-locomotive]-a",
+    },
+
+    ["cargo-wagon"] = {
+      ["armored-platform-mk1"        ] = "y[Armored-train]-b[armored-platform]-a[platform]",
+      ["armored-platform-minigun-mk1"] = "y[Armored-train]-b[armored-platform]-b[minigun]",
+      ["armored-platform-rocket-mk1" ] = "y[Armored-train]-b[armored-platform]-c[rocket]",
+      ["armored-wagon-mk1"           ] = "y[Armored-train]-b[armored-wagon]-a[wagon]",
+      ["armored-wagon-cannon-mk1"    ] = "y[Armored-train]-b[armored-wagon]-b[cannon]",
+      ["armored-wagon-chaingun-mk1"  ] = "y[Armored-train]-b[armored-wagon]-c[chaingun]",
+    },
+  }
+end
+
+if mods["FARL"] then
+  createOrdering{
+    ["locomotive"] = {
+      ["farl"] = "a[farl]-a",
     },
   }
 end

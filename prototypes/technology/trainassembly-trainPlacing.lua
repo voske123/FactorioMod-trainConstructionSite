@@ -11,6 +11,7 @@ local recipesToIgnore = {
 
 -- for mod compatibility we have to add these fluid recipe unlocks to the tech tree
 local trainsToIgnore = require("prototypes/modded-trains-to-ignore")
+local itemOverride   = require("prototypes/modded-trains-item-override")
 for _, trainType in pairs({
   "locomotive",
   "cargo-wagon",
@@ -22,8 +23,8 @@ for _, trainType in pairs({
     -- For each entity, we get the item name. The item name is stored in minable.result
     if (not trainsToIgnore[trainType][trainEntity.name]) and trainEntity.minable and trainEntity.minable.result then
 
-      local itemName        = trainEntity.minable.result
-      local recipeName      = itemName -- assume the recipeName is the same as the item (for now)
+      local itemName   = itemOverride[trainType][trainEntity.name] or trainEntity.minable.result
+      local recipeName = itemName -- assume the recipeName is the same as the item (for now)
 
       if not recipesToIgnore[recipeName] then
         local fluidRecipeName = trainEntity.name .. "-fluid[" .. trainType .. "]"

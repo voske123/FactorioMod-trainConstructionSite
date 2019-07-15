@@ -1,19 +1,22 @@
 {
   "name": "trainConstructionSite",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "factorio_version": "0.17",
   "title": "Train construction site",
   "author": "voske_123 & lovely_santa",
   "homepage": "https://mods.factorio.com/mod/trainConstructionSite",
   "description": "A nice, automated way of creating trains",
   "dependencies": [
-        "base >= 0.17.45",
+        "base >= 0.17.56",
 
+        "? accumulator-wagon",
         "? angelsaddons-petrotrain",
         "? angelsaddons-smeltingtrain",
+        "? Armored-train",
         "? boblogistics",
-        "? TrainOverhaul",
+        "? FARL",
         "? Realistic_Electric_Trains",
+        "? TrainOverhaul",
 
         "! MultipleUnitTrainControl"
   ]

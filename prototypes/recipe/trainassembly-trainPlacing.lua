@@ -1,3 +1,4 @@
+local itemOverride   = require("prototypes/modded-trains-item-override")
 
 -- For each train-like entity we want to create a recipe so we can put this in
 -- our trainbuilding to make an actual train on the tracks. To get the fluidname
@@ -15,7 +16,7 @@ for _, trainType in pairs({
     -- For each entity, we get the item name. The item name is stored in minable.result
     if (not trainsToIgnore[trainType][trainEntity.name]) and trainEntity.minable and trainEntity.minable.result then
 
-      local itemName = trainEntity.minable.result
+      local itemName = itemOverride[trainType][trainEntity.name] or trainEntity.minable.result
 
       -- now that we have the itemname we can create the fluid recipe.
       data:extend{

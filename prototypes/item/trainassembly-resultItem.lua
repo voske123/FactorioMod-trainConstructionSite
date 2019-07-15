@@ -3,7 +3,7 @@ local locomotiveManualBuild = util.table.deepcopy(data.raw["item-with-entity-dat
 
 locomotiveManualBuild.name = "locomotive-manual-build"
 locomotiveManualBuild.subgroup = "manual-buildable-vehicles"
-locomotiveManualBuild.order = "a"
+locomotiveManualBuild.order = "a[railway]-a[vanilla]"
 
 
 -- We have fluids to craft to make the train on a track. With this in mind, we
@@ -12,6 +12,8 @@ locomotiveManualBuild.order = "a"
 
 local trainsToIgnore = require("prototypes/modded-trains-to-ignore")
 local itemOrder      = require("prototypes/modded-trains-ordening")
+local itemOverride   = require("prototypes/modded-trains-item-override")
+local itemPlaceResult = {}
 
 -- For each train type like item we want to change the place_result
 -- To accuire all the itemnames, we have to iterate over the entities
@@ -31,17 +33,20 @@ for _, trainType in pairs{
       -- the place_result, the entity will be delinked from the item. This means
       -- the entity will not have an order defined. To solve this issue we copy
       -- the order string over from the item to the entity.
-      local item = data.raw["item-with-entity-data"][trainEntity.minable.result] or data.raw["item"][trainEntity.minable.result]
-      if item then
-        --log(string.format("Creating train parts: %s (%s)", trainEntity.name, trainType))
+      local itemName = itemOverride[trainType][trainEntity.name] or trainEntity.minable.result
+      local item = data.raw["item-with-entity-data"][itemName] or data.raw["item"][itemName]
+      
+      if item and data.raw[trainType][item.place_result] then
+        log(string.format("Creating train parts: %s (%s)", trainEntity.name, trainType))
         data.raw[trainType][item.place_result].order = item.order
-
-        -- And finaly remove the place_result.
-        item.place_result =  nil
 
         item.localised_name = item.localised_name and {"item-name.trainparts", item.localised_name} or {"item-name.trainparts", "__ENTITY__"..trainEntity.name.."__"}
         item.subgroup       = "transport"
         item.order          = (itemOrder[trainType][item.name] and itemOrder[trainType][item.name].."-" or "") .. item.order
+
+        -- Add item to remove the place_result.
+        if not itemPlaceResult[item.type] then itemPlaceResult[item.type] = {} end
+        itemPlaceResult[item.type][item.name] = true
 
       else
         log(string.format("Error creating train parts: %s (%s)", trainEntity.name, trainType))
@@ -50,6 +55,12 @@ for _, trainType in pairs{
   end
 end
 
+-- Now we can remove all place_results
+for itemType, itemNames in pairs(itemPlaceResult) do
+  for itemName,_ in pairs(itemNames) do
+    data.raw[itemType][itemName].place_result =  nil
+  end
+end
 
 data:extend{
   locomotiveManualBuild,

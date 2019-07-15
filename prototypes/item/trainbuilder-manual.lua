@@ -10,7 +10,7 @@ data:extend{
     icon = "__trainConstructionSite__/graphics/item/trainbuilder-manual.png",
     icon_size = 128,
 
-    order = data.raw["item"]["rail-chain-signal"].order .. "-tb[trainbuilding]-a[manual]",
+    order = "d[trainbuilder]-a[manual]",
     subgroup = "transport-railway",
 
     stack_size = 10,

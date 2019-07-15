@@ -9,7 +9,7 @@ traincontroller.icon = "__trainConstructionSite__/graphics/placeholders/icon.png
 traincontroller.icons = nil
 traincontroller.icon_size = 32
 
-traincontroller.order = traincontroller.order .. "-tb[trainbuilding]-c[controller]"
+traincontroller.order = "d[trainbuilder]-c[controller]"
 
 traincontroller.place_result = traincontroller.name
 

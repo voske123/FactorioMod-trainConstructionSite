@@ -9,7 +9,7 @@ traindepot.icon = "__trainConstructionSite__/graphics/placeholders/icon.png"
 traindepot.icons = nil
 traindepot.icon_size = 32
 
-traindepot.order = traindepot.order .. "-tb[trainbuilding]-a"
+traindepot.order = "b[stop]-b[trainbuilding]"
 
 traindepot.place_result = traindepot.name
 

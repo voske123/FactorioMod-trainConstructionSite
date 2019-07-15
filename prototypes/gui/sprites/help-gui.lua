@@ -35,8 +35,8 @@ data:extend{
     type     = "sprite",
     name     = introductionName.."-sprite1",
     filename = "__trainConstructionSite__/graphics/screenshots/introduction-preview.png",
-    width    = 2535,
-    height   = 592,
+    width    = 2048,
+    height   = 478,
     scale    = .5,
     --shift    = {0, 32},
     flags    = {
@@ -53,8 +53,8 @@ data:extend{
     type     = "sprite",
     name     = traindepotName.."-sprite1",
     filename = "__trainConstructionSite__/graphics/screenshots/traindepot-creation.png",
-    width    = 2440,
-    height   = 886,
+    width    = 2048,
+    height   = 744,
     scale    = .5,
     --shift    = {0, 32},
     flags    = {
@@ -84,8 +84,8 @@ data:extend{
     type     = "sprite",
     name     = trainassemblyName.."-sprite2",
     filename = "__trainConstructionSite__/graphics/screenshots/trainassembly-direction.png",
-    width    = 2353,
-    height   = 595,
+    width    = 2048,
+    height   = 518,
     scale    = .5,
     --shift    = {0, 32},
     flags    = {
@@ -115,8 +115,8 @@ data:extend{
     type     = "sprite",
     name     = traincontrollerName.."-sprite2",
     filename = "__trainConstructionSite__/graphics/screenshots/traincontroller-configuration.png",
-    width    = 2491,
-    height   = 869,
+    width    = 2048,
+    height   = 714,
     scale    = .5,
     --shift    = {0, 32},
     flags    = {
