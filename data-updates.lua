@@ -32,3 +32,8 @@ if mods["FARL"] then
   data.raw["item"]["farl-roboport"].subgroup = data.raw["item-with-entity-data"]["locomotive-manual-build"].subgroup
   data.raw["item"]["farl-roboport"].order    = "a[railway]-b[FARL]"
 end
+
+if mods["SmartTrains"] then
+  data.raw["item"]["smart-train-stop"].subgroup = data.raw["item"]["train-stop"].subgroup
+  data.raw["item"]["smart-train-stop"].order    = "b[stop]-d[SmartTrains]"
+end

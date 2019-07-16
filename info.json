@@ -1,6 +1,6 @@
 {
   "name": "trainConstructionSite",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "factorio_version": "0.17",
   "title": "Train construction site",
   "author": "voske_123 & lovely_santa",
@@ -16,6 +16,7 @@
         "? boblogistics",
         "? FARL",
         "? Realistic_Electric_Trains",
+        "? SmartTrains",
         "? TrainOverhaul",
 
         "! MultipleUnitTrainControl"
