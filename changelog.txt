@@ -4,6 +4,7 @@ Date: 21. 7. 2019
   Features:
     - Improved auto support for other train mods
     - Added support for modded trains from "FactorioExtended-Plus-Transport"
+    - Added support for modded trains from "RailPowerSystem"
   Bugfixes:
     - Fixed technology recipes would not show up when research was already done
 ---------------------------------------------------------------------------------------------------
