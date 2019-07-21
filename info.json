@@ -1,6 +1,6 @@
 {
   "name": "trainConstructionSite",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "factorio_version": "0.17",
   "title": "Train construction site",
   "author": "voske_123 & lovely_santa",
@@ -8,16 +8,9 @@
   "description": "A nice, automated way of creating trains",
   "dependencies": [
         "base >= 0.17.56",
+        "LSlib >= 2019.7.21",
 
-        "? accumulator-wagon",
-        "? angelsaddons-petrotrain",
-        "? angelsaddons-smeltingtrain",
-        "? Armored-train",
-        "? boblogistics",
         "? FARL",
-        "? Realistic_Electric_Trains",
-        "? SmartTrains",
-        "? TrainOverhaul",
 
         "! MultipleUnitTrainControl"
   ]

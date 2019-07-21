@@ -145,4 +145,29 @@ if mods["FARL"] then
   }
 end
 
+if mods["FactorioExtended-Plus-Transport"] then
+  createOrdering{
+    ["locomotive"] = {
+      ["locomotive-mk2"] = "b[FactorioExtended-Plus]-a[mk2]-a[locomotive]",
+      ["locomotive-mk3"] = "b[FactorioExtended-Plus]-b[mk3]-a[locomotive]",
+    },
+    ["cargo-wagon"] = {
+      ["cargo-wagon-mk2"] = "b[FactorioExtended-Plus]-a[mk2]-b[cargo-wagon]",
+      ["cargo-wagon-mk3"] = "b[FactorioExtended-Plus]-b[mk3]-b[cargo-wagon]",
+    },
+    ["fluid-wagon"] = {
+      ["fluid-wagon-mk2"] = "b[FactorioExtended-Plus]-a[mk2]-b[fluid-wagon]",
+      ["fluid-wagon-mk3"] = "b[FactorioExtended-Plus]-b[mk3]-c[fluid-wagon]",
+    },
+  }
+end
+
+if mods["RailPowerSystem"] then
+  createOrdering{
+    ["locomotive"] = {
+      ["hybrid-train"] = "z[RailPowerSystem]-a[hybrid-train]",
+    },
+  }
+end
+
 return trainOrdening

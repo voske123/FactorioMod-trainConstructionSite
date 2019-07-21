@@ -5,6 +5,8 @@ local trainsToIgnore = {
   ["artillery-wagon"] = {},
 }
 
+trainsToIgnore["locomotive"]["trainassembly-placeable"] = true -- trainassembly
+
 if mods["creative-mod"] then
   for _,cargowagon in pairs{
     "creative-mod_creative-cargo-wagon"   ,
