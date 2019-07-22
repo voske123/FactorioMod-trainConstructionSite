@@ -1,32 +1,27 @@
 -- removing trainfuel from the electric trains
+require "modding-interface"
 local trainfuel = "trainassembly-recipefuel"
 
 if mods["Realistic_Electric_Trains"] then
-  for _,locomotive in pairs{
-    "ret-electric-locomotive"    ,
-    "ret-electric-locomotive-mk2",
-    "ret-modular-locomotive"     ,
-  } do
-    LSlib.recipe.removeIngredient(locomotive .. "-fluid[locomotive]", trainfuel)
-  end
+  trainConstructionSite.remote.addElectricTrain("locomotive", "ret-electric-locomotive"    )
+  trainConstructionSite.remote.addElectricTrain("locomotive", "ret-electric-locomotive-mk2")
+  trainConstructionSite.remote.addElectricTrain("locomotive", "ret-modular-locomotive"     )
 end
 
 if mods["Electronic_Locomotives"] then
-  for _,locomotive in pairs{
-    "Senpais-Electric-Train"      ,
-    "Senpais-Electric-Train-Heavy",
-  } do
-    LSlib.recipe.removeIngredient(locomotive .. "-fluid[locomotive]", trainfuel)
-  end
+  trainConstructionSite.remote.addElectricTrain("locomotive", "Senpais-Electric-Train"      )
+  trainConstructionSite.remote.addElectricTrain("locomotive", "Senpais-Electric-Train-Heavy")
 end
 
 if mods["Electronic_Battle_Locomotives"] then
-  for _,locomotive in pairs{
-    "Elec-Battle-Loco-1",
-    "Elec-Battle-Loco-2",
-    "Elec-Battle-Loco-3",
-  } do
-    LSlib.recipe.removeIngredient(locomotive .. "-fluid[locomotive]", trainfuel)
+  trainConstructionSite.remote.addElectricTrain("locomotive", "Elec-Battle-Loco-1")
+  trainConstructionSite.remote.addElectricTrain("locomotive", "Elec-Battle-Loco-2")
+  trainConstructionSite.remote.addElectricTrain("locomotive", "Elec-Battle-Loco-3")
+end
+
+for trainType,trainData in pairs(trainConstructionSite.remoteData.electricTrains or {}) do
+  for trainName,_ in pairs(trainData or {}) do
+    LSlib.recipe.removeIngredient(trainName.."-fluid["..trainType.."]", trainfuel)
   end
 end
 

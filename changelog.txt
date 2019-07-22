@@ -11,6 +11,8 @@ Date: 22. 7. 2019
     - Fixed some missing functions in LSlib
     - Fixed that the recipes for placing down trains did not unlock when using an existing save
     - Fixed that the train placing fuel was showing up on the fuel tooltip while it can't be used
+  Modding:
+    - Added interface to register trains that do not require fuel.
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.6
 Date: 21. 7. 2019
