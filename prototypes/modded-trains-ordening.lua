@@ -170,4 +170,24 @@ if mods["RailPowerSystem"] then
   }
 end
 
+if mods["Electronic_Locomotives"] then
+  createOrdering{
+    ["locomotive"] = {
+      ["Senpais-Electric-Train"      ] = "z[Senpais_Electronic_Locomotives]-a[regular]-a",
+      ["Senpais-Electric-Train-Heavy"] = "z[Senpais_Electronic_Locomotives]-a[regular]-b",
+    },
+  }
+end
+
+if mods["Electronic_Battle_Locomotives"] then
+  createOrdering{
+    ["locomotive"] = {
+      ["Elec-Battle-Loco-1"] = "z[Senpais_Electronic_Locomotives]-b[battle]-a",
+      ["Elec-Battle-Loco-2"] = "z[Senpais_Electronic_Locomotives]-b[battle]-b",
+      ["Elec-Battle-Loco-3"] = "z[Senpais_Electronic_Locomotives]-b[battle]-c",
+    },
+  }
+end
+
+
 return trainOrdening
