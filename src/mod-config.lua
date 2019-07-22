@@ -9,18 +9,12 @@ return function(configurationData)
       local technologies = force.technologies
       local recipes      = force.recipes
 
-      -- locomotive ------------------------------------------------------------
       if recipes["locomotive"].enabled then
          technologies["trainassembly-automated-train-assembling"].researched = true
-      end
-
-      -- cargo wagon -----------------------------------------------------------
-      if recipes["cargo-wagon"].enabled then
          technologies["trainassembly-cargo-wagon"].researched = true
       end
 
-      -- artillery wagon -------------------------------------------------------
-      if recipes["artillery-wagon"].enabled then
+      if recipes["artillery-turret"].enabled then
          technologies["trainassembly-artillery-wagon"].researched = true
       end
 
