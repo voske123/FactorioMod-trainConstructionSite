@@ -32,6 +32,8 @@ trainassemblyRecipefuel.fuel_emission_multiplier      = nil
 -- STEP 3: make sure the player only can see the recipefuel
 trainassemblyTrainfuel.flags = trainassemblyTrainfuel.flags or {}
 table.insert(trainassemblyTrainfuel.flags, "hidden")
+table.insert(trainassemblyTrainfuel.flags, "hide-from-bonus-gui")
+table.insert(trainassemblyTrainfuel.flags, "hide-from-fuel-tooltip")
 
 -- STEP 4: add both items to the game
 data:extend{
