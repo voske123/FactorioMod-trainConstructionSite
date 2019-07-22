@@ -310,16 +310,20 @@ function Traincontroller.Builder:buildNextTrain(trainBuilderIndex)
             -- now the entity is created, start saving this entity
             Trainassembly:setCreatedEntity(builderLocation["surfaceIndex"], builderLocation["position"], createdEntity)
 
-            -- if this is a locomotive, we have to insert fuel
+            -- if this is a locomotive, we have to do some more stuff
             local buildEntityType = LSlib.utils.string.split(machineRecipe.name, "[")
             buildEntityType = buildEntityType[#buildEntityType]
             buildEntityType = buildEntityType:sub(1, buildEntityType:len()-1)
             if buildEntityType == "locomotive" then
-              -- insert fuel
-              fuelInventory = createdEntity.get_fuel_inventory().insert{
-                name="trainassembly-trainfuel",
-                count=1,
-              }
+              -- insert fuel if recipe had fuel
+              for _,ingredient in pairs(machineRecipe.ingredients) do
+                if ingredient.name == "trainassembly-recipefuel" then
+                  createdEntity.get_fuel_inventory().insert{
+                    name  = "trainassembly-trainfuel",
+                    count = ingredient.amount,
+                  }
+                end
+              end
 
               -- give it some color
               local createdEntityColor = Trainassembly:getMachineTint(machineEntity)
