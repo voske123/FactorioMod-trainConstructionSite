@@ -10,12 +10,15 @@ return function(configurationData)
       local recipes      = force.recipes
 
       if recipes["locomotive"].enabled then
-         technologies["trainassembly-automated-train-assembling"].researched = true
-         technologies["trainassembly-cargo-wagon"].researched = true
+        technologies["trainassembly-automated-train-assembling"].researched = true
       end
 
-      if recipes["artillery-turret"].enabled then
-         technologies["trainassembly-artillery-wagon"].researched = true
+      if recipes["cargo-wagon"].enabled then
+        technologies["trainassembly-cargo-wagon"].researched = true
+     end
+
+      if recipes["artillery-wagon"].enabled then
+        technologies["trainassembly-artillery-wagon"].researched = true
       end
 
       force.reset_technology_effects()

@@ -17,7 +17,7 @@ local itemPlaceResult = {}
 
 -- For each train type like item we want to change the place_result
 -- To accuire all the itemnames, we have to iterate over the entities
--- becose those have different types as the items are all type = "item".
+-- because those have different types as the items are all type = "item".
 for _, trainType in pairs{
   "locomotive",
   "cargo-wagon",
