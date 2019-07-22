@@ -1,13 +1,13 @@
 require "LSlib.lib"
 
-local onConfigChanges = require("src.mod-config")
-script.on_configuration_changed(onConfigChanges)
-
 require "src.debug"
 require "src.help"
 require "src.traindepot"
 require "src.trainassembly"
 require "src.traincontroller"
+
+local onConfigChanges = require("src.mod-config")
+script.on_configuration_changed(onConfigChanges)
 
 --Debug.enabled = true -- only when debugging
 

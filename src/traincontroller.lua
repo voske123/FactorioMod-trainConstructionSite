@@ -61,7 +61,7 @@ function Traincontroller:initPrototypeData()
     ["trainControllerSignalName" ] = "traincontroller-signal", -- hidden signals
     ["trainControllerMapviewName"] = "traincontroller-mapview",-- simple entity
 
-    ["trainControllerForce"]      = "-trainControllerForce",  -- force for the traincontrollers
+    ["trainControllerForce"      ] = "-trainControllerForce",  -- force for the traincontrollers
   }
 end
 
@@ -328,6 +328,24 @@ function Traincontroller:setTrainstopControlBehaviour(trainStopEntity)
       constant      = nil, -- if not set, will default to 0
     }
   }
+end
+
+
+
+function Traincontroller:setDefaultMachineTints(builderIndex)
+  -- set the default machine tints depending on the recipe
+  for _, builderLocation in pairs(Trainassembly:getTrainBuilder(builderIndex)) do
+    local builderEntity = Trainassembly:getMachineEntity(builderLocation["surfaceIndex"], builderLocation["position"])
+    if builderEntity and builderEntity.valid then
+      local builderRecipe = builderEntity.get_recipe()
+      if builderRecipe then
+        local buildEntityName = LSlib.utils.string.split(builderRecipe.name, "[")[1]
+        buildEntityName = buildEntityName:sub(1, buildEntityName:len()-6)
+
+        Trainassembly:setMachineTint(builderEntity, Trainassembly:getTrainTint(buildEntityName))
+      end
+    end
+  end
 end
 
 
@@ -815,6 +833,7 @@ function Traincontroller:onBuildEntity(createdEntity, playerIndex)
     local validPlacement, trainBuilderIndex = self:checkValidPlacement(createdEntity, playerIndex)
     if validPlacement then -- It is valid, now we have to add the entity to the list
       self:saveNewStructure(createdEntity, trainBuilderIndex)
+      self:setDefaultMachineTints(trainBuilderIndex)
 
       -- after structure is saved, we rename it, this will trigger Traincontroller:onRenameEntity as well
       createdEntity.backer_name = "Unused Trainbuilder"

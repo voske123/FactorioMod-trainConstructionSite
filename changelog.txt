@@ -1,4 +1,17 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.7
+Date: 22. 7. 2019
+  Features:
+    - Default color of locomotives is now the same color as when you would place it manualy
+    - Added support for modded trains from "Electronic_Locomotives"
+    - Added support for modded trains from "Electronic_Battle_Locomotives"
+  Changes:
+    - Now tries to insert the correct amount of trainfuel (or none if not required)
+  Bugfixes:
+    - Fixed some missing functions in LSlib
+    - Fixed that the recipes for placing down trains did not unlock when using an existing save
+    - Fixed that the train placing fuel was showing up on the fuel tooltip while it can't be used
+---------------------------------------------------------------------------------------------------
 Version: 0.1.6
 Date: 21. 7. 2019
   Features:

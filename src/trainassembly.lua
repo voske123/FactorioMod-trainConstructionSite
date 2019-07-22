@@ -19,7 +19,7 @@ end
 -- Initiation of the global data
 function Trainassembly:initGlobalData()
   local TA_data = {
-    ["version"] = 1, -- version of the global data
+    ["version"] = 2, -- version of the global data
     ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
 
     ["trainAssemblers"] = {}, -- keep track of all assembling machines
@@ -37,9 +37,11 @@ end
 function Trainassembly:initPrototypeData()
   return
   {
-    ["itemName"]      = "trainassembly",                -- the item
-    ["placeableName"] = "trainassembly-placeable",      -- locomotive entity
-    ["machineName"]   = "trainassembly-machine",        -- assembling entity
+    ["itemName"     ] = "trainassembly",           -- the item
+    ["placeableName"] = "trainassembly-placeable", -- locomotive entity
+    ["machineName"  ] = "trainassembly-machine",   -- assembling entity
+
+    ["trainTint"    ] = {},                        -- the tint of each created entity
   }
 end
 
@@ -810,6 +812,20 @@ function Trainassembly:getTrainBuilderIterator(dir)
 
     return iteratorNext, t, nil
   end
+end
+
+
+
+function Trainassembly:getTrainTint(trainEntityName)
+  if not global.TA_data.prototypeData.trainTint[trainEntityName] then
+    -- value not cached yet
+    local entityPrototype = game.entity_prototypes[trainEntityName]
+    if not entityPrototype then return {} end
+
+    global.TA_data.prototypeData.trainTint[trainEntityName] = entityPrototype.color or {}
+  end
+
+  return global.TA_data.prototypeData.trainTint[trainEntityName]
 end
 
 
