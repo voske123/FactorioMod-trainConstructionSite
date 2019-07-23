@@ -936,7 +936,8 @@ function Trainassembly:onBuildEntity(createdEntity, playerIndex)
   -- We manualy have to build a machine entity on the same spot.
   --
   -- Player experience: The player thinks he builded an assembling machine on top of rails.
-  if createdEntity.name == self:getPlaceableEntityName() then
+  if createdEntity.name == self:getPlaceableEntityName() or
+     createdEntity.name == self:getMachineEntityName() then
     -- We know the createdEntity is the placeable entity, meaning the player wants
     -- to build a trainassembly on this spot
 
