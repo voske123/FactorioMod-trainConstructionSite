@@ -35,7 +35,7 @@ for _, trainType in pairs{
       -- the order string over from the item to the entity.
       local itemName = itemOverride[trainType][trainEntity.name] or trainEntity.minable.result
       local item = data.raw["item-with-entity-data"][itemName] or data.raw["item"][itemName]
-      
+
       if item and data.raw[trainType][item.place_result] then
         log(string.format("Creating train parts: %s (%s)", trainEntity.name, trainType))
         data.raw[trainType][item.place_result].order = item.order
@@ -46,7 +46,7 @@ for _, trainType in pairs{
 
         -- Add item to remove the place_result.
         if not itemPlaceResult[item.type] then itemPlaceResult[item.type] = {} end
-        itemPlaceResult[item.type][item.name] = true
+        itemPlaceResult[item.type][item.name] = (settings.startup["trainController-manual-placing-trains"].value == false)
 
       else
         log(string.format("Error creating train parts: %s (%s)", trainEntity.name, trainType))
@@ -57,11 +57,15 @@ end
 
 -- Now we can remove all place_results
 for itemType, itemNames in pairs(itemPlaceResult) do
-  for itemName,_ in pairs(itemNames) do
-    data.raw[itemType][itemName].place_result =  nil
+  for itemName, removePlaceResult in pairs(itemNames) do
+    if removePlaceResult then
+      data.raw[itemType][itemName].place_result =  nil
+    end
   end
 end
 
-data:extend{
-  locomotiveManualBuild,
-}
+if settings.startup["trainController-manual-placing-trains"].value == false then
+  data:extend{
+    locomotiveManualBuild,
+  }
+end

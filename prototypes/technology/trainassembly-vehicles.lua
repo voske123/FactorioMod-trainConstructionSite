@@ -19,6 +19,14 @@ if data.raw["technology"]["railway"].prerequisites then -- replace logistics-2 f
   end
 end
 
+if data.raw["technology"]["railway"].effects then
+  for effectIndex, effect in pairs(data.raw["technology"]["railway"].effects) do
+    if effect.type == "unlock-recipe" and effect.recipe == "cargo-wagon" then
+      data.raw["technology"]["railway"].effects[effectIndex] = nil -- this removes that single unlock
+    end
+  end
+end
+
 trainTechCargo.effects = {}
 for _, trainRecipe in pairs ({
   "cargo-wagon",
@@ -49,6 +57,14 @@ trainTechArty.icon = "__trainConstructionSite__/graphics/technology/artillery-wa
 trainTechArty.icon_size = 256
 
 trainTechArty.prerequisites = {"trainassembly-cargo-wagon", "artillery"}
+
+if data.raw["technology"]["artillery"].effects then
+  for effectIndex, effect in pairs(data.raw["technology"]["artillery"].effects) do
+    if effect.type == "unlock-recipe" and effect.recipe == "artillery-wagon" then
+      data.raw["technology"]["artillery"].effects[effectIndex] = nil -- this removes that single unlock
+    end
+  end
+end
 
 trainTechArty.effects = {}
 for _, trainRecipe in pairs ({
@@ -81,19 +97,6 @@ for _, trainRecipe in pairs ({
 end
 
 
---Unlocking locomotive manual build in the railway techtree
-
-for _, trainRecipe in pairs ({
-  "locomotive-manual-build",
-}) do
-  table.insert(data.raw["technology"]["railway"].effects,
-  {
-    type = "unlock-recipe",
-    recipe = trainRecipe,
-  })
-end
-
-
 
 --making the fluid tech for fluid wagon
 
@@ -116,28 +119,6 @@ for techName, techPrototype in pairs(data.raw["technology"]) do
     end
   end
 end
-
-
-
-if data.raw["technology"]["railway"].effects then
-  for effectIndex, effect in pairs(data.raw["technology"]["railway"].effects) do
-    if effect.type == "unlock-recipe" and effect.recipe == "cargo-wagon" then
-      data.raw["technology"]["railway"].effects[effectIndex] = nil -- this removes that single unlock
-    end
-  end
-end
-
-
-
-if data.raw["technology"]["artillery"].effects then
-  for effectIndex, effect in pairs(data.raw["technology"]["artillery"].effects) do
-    if effect.type == "unlock-recipe" and effect.recipe == "artillery-wagon" then
-      data.raw["technology"]["artillery"].effects[effectIndex] = nil -- this removes that single unlock
-    end
-  end
-end
-
-
 
 if data.raw["technology"]["fluid-wagon"].prerequisites then
   for prerequisitesIndex, prerequisite in pairs(data.raw["technology"]["fluid-wagon"].prerequisites) do

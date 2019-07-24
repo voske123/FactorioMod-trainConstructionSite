@@ -1,6 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.8
 Date: 24. 7. 2019
+  Features:
+    - Added setting so you can manualy build all trains without the trainbuilder.
   Bugfixes:
     - Fixed bots replacing a ghost did not work correctly, resulting in crash later on
 ---------------------------------------------------------------------------------------------------
