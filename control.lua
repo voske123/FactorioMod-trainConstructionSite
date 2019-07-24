@@ -83,6 +83,13 @@ end)
 
 
 
+script.on_event(defines.events.on_post_entity_died, function(event)
+  -- Called after an entity dies.
+  Trainassembly:onGhostBuild(event.prototype, event.ghost)
+end)
+
+
+
 script.on_event(defines.events.on_player_rotated_entity, function(event)
   -- Called when player rotates an entity.
   local rotatedEntity = event.entity

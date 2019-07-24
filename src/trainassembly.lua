@@ -1034,6 +1034,23 @@ end
 
 
 
+-- Called after an entity dies.
+function Trainassembly:onGhostBuild(removedEntityPrototype, ghostEntity)
+  -- When the building gets removed, it can make a ghost so the bots will come
+  -- replace it.
+  if ghostEntity and removedEntityPrototype.name == self:getMachineEntityName() then
+    rendering.draw_animation{
+      animation = removedEntityPrototype.name .. "-" .. LSlib.utils.directions.toString(ghostEntity.direction),
+      tint = {r = 0.6, g = 0.6, b = 0.6, a = 0.3}, -- utility constant ghost_tint
+      render_layer = "object",
+      target = ghostEntity,
+      surface = ghostEntity.surface,
+    }
+  end
+end
+
+
+
 -- When a player rotates an entity
 function Trainassembly:onPlayerRotatedEntity(rotatedEntity)
   -- The player rotated the machine entity +/-90 degrees, the building can only be
