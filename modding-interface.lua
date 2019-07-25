@@ -1,4 +1,4 @@
-require "LSlib/lib"
+require("__LSlib__/LSlib")
 
 trainConstructionSite = trainConstructionSite or {}
 trainConstructionSite.remote = trainConstructionSite.remote or {}

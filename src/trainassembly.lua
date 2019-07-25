@@ -1,5 +1,5 @@
 require 'util'
-require "LSlib/lib"
+--require "LSlib/lib"
 
 -- Create class
 Trainassembly = {}

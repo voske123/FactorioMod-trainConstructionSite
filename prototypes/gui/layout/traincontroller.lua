@@ -1,4 +1,3 @@
-require "LSlib.lib"
 
 local guiLayout = LSlib.gui.layout.create("center")
 

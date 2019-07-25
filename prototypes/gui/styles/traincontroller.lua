@@ -1,4 +1,3 @@
-require "LSlib/lib"
 
 -- default styles --------------------------------------------------------------
 LSlib.styles.addTabStyle(LSlib.styles.getVanillaTabStyleSpecification())

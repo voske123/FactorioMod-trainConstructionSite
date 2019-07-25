@@ -1,4 +1,3 @@
-require "LSlib.lib"
 
 local function createRecipeIcons(itemPrototypeName)
   local recipeIcons = LSlib.item.getIcons("item", "trainassembly-recipefuel")

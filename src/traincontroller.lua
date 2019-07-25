@@ -1,5 +1,5 @@
 require 'util'
-require "LSlib/lib"
+require("__LSlib__/LSlib")
 
 -- Create class
 Traincontroller = {}

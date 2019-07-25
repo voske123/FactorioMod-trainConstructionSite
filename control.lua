@@ -1,4 +1,4 @@
-require "LSlib.lib"
+require("__LSlib__/LSlib")
 
 require "src.debug"
 require "src.help"
