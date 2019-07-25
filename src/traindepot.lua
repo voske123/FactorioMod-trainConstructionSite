@@ -229,6 +229,18 @@ end
 
 
 
+function Traindepot:getDepotEntity(depotSurfaceIndex, depotPosition)
+  if global.TD_data["depots"][depotSurfaceIndex]                                   and
+     global.TD_data["depots"][depotSurfaceIndex][depotPosition.y]                  and
+     global.TD_data["depots"][depotSurfaceIndex][depotPosition.y][depotPosition.x] then
+    return global.TD_data["depots"][depotSurfaceIndex][depotPosition.y][depotPosition.x]["entity"]
+  else
+    return nil
+  end
+end
+
+
+
 function Traindepot:getDepotData(depotForceName, depotSurfaceIndex)
   if self:hasDepotEntities(depotForceName, depotSurfaceIndex) then
     return global.TD_data["depotStatistics"][depotForceName][depotSurfaceIndex]
@@ -338,7 +350,7 @@ end
 
 -- When a player/script renames an entity
 function Traindepot:onRenameEntity(renamedEntity, oldName)
-  if renamedEntity.name == self:getDepotEntityName() then
+  if renamedEntity.name == self:getDepotEntityName() and self:getDepotEntity(renamedEntity.surface.index, renamedEntity.position) then
     self:renameBuilding(renamedEntity, oldName)
   end
 end

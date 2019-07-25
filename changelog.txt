@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.9
+Date: 25. 7. 2019
+  Bugfixes:
+    - Fixed crash related when playing together with the mod "Automatic Train Station Names"
+---------------------------------------------------------------------------------------------------
 Version: 0.1.8
 Date: 24. 7. 2019
   Features:

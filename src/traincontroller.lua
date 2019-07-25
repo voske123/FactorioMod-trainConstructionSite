@@ -447,6 +447,18 @@ end
 
 
 
+function Traincontroller:getControllerEntity(controllerSurfaceIndex, controllerPosition)
+  if global.TC_data["trainControllers"][controllerSurfaceIndex]                                            and
+     global.TC_data["trainControllers"][controllerSurfaceIndex][controllerPosition.y]                      and
+     global.TC_data["trainControllers"][controllerSurfaceIndex][controllerPosition.y][controllerPosition.x] then
+    return global.TC_data["trainControllers"][controllerSurfaceIndex][controllerPosition.y][controllerPosition.x]["entity"]
+  else
+    return nil
+  end
+end
+
+
+
 function Traincontroller:getAllTrainControllers(surfaceIndex, controllerName)
   if not global.TC_data["trainControllers"][surfaceIndex] then return {} end
 
@@ -893,7 +905,7 @@ end
 
 -- When a player/script renames an entity
 function Traincontroller:onRenameEntity(renamedEntity, oldName)
-  if renamedEntity.name == self:getControllerEntityName() then
+  if renamedEntity.name == self:getControllerEntityName() and self:getControllerEntity(renamedEntity.surface.index, renamedEntity.position) then
     self:renameBuilding(renamedEntity, oldName)
   end
 end
