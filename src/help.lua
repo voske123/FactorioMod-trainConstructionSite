@@ -60,5 +60,7 @@ end
 --------------------------------------------------------------------------------
 -- When the player uses the 'Open item GUI' control on an item defined with 'can_be_mod_opened' as true
 function Help:onOpenItem(clickedItem, playerIndex)
-  Help.Gui:openGui(playerIndex)
+  if clickedItem.name == "trainbuilder-manual" then
+    Help.Gui:openGui(playerIndex)
+  end
 end
