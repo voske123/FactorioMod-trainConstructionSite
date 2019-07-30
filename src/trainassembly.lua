@@ -19,7 +19,7 @@ end
 -- Initiation of the global data
 function Trainassembly:initGlobalData()
   local TA_data = {
-    ["version"] = 2, -- version of the global data
+    ["version"] = 3, -- version of the global data
     ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
 
     ["trainAssemblers"] = {}, -- keep track of all assembling machines
@@ -42,6 +42,12 @@ function Trainassembly:initPrototypeData()
     ["machineName"  ] = "trainassembly-machine",   -- assembling entity
 
     ["trainTint"    ] = {},                        -- the tint of each created entity
+    ["rollingStock" ] = {                          -- the types of rolling stocks
+      ["locomotive"     ] = true,
+      ["cargo-wagon"    ] = true,
+      ["fluid-wagon"    ] = true,
+      ["artillery-wagon"] = true,
+    },
   }
 end
 
@@ -570,6 +576,12 @@ end
 
 
 
+function Trainassembly:isRollingStock(entity)
+  return global.TA_data.prototypeData.rollingStock[entity.prototype.type] and true or false
+end
+
+
+
 function Trainassembly:getMachineEntity(machineSurfaceIndex, machinePosition)
   -- STEP 1: If we don't have a trainBuilder saved on that surface, or not
   --         on that y position or on that x position, it means that we don't
@@ -997,6 +1009,17 @@ function Trainassembly:onBuildEntity(createdEntity, playerIndex)
       createdEntity.destroy()
       game.players[playerIndex].insert{name="rail", count=1}
     end
+
+  elseif self:isRollingStock(createdEntity) then
+    if game.active_mods["MultipleUnitTrainControl"] and string.sub(createdEntity.name, -3) == "-mu" and
+      createdEntity.surface.count_entities_filtered{
+        name     = self:getMachineEntityName(),
+        position = createdEntity.position,
+        force    = createdEntity.force,
+        limit    = 1,
+      } > 0 then
+      self:setCreatedEntity(createdEntity.surface.index, createdEntity.position, createdEntity)
+    end
   end
 end
 
@@ -1029,6 +1052,16 @@ function Trainassembly:onRemoveEntity(removedEntity)
 
     -- STEP 3: Update the data structure
     self:deleteBuilding(removedEntity)
+
+  elseif self:isRollingStock(removedEntity) then
+    if removedEntity.surface.count_entities_filtered{
+      name     = self:getMachineEntityName(),
+      position = removedEntity.position,
+      force    = removedEntity.force,
+      limit    = 1,
+    } > 0 then
+      self:setCreatedEntity(removedEntity.surface.index, removedEntity.position, nil)
+    end
   end
 end
 

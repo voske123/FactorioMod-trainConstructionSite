@@ -10,8 +10,6 @@
         "base >= 0.17.56",
         "LSlib >= 2019.7.31",
 
-        "? FARL",
-
-        "! MultipleUnitTrainControl"
+        "? FARL"
   ]
 }
