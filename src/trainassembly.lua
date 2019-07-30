@@ -577,7 +577,7 @@ end
 
 
 function Trainassembly:isRollingStock(entity)
-  return global.TA_data.prototypeData.rollingStock[entity.prototype.type] and true or false
+  return entity and entity.valid and global.TA_data.prototypeData.rollingStock[entity.type] or false
 end
 
 
