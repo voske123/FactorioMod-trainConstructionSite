@@ -1,13 +1,13 @@
 -- Other mod items related to trains to be sorted
 
 if mods["concreted-rails"] then
-  data.raw["rail-planner"]["concrete-rail"].subgroup = data.raw["rail-planner"]["rail"].subgroup
-  data.raw["rail-planner"]["concrete-rail"].order    = "a[rai]-b[concreted-rails]"
+  LSlib.item.setSubgroup("rail-planner", "concrete-rail", LSlib.item.getSubgroup("rail-planner", "rail"))
+  LSlib.item.setOrderstring("rail-planner", "concrete-rail", "a[rai]-b[concreted-rails]")
 end
 
 if mods["FuelTrainStop"] then
-  data.raw["item"]["fuel-train-stop"].subgroup = data.raw["item"]["train-stop"].subgroup
- data.raw["item"]["fuel-train-stop"].order     = "b[stop]-c[FuelTrainStop]"
+  LSlib.item.setSubgroup("item", "fuel-train-stop", LSlib.item.getSubgroup("item", "train-stop"))
+  LSlib.item.setOrderstring("item", "fuel-train-stop", "b[stop]-c[FuelTrainStop]")
 end
 
 if mods["Armored-train"] then
@@ -16,26 +16,26 @@ if mods["Armored-train"] then
     "wagon-cannon-turret-mk1"    ,
     "platform-rocket-turret-mk1" ,
   } do
-    data.raw["item"][itemName].subgroup = data.raw["item"]["gun-turret"].subgroup
-    data.raw["item"][itemName].order    = "b[turret]-a[gun-turret]-h[Armored-train]-"..data.raw["item"][itemName].order
+    LSlib.item.setSubgroup("item", itemName, LSlib.item.getSubgroup("item", "gun-turret"))
+    LSlib.item.setOrderstring("item", itemName, "b[turret]-a[gun-turret]-h[Armored-train]-"..LSlib.item.getSubgroup("item", itemName))
   end
 end
 
 if mods["FARL"] then
-  data.raw["item"]["farl-roboport"].subgroup = data.raw["item-with-entity-data"]["locomotive-manual-build"].subgroup
-  data.raw["item"]["farl-roboport"].order    = "a[railway]-b[FARL]"
+  LSlib.item.setSubgroup("item", "farl-roboport", "manual-buildable-vehicles")
+  LSlib.item.setOrderstring("item", "farl-roboport", "a[railway]-b[FARL]")
 end
 
 if mods["SmartTrains"] then
-  data.raw["item"]["smart-train-stop"].subgroup = data.raw["item"]["train-stop"].subgroup
-  data.raw["item"]["smart-train-stop"].order    = "b[stop]-d[SmartTrains]"
+  LSlib.item.setSubgroup("item", "smart-train-stop", LSlib.item.getSubgroup("item", "train-stop"))
+  LSlib.item.setOrderstring("item", "smart-train-stop", "b[stop]-d[SmartTrains]")
 end
 
 if mods["RailPowerSystem"] then
-  data.raw["rail-planner"]["electric-rail"].subgroup = data.raw["rail-planner"]["rail"].subgroup
-  data.raw["rail-planner"]["electric-rail"].order    = "a[rai]-c[RailPowerSystem]-a[rail]"
-  data.raw["item"]["prototype-connector"  ].subgroup = data.raw["rail-planner"]["rail"].subgroup
-  data.raw["item"]["prototype-connector"  ].order    = "a[rai]-c[RailPowerSystem]-b[pole]"
+  LSlib.item.setSubgroup("rail-planner", "electric-rail", LSlib.item.getSubgroup("rail-planner", "rail"))
+  LSlib.item.setSubgroup("item", "prototype-connector"  , LSlib.item.getSubgroup("rail-planner", "rail"))
+  LSlib.item.setOrderstring("rail-planner", "electric-rail", "a[rai]-c[RailPowerSystem]-a[rail]")
+  LSlib.item.setOrderstring("item", "prototype-connector"  , "a[rai]-c[RailPowerSystem]-b[pole]")
 end
 
 if mods["assembler-pipe-passthrough"] then

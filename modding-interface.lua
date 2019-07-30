@@ -6,6 +6,7 @@ trainConstructionSite.remoteData = trainConstructionSite.remoteData or {}
 
 trainConstructionSite.remote.addElectricTrain = function(entityType, entityName)
   -- Register a train to not use fuel. This means it won't add fuel when creating the trains
+  -- The main usage for this will probably be electric trains...
   --
   -- Arguments:
   --     - entityType: type of the entity (for example "locomotive")
@@ -13,6 +14,10 @@ trainConstructionSite.remote.addElectricTrain = function(entityType, entityName)
   --
   -- Timing:
   --     - Registering a train needs to be done before __trainConstructionSite__/data-final-fixes.lua
+  --
+  -- Example:
+  --     - trainConstructionSite.remote.addElectricTrain("locomotive", "electric-locomotive")
+
   trainConstructionSite.remoteData.electricTrains =
     trainConstructionSite.remoteData.electricTrains or {}
   trainConstructionSite.remoteData.electricTrains[entityType] =
