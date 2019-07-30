@@ -37,3 +37,9 @@ if mods["RailPowerSystem"] then
   data.raw["item"]["prototype-connector"  ].subgroup = data.raw["rail-planner"]["rail"].subgroup
   data.raw["item"]["prototype-connector"  ].order    = "a[rai]-c[RailPowerSystem]-b[pole]"
 end
+
+if mods["assembler-pipe-passthrough"] then
+  if appmod and appmod.blacklist then
+    appmod.blacklist["trainassembly-machine"] = true
+  end
+end

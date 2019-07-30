@@ -3,6 +3,7 @@ Version: 0.1.10
 Date: xx. xx. 2019
   Bugfixes:
     - Fixed that the manual would open when the player opened any item
+    - Fixed "Assemble Pipe Passthrough" (APP) adding fluid throughput to the trainassembler
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.9
 Date: 25. 7. 2019
