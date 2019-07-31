@@ -39,4 +39,12 @@ if mods["Armored-train"] then
   end
 end
 
+if mods["MultipleUnitTrainControl"] then
+  for locomotive,_ in pairs(data.raw["locomotive"]) do
+    if string.sub(locomotive, -3) == "-mu" then
+      trainsToIgnore["locomotive"][locomotive] = true
+    end
+  end
+end
+
 return trainsToIgnore

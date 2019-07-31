@@ -37,5 +37,17 @@ return function(configurationData)
       global.TA_data.version = 2
     end
 
+    if global.TA_data.version == 2 then
+      log("Updating Trainassembly from version 2 to version 3.")
+      global.TA_data.prototypeData.rollingStock =
+      {
+        ["locomotive"     ] = true,
+        ["cargo-wagon"    ] = true,
+        ["fluid-wagon"    ] = true,
+        ["artillery-wagon"] = true,
+      }
+      global.TA_data.version = 3
+    end
+
   end
 end

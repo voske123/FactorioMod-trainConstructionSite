@@ -33,5 +33,17 @@ if mods["FARL"] then
 end
 
 if mods["TrainOverhaul"] then
-    LSlib.technology.addRecipeUnlock("nuclear-locomotive", "nuclear-locomotive-fluid[locomotive]")
+  LSlib.technology.addRecipeUnlock("nuclear-locomotive", "nuclear-locomotive-fluid[locomotive]")
+end
+
+if mods["MultipleUnitTrainControl"] then
+  for locomotive,_ in pairs(data.raw["locomotive"]) do
+    if string.sub(locomotive, -3) == "-mu" then
+      local recipe = data.raw["recipe"][locomotive]
+      if recipe then recipe.allow_as_intermediate = false end
+
+      local item = data.raw["item"][locomotive] or data.raw["item-with-entity-data"][locomotive]
+      if item then LSlib.item.setHidden(item.type, locomotive) end
+    end
   end
+end
