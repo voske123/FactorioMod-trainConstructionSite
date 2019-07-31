@@ -1,6 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.10
-Date: xx. xx. 2019
+Date: 31. 07. 2019
+  Features:
+    - Added support for Multiple Unit Train Control (>= v0.1.18)
   Bugfixes:
     - Fixed that the manual would open when the player opened any item
     - Fixed "Assemble Pipe Passthrough" (APP) adding fluid throughput to the trainassembler
