@@ -13,8 +13,21 @@ local trainassemblyTrainfuel = util.table.deepcopy(data.raw["item"]["rocket-fuel
 
 trainassemblyTrainfuel.name           = "trainassembly-trainfuel"
 trainassemblyTrainfuel.localised_name = {"item-name.trainassemblyfuel"}
-trainassemblyTrainfuel.icon           = "__trainConstructionSite__/graphics/placeholders/icon.png"
-trainassemblyTrainfuel.icon_size      = 32
+trainassemblyTrainfuel.icon           = nil--"__trainConstructionSite__/graphics/placeholders/icon.png"
+trainassemblyTrainfuel.icon_size      = nil--32
+trainassemblyTrainfuel.icons          = {
+  {
+    icon      = "__trainConstructionSite__/graphics/item/trainfuel/loco/loco-64.png",
+    icon_size = 64,
+    shift     = {10, 0}
+  },
+  {
+    icon      = "__trainConstructionSite__/graphics/item/trainfuel/fuel-handle/fuel-handle-32.png",
+    icon_size = 32,
+    shift     = {-16, -20},
+    scale     = 1.2,
+  }
+}
 trainassemblyTrainfuel.subgroup       = "trainassembler-fuel"
 trainassemblyTrainfuel.order          = "b"
 
