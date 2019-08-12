@@ -889,7 +889,7 @@ function Trainassembly:checkValidPlacement(createdEntity, playerIndex)
 
   -- STEP 1: check the rails underneath
   for _,railEntity in pairs(entitySurface.find_entities_filtered{
-    name = "straight-rail",
+    --name = "straight-rail",
     type = "straight-rail",
     area = {
       {entityPosition.x - 3.1, entityPosition.y - 3.1},

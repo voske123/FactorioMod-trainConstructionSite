@@ -3,6 +3,8 @@ Version: 0.1.11
 Date: xx. xx. 2019
   Features:
     - Added graphics for trainfuel
+  Bugfixes:
+    - Fixed space exploration's space rail didn't allow trainassemblers to be build
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.10
 Date: 31. 07. 2019
