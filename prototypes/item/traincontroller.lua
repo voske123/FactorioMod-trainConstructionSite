@@ -13,6 +13,8 @@ traincontroller.order = "d[trainbuilder]-c[controller]"
 
 traincontroller.place_result = traincontroller.name
 
+traincontroller.stack_size = data.raw["item"]["train-stop"].stack_size
+
 
 
 data:extend{

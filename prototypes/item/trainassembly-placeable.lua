@@ -15,7 +15,7 @@ trainassembly.order = "d[trainbuilder]-b[builder]"
 
 trainassembly.place_result = "trainassembly-placeable" -- the name of the placable entity
 
-trainassembly.stack_size = 10
+--trainassembly.stack_size = 10
 
 
 
