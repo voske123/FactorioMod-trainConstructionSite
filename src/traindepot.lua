@@ -265,6 +265,7 @@ end
 
 function Traindepot:getAllTrainsPathingToDepot(depotSurfaceIndex, depotName)
   -- index all depots on this surface, we need to find one depot with the given name
+  if not global.TD_data["depots"][depotSurfaceIndex] then return nil end
   for depotPositionY,depotPositionList in pairs(global.TD_data["depots"][depotSurfaceIndex]) do
     for depotPositionX,depotEntityData in pairs(depotPositionList) do
 
