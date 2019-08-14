@@ -1,7 +1,9 @@
 require("__LSlib__/LSlib")
 
 local function createRecipeIcons(itemPrototypeName)
-  local recipeIcons = LSlib.item.getIcons("item", "trainassembly-recipefuel")
+  local recipeIcons = util.table.deepcopy(LSlib.item.getIcons("item", "trainassembly-recipefuel"))
+  recipeIcons[2].shift = {-16, -20}
+  recipeIcons[2].scale = 1.2
   local recipeIconsLength = #recipeIcons -- number of layers to offset the existing layers
 
   local extraScale = recipeIcons[1].icon_size / LSlib.item.getIconSize("item", itemPrototypeName)[1]

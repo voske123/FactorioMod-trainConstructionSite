@@ -24,8 +24,8 @@ trainassemblyTrainfuel.icons          = {
   {
     icon      = "__trainConstructionSite__/graphics/item/trainfuel/fuel-handle/fuel-handle-32.png",
     icon_size = 32,
-    shift     = {-16, -20},
-    scale     = 1.2,
+    shift     = {-6, -8},
+    scale     = 0.8,
   }
 }
 trainassemblyTrainfuel.subgroup       = "trainassembler-fuel"
