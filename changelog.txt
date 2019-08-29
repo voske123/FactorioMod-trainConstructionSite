@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.13
+Date: 29. 08. 2019
+  Features:
+    - Added support for modded tanks from "bobswarfare"
+  Bugfixes:
+    - Fixed bobs inserter overhaul would set trainbuilder to require express inserters
+---------------------------------------------------------------------------------------------------
 Version: 0.1.12
 Date: 14. 08. 2019
   Bugfixes:

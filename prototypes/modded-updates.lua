@@ -1,4 +1,5 @@
 -- Other mod items related to trains to be sorted
+local otherVehicleGroup = "manual-buildable-vehicles"
 
 if mods["concreted-rails"] then
   LSlib.item.setSubgroup("rail-planner", "concrete-rail", LSlib.item.getSubgroup("rail-planner", "rail"))
@@ -22,7 +23,7 @@ if mods["Armored-train"] then
 end
 
 if mods["FARL"] then
-  LSlib.item.setSubgroup("item", "farl-roboport", "manual-buildable-vehicles")
+  LSlib.item.setSubgroup("item", "farl-roboport", otherVehicleGroup)
   LSlib.item.setOrderstring("item", "farl-roboport", "a[railway]-b[FARL]")
 end
 
@@ -42,4 +43,16 @@ if mods["assembler-pipe-passthrough"] then
   if appmod and appmod.blacklist then
     appmod.blacklist["trainassembly-machine"] = true
   end
+end
+
+if mods["boblogistics"] then
+  if settings.startup["bobmods-logistics-inserteroverhaul"].value == true then
+    -- recipe utilizing express inserters -> move over to fast inserter instead
+    LSlib.recipe.editIngredient("trainassembly", "fast-inserter", "long-handed-inserter")
+  end
+end
+
+if mods["bobwarfare"] then
+  LSlib.item.setSubgroup("item-with-entity-data", "bob-tank-2", otherVehicleGroup)
+  LSlib.item.setSubgroup("item-with-entity-data", "bob-tank-3", otherVehicleGroup)
 end
