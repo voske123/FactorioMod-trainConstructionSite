@@ -13,7 +13,7 @@ data:extend{
     order = "d[trainbuilder]-a[manual]",
     subgroup = "transport-railway",
 
-    stack_size = 10,
+    stack_size = 1,
     stackable = true,
     show_in_library = false,
 

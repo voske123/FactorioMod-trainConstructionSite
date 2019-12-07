@@ -16,11 +16,7 @@ end
 -- We want to create different fuel recipes to create the fuel to initialy fuel the train.
 -- We make a fuel for each of the next items:
 for fuelOrder, fuelIngredient in pairs{
-  {"wood"        , 100},
-  {"coal"        , 50 },
-  {"solid-fuel"  , 20 },
-  {"rocket-fuel" , 10 },
-  {"nuclear-fuel", 1  },
+  mods["Bio_Industries"] and {"pellet-coke", 10} or nil,
 } do
 
   -- For this item we create a fuel recipe
@@ -51,7 +47,34 @@ for fuelOrder, fuelIngredient in pairs{
 
       -- We have to add a order string to the recipe becose we have multiple
       -- recipes resulting in the same item.
-      order = "a-"..fuelOrder,
-    }
+      order = "b-"..fuelOrder,
+    },
+  }
+  data:extend{
+    {
+      type = "technology",
+      name = "trainfuel-"..fuelIngredient[1],
+      localised_name = {"technology-name.trainfuel", "trainassemblyfuel", fuelIngredient[1]},
+      localised_description = {"technology-description.trainfuel", "trainassemblyfuel", fuelIngredient[1]},
+      icons = LSlib.recipe.getIcons("trainassembly-trainfuel-"..fuelIngredient[1]),
+      effects =
+      {
+        {
+          type = "unlock-recipe",
+          recipe = "trainassembly-trainfuel-" .. fuelIngredient[1],
+        },
+      },
+      prerequisites =
+      {
+        "trainassembly-automated-train-assembling",
+      },
+      unit =
+      {
+        count = 75,
+        ingredients = util.table.deepcopy(data.raw["technology"]["railway"].unit.ingredients),
+        time = 10,
+      },
+      order = "c-g-a-b",
+    },
   }
 end
