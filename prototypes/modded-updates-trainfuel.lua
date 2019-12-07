@@ -16,7 +16,8 @@ end
 -- We want to create different fuel recipes to create the fuel to initialy fuel the train.
 -- We make a fuel for each of the next items:
 for fuelOrder, fuelIngredient in pairs{
-  mods["Bio_Industries"] and {"pellet-coke", 10} or nil,
+  mods["aai-industry"  ] and {"vehicle-fuel", 40, "fuel-processing"          } or nil,
+  mods["Bio_Industries"] and {"pellet-coke" , 10, "bi-tech-coal-processing-2"} or nil,
 } do
 
   -- For this item we create a fuel recipe
@@ -77,4 +78,8 @@ for fuelOrder, fuelIngredient in pairs{
       order = "c-g-a-b",
     },
   }
+  LSlib.technology.addPrerequisite("trainfuel-"..fuelIngredient[1], fuelIngredient[3])
+  data.raw.technology["trainfuel-"..fuelIngredient[1]].unit = data.raw.technology[fuelIngredient[3]].unit or
+        (data.raw.technology[fuelIngredient[3]].normal    and data.raw.technology[fuelIngredient[3]].normal.unit) or
+        (data.raw.technology[fuelIngredient[3]].expensive and data.raw.technology[fuelIngredient[3]].expensive.unit)
 end

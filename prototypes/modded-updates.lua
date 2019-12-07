@@ -57,11 +57,3 @@ if mods["bobwarfare"] then
   LSlib.item.setSubgroup("item-with-entity-data", "bob-tank-2", otherVehicleGroup)
   LSlib.item.setSubgroup("item-with-entity-data", "bob-tank-3", otherVehicleGroup)
 end
-
-if mods["Bio_Industries"] then
-  -- train fuel
-  LSlib.technology.addPrerequisite("trainfuel-pellet-coke", "bi-tech-coal-processing-2")
-  data.raw.technology["trainfuel-pellet-coke"].unit = data.raw.technology["bi-tech-coal-processing-2"].unit or
-  (data.raw.technology["bi-tech-coal-processing-2"].normal and data.raw.technology["bi-tech-coal-processing-2"].normal.unit) or
-  (data.raw.technology["bi-tech-coal-processing-2"].expensive and data.raw.technology["bi-tech-coal-processing-2"].expensive.unit)
-end
