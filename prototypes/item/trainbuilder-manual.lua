@@ -17,7 +17,7 @@ data:extend{
     stackable = true,
     show_in_library = false,
 
-    can_be_mod_opened = true,
+    flags = {"mod-openable"},
 
     mouse_cursor = "trainbuilder-manual",
 

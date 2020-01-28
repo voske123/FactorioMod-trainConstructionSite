@@ -1,14 +1,14 @@
 {
   "name": "trainConstructionSite",
-  "version": "0.1.14",
-  "factorio_version": "0.17",
+  "version": "0.1.15",
+  "factorio_version": "0.18",
   "title": "Train construction site",
   "author": "voske_123 & lovely_santa",
   "homepage": "https://mods.factorio.com/mod/trainConstructionSite",
   "description": "A nice, automated way of creating trains",
   "dependencies": [
-        "base >= 0.17.56",
-        "LSlib >= 2019.7.31",
+        "base >= 0.18.01",
+        "LSlib >= 2020.1.24",
 
         "? FARL"
   ]

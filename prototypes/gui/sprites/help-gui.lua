@@ -3,7 +3,7 @@ data:extend{
   {
     type     = "sprite",
     name     = guiName.."-icon1",
-    filename = "__core__/graphics/misaligned-icon.png",
+    filename = "__trainConstructionSite__/graphics/sprite/misaligned-icon.png",
     width    = 64,
     height   = 64,
     scale    = .5,
