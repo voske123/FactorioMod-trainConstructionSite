@@ -47,6 +47,8 @@ for _, trainType in pairs{
         -- Add item to remove the place_result.
         if not itemPlaceResult[item.type] then itemPlaceResult[item.type] = {} end
         itemPlaceResult[item.type][item.name] = (settings.startup["trainController-manual-placing-trains"].value == false)
+        trainEntity.fast_upgrade_group = nil
+        trainEntity.next_upgrade = nil
 
       else
         log(string.format("Error creating train parts: %s (%s)", trainEntity.name, trainType))
