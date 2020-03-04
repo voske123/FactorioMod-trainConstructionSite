@@ -100,6 +100,7 @@ traincontrollerSignal.flags = {
 }
 
 traincontrollerSignal.fast_replaceable_group = nil
+traincontrollerSignal.next_upgrade = nil
 traincontrollerSignal.minable = nil
 
 traincontrollerSignal.animation = {

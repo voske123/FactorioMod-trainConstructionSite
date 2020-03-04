@@ -32,6 +32,7 @@ trainassembly.collision_mask =
 trainassembly.collision_box = {{-2.95, -3.9}, {2.95, 3.9}} -- when train is facing north
 
 trainassembly.fast_replaceable_group = nil
+trainassembly.next_upgrade = nil
 trainassembly.max_health = data.raw["assembling-machine"]["assembling-machine-2"].max_health
 
 -- make sure tracks are comming out on both sides

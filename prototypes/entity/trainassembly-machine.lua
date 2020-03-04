@@ -38,6 +38,7 @@ for collisionIndex, collisionLayer in pairs(trainassembly.collision_mask) do
 end
 
 trainassembly.fast_replaceable_group = nil
+trainassembly.next_upgrade = nil
 
 trainassembly.fluid_boxes = -- give it an output pipe so it has a direction
 {
