@@ -11,6 +11,7 @@ traincontroller.localised_description = util.table.deepcopy(data.raw["item"][tra
 traincontroller.icon = data.raw["item"][traincontroller.minable.result].icon
 traincontroller.icon_size = data.raw["item"][traincontroller.minable.result].icon_size
 traincontroller.icons = util.table.deepcopy(data.raw["item"][traincontroller.minable.result].icons)
+traincontroller.icon_mipmaps = util.table.deepcopy(data.raw["item"][traincontroller.minable.result].icon_mipmaps)
 
 --traincontroller.map_color          = data.raw["utility-constants"]["default"].chart.default_friendly_color
 --traincontroller.friendly_map_color = traincontroller.map_color
@@ -88,6 +89,7 @@ traincontrollerSignal.name = traincontroller.name .. "-signal"
 traincontrollerSignal.icon = traincontroller.icon
 traincontrollerSignal.icon_size = traincontroller.icon_size
 traincontrollerSignal.icons = util.table.deepcopy(traincontroller.icons)
+traincontrollerSignal.icon_mipmaps = 1
 
 traincontrollerSignal.collision_box  = nil
 traincontrollerSignal.collision_mask = {}

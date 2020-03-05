@@ -16,6 +16,7 @@ trainassembly.localised_description = util.table.deepcopy(data.raw["item"][train
 trainassembly.icon = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].icon)
 trainassembly.icons = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].icons)
 trainassembly.icon_size = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].icon_size)
+trainassembly.icon_mipmaps = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].icon_mipmaps)
 
 -- define the order since this entity doesn't have a dedicated item
 trainassembly.order = data.raw["item"][trainassembly.minable.result].order

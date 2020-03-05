@@ -1,6 +1,7 @@
 local recipesToIgnore = {
   -- trainConstructionSite
   ["trainassembly"] = true,
+  ["traindisassembly"] = mods["trainDeconstructionSite"] and true or nil,
 
   -- base game
   ["locomotive"     ] = true,

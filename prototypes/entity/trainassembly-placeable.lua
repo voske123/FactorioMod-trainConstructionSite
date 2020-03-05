@@ -12,6 +12,7 @@ trainassembly.localised_description = util.table.deepcopy(data.raw["item"][train
 trainassembly.icon = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].icon)
 trainassembly.icons = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].icons)
 trainassembly.icon_size = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].icon_size)
+trainassembly.icon_mipmaps = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].icon_mipmaps)
 
 -- remove the placeable_off_grid flag
 for flagIndex, flagName in pairs(trainassembly.flags) do

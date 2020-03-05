@@ -6,6 +6,10 @@ local trainsToIgnore = {
 }
 
 trainsToIgnore["locomotive"]["trainassembly-placeable"] = true -- trainassembly
+trainsToIgnore["locomotive"]["traindisassembly-placeable"] = true -- traindisassembly
+--if mods["trainDeconstructionSite"] then 
+--  trainsToIgnore["locomotive"]["traindisassembly-placeable"] = true -- traindisassembly
+--end
 
 if mods["creative-mod"] then
   for _,cargowagon in pairs{

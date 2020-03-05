@@ -11,6 +11,7 @@ traindepot.localised_description = util.table.deepcopy(data.raw["item"][traindep
 traindepot.icon = util.table.deepcopy(data.raw["item"][traindepot.minable.result].icon)
 traindepot.icon_size = util.table.deepcopy(data.raw["item"][traindepot.minable.result].icon_size)
 traindepot.icons = util.table.deepcopy(data.raw["item"][traindepot.minable.result].icons)
+traindepot.icon_mipmaps = util.table.deepcopy(data.raw["item"][traindepot.minable.result].icon_mipmaps)
 
 
 

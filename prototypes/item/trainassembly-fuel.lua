@@ -28,6 +28,8 @@ trainassemblyTrainfuel.icons          = {
     scale     = 0.8,
   }
 }
+trainassemblyTrainfuel.icon_mipmaps   = 1
+
 trainassemblyTrainfuel.subgroup       = "trainassembler-fuel"
 trainassemblyTrainfuel.order          = "b"
 
