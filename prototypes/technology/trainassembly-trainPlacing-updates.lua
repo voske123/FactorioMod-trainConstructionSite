@@ -31,6 +31,7 @@ for _, trainType in pairs({
         local fluidRecipeName = trainEntity.name .. "-fluid[" .. trainType .. "]"
 
         -- now search all tech, to find the recipe that unlocks the item
+        local technologyUnlockAdded = false
         for technologyName, technology in pairs(data.raw.technology) do
           for effectIndex, effect in pairs(technology.effects or {}) do
             if effect.type == "unlock-recipe" and effect.recipe == recipeName then
@@ -43,11 +44,14 @@ for _, trainType in pairs({
               end
 
               -- if it is not present, we can add it
-              if not fluidRecipePresent then
+              if fluidRecipePresent then
+                technologyUnlockAdded = true
+              else
                 table.insert(technology.effects, effectIndex + 1, {
                   type   = effect.type    ,
                   recipe = fluidRecipeName,
                 })
+                technologyUnlockAdded = true
 
                 -- add new prerequisites
                 if not technology.prerequisites then
@@ -77,6 +81,12 @@ for _, trainType in pairs({
 
             end
           end
+        end
+
+        -- if we didn't find it, we enable the recipe from the start
+        if not technologyUnlockAdded then
+          log(fluidRecipeName)
+          data.raw.recipe[fluidRecipeName].normal.enabled = true
         end
 
       end
