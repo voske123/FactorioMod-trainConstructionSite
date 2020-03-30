@@ -73,23 +73,23 @@ trainassembly.pictures =
   layers =
   {
     {
-      width = 256,
-      height = 256,
+      width = 512,
+      height = 512,
+      scale = 0.5,
       direction_count = 4,
       --allow_low_quality_rotation = true,
       frame_count = 1,
-      line_length = 4,
+      line_length = 1,
       lines_per_file = 1,
-      filename = "__trainConstructionSite__/graphics/placeholders/6x6-4.png",
-      --[[
+      scale = 0.5,
+      shift = util.by_pixel(32, -16),
       filenames =
       {
-        "__trainConstructionSite__/graphics/placeholders/6x6.png",
-        "__trainConstructionSite__/graphics/placeholders/6x6.png",
-        "__trainConstructionSite__/graphics/placeholders/6x6.png",
-        "__trainConstructionSite__/graphics/placeholders/6x6.png",
+        "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-N.png",
+        "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-E.png",
+        "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-S.png",
+        "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-W.png",
       },
-      ]]--
       hr_version = nil,
     },
     --[[{

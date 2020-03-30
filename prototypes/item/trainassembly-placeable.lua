@@ -6,9 +6,9 @@ trainassembly.name                  = "trainassembly"
 trainassembly.localised_name        = {"item-name.trainassembly"}
 trainassembly.localised_description = {"item-description.trainassembly"}
 
-trainassembly.icon                  = "__trainConstructionSite__/graphics/placeholders/icon.png"
+trainassembly.icon                  = "__trainConstructionSite__/graphics/item/trainassembly/trainassembly.png"
 trainassembly.icons                 = nil
-trainassembly.icon_size             = 32
+trainassembly.icon_size             = 64
 trainassembly.icon_mipmaps          = 1
 
 trainassembly.subgroup              = "transport-railway"

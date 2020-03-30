@@ -26,6 +26,7 @@ table.insert(trainassembly.flags, "not-blueprintable")
 
 -- selection box
 trainassembly.selection_box = {{-3, -3}, {3, 3}}
+trainassembly.drawing_box = {{-3, -5}, {3, 3}}
 
 -- collision mask & box
 trainassembly.collision_mask = util.table.deepcopy(data.raw["locomotive"]["trainassembly-placeable"].collision_mask)
@@ -73,24 +74,16 @@ trainassembly.animation =
     layers =
     {
       {
-        filename = "__trainConstructionSite__/graphics/placeholders/6x6.png",
+        filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-N.png",
         priority = "high",
-        width = 256,
-        height = 256,
+        width = 512,
+        height = 512,
         frame_count = 1,
         line_length = 1,
-        --shift = util.by_pixel(0, 4),
+        scale = 0.5,
+        shift = util.by_pixel(31.5, -18),
         hr_version = nil,
       },
-      --[[{
-        filename = "__trainConstructionSite__/graphics/placeholders/direction_north.png",
-        width = 82,
-        height = 82,
-        frame_count = 1,
-        line_length = 1,
-        shift = util.by_pixel(0, -32*1.25),
-        hr_version = nil,
-      },]]
     },
   },
   east =
@@ -98,24 +91,16 @@ trainassembly.animation =
     layers =
     {
       {
-        filename = "__trainConstructionSite__/graphics/placeholders/6x6.png",
+        filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-E.png",
         priority = "high",
-        width = 256,
-        height = 256,
+        width = 512,
+        height = 512,
         frame_count = 1,
         line_length = 1,
-        --shift = util.by_pixel(0, 4),
+        scale = 0.5,
+        shift = util.by_pixel(30, -28),
         hr_version = nil,
       },
-      --[[{
-        filename = "__trainConstructionSite__/graphics/placeholders/direction_east.png",
-        width = 82,
-        height = 82,
-        frame_count = 1,
-        line_length = 1,
-        shift = util.by_pixel(0, -32*1.25),
-        hr_version = nil,
-      },]]
     },
   },
   south =
@@ -123,24 +108,16 @@ trainassembly.animation =
     layers =
     {
       {
-        filename = "__trainConstructionSite__/graphics/placeholders/6x6.png",
+        filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-S.png",
         priority = "high",
-        width = 256,
-        height = 256,
+        width = 512,
+        height = 512,
         frame_count = 1,
         line_length = 1,
-        --shift = util.by_pixel(0, 4),
+        scale = 0.5,
+        shift = util.by_pixel(31.5, -18),
         hr_version = nil,
       },
-      --[[{
-        filename = "__trainConstructionSite__/graphics/placeholders/direction_south.png",
-        width = 82,
-        height = 82,
-        frame_count = 1,
-        line_length = 1,
-        shift = util.by_pixel(0, -32*1.25),
-        hr_version = nil,
-      },]]
     },
   },
   west =
@@ -148,24 +125,16 @@ trainassembly.animation =
     layers =
     {
       {
-        filename = "__trainConstructionSite__/graphics/placeholders/6x6.png",
+        filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-W.png",
         priority = "high",
-        width = 256,
-        height = 256,
+        width = 512,
+        height = 512,
         frame_count = 1,
         line_length = 1,
-        --shift = util.by_pixel(0, 4),
+        scale = 0.5,
+        shift = util.by_pixel(30, -28),
         hr_version = nil,
       },
-      --[[{
-        filename = "__trainConstructionSite__/graphics/placeholders/direction_west.png",
-        width = 82,
-        height = 82,
-        frame_count = 1,
-        line_length = 1,
-        shift = util.by_pixel(0, -32*1.25),
-        hr_version = nil,
-      },]]
     },
   },
 }
@@ -177,14 +146,14 @@ for _,orientation in pairs{"north", "east", "south", "west"} do
     name = trainassembly.name .. "-" .. orientation,
     layers = util.table.deepcopy(trainassembly.animation[orientation].layers),
   }}
-  trainassembly.animation[orientation] =
+  --[[trainassembly.animation[orientation] =
   {
     filename = "__core__/graphics/empty.png",
     priorit = "very-low",
     width = 1,
     height = 1,
     frame_count = 1,
-  }
+  }]]
 end
 
 data:extend{
