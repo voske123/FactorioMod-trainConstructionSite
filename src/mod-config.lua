@@ -49,5 +49,17 @@ return function(configurationData)
       global.TA_data.version = 3
     end
 
+    --------------------------------------------------
+    -- Traincontroller script                       --
+    --------------------------------------------------
+    if global.TC_data.version == 1 then
+      log("Updating Traincontroller from version 1 to version 2.")
+      if LSlib.utils.table.isEmpty(global.TC_data["trainControllers"]) and global.TC_data["nextTrainControllerIterate"] then
+        global.TC_data["nextTrainControllerIterate"] = nil
+        Traincontroller.Builder:deactivateOnTick()
+      end
+      global.TC_data.version = 2
+    end
+
   end
 end
