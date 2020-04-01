@@ -90,7 +90,7 @@ function Trainassembly:saveNewStructure(machineEntity, machineRenderID)
   global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] =
   {
     ["entity"           ] = machineEntity,           -- the entity
-    ["renderID"         ] = machineRenderID,         -- the render of the building
+    ["renderID"         ] = machineRenderID,         -- the renders of the building
     ["direction"        ] = machineEntity.direction, -- the direction its facing
     ["trainColor"       ] = LSlib.utils.table.convertRGBA{r = 234, g = 17, b = 0}, -- the color of the train entity when it will be created
     ["createdEntity"    ] = nil,                     -- the created train entity from this building
@@ -631,7 +631,7 @@ end
 
 
 
-function Trainassembly:getMachineRenderID(machineEntity)
+function Trainassembly:getMachineRenderIDs(machineEntity)
   -- STEP 1: If the machineEntity isn't valid, its position isn't valid either
   if not (machineEntity and machineEntity.valid) then
     return nil
@@ -981,15 +981,21 @@ function Trainassembly:onBuildEntity(createdEntity, playerIndex)
         railEntity.minable      = false -- entity can't be mined
       end
 
-      local machineRenderID = rendering.draw_animation{
-        animation = machineEntity.name .. "-" .. LSlib.utils.directions.toString(machineEntity.direction),
+      local machineRenderID = {}
+      for animationLayer,renderLayer in pairs{
+        ["base"] = 124,
         -- @Bilka said:
         -- "item-in-inserter-hand" = 134
         -- "higher-object-above"   = 132
-        render_layer = 133,
-        target = machineEntity,
-        surface = machineEntity.surface,
-      }
+        ["overlay"] = 133
+      } do
+        machineRenderID[animationLayer] = rendering.draw_animation{
+          animation = machineEntity.name .. "-" .. LSlib.utils.directions.toString(machineEntity.direction) .. "-" .. animationLayer,
+          render_layer = renderLayer,
+          target = machineEntity,
+          surface = machineEntity.surface,
+        }
+      end
 
       -- STEP 4: delete the locomotive that was build.
       createdEntity.destroy()
@@ -1095,8 +1101,11 @@ function Trainassembly:onPlayerRotatedEntity(rotatedEntity)
     local newDirection = LSlib.utils.directions.oposite(self:getMachineDirection(rotatedEntity))
 
     -- STEP 2: set the new rotated direction
+    local renderIDs = self:getMachineRenderIDs(rotatedEntity)
     rotatedEntity.direction = newDirection
-    rendering.set_animation(self:getMachineRenderID(rotatedEntity), rotatedEntity.name .. "-" .. LSlib.utils.directions.toString(newDirection))
+    for _,animationLayer in pairs{"base", "overlay"} do
+      rendering.set_animation(renderIDs[animationLayer], rotatedEntity.name .. "-" .. LSlib.utils.directions.toString(newDirection) .. "-" .. animationLayer)
+    end
 
     -- STEP 3: save the state to the data structure
     self:updateMachineDirection(rotatedEntity)

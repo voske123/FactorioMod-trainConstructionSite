@@ -74,7 +74,7 @@ trainassembly.animation =
     layers =
     {
       {
-        filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-N-base.png",
+        --filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-N-base.png",
         priority = "high",
         width = 512,
         height = 512,
@@ -91,7 +91,7 @@ trainassembly.animation =
     layers =
     {
       {
-        filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-E-base.png",
+        --filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-E-base.png",
         priority = "high",
         width = 512,
         height = 512,
@@ -108,7 +108,7 @@ trainassembly.animation =
     layers =
     {
       {
-        filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-S-base.png",
+        --filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-S-base.png",
         priority = "high",
         width = 512,
         height = 512,
@@ -125,7 +125,7 @@ trainassembly.animation =
     layers =
     {
       {
-        filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-W-base.png",
+        --filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-W-base.png",
         priority = "high",
         width = 512,
         height = 512,
@@ -139,10 +139,6 @@ trainassembly.animation =
   },
 }
 
-data:extend{
-  util.table.deepcopy(trainassembly),
-}
-
 -- split the rendering from the machine
 for orientation,orientation_string in pairs{
   ["north"] = "N",
@@ -150,15 +146,30 @@ for orientation,orientation_string in pairs{
   ["south"] = "S",
   ["west" ] = "W",
 } do
-  local animation =
-  {
-    type = "animation",
-    name = trainassembly.name .. "-" .. orientation,
-    layers = util.table.deepcopy(trainassembly.animation[orientation].layers),
+  for _,animation_layer in pairs{ "base", "overlay" } do
+    local animation =
+    {
+      type = "animation",
+      name = trainassembly.name .. "-" .. orientation .. "-" .. animation_layer,
+      layers = util.table.deepcopy(trainassembly.animation[orientation].layers),
+    }
+    animation.layers[1].filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-"..orientation_string.."-"..animation_layer..".png"
+    data:extend{animation}
+  end
+  trainassembly.animation[orientation].layers = {
+    {
+      filename = "__core__/graphics/empty.png",
+      priority = "very-low",
+      width = 1,
+      height = 1,
+      frame_count = 1,
+    }
   }
-  animation.layers[1].filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-"..orientation_string.."-overlay.png"
-  data:extend{animation}
 end
+
+data:extend{
+  util.table.deepcopy(trainassembly),
+}
 
 -- now create the selector
 trainassembly.name = trainassembly.name .. "-recipe-selector"

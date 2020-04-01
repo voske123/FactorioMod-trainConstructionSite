@@ -1,3 +1,4 @@
+require("__LSlib__/LSlib")
 
 -- To make sure everything is inline with the technology tree when the mod is added.
 -- This is for when the mod is added into an existing game or when the mod is updated.
@@ -47,6 +48,31 @@ return function(configurationData)
         ["artillery-wagon"] = true,
       }
       global.TA_data.version = 3
+    end
+
+    if global.TA_data.version == 3 then
+      log("Updating Trainassembly from version 3 to version 4.")
+      for machineSurface,machineSurfaceData in pairs(global.TA_data and global.TA_data["trainAssemblers"] or {}) do
+        for machinePositionY, machinePositionData in pairs(machineSurfaceData) do
+          for machinePositionX, machineData in pairs(machinePositionData) do
+            local renderIDs = {}
+            local machineEntity = machineData.entity
+            for animationLayer,renderLayer in pairs{
+              ["base"] = 124,
+              ["overlay"] = 133
+            } do
+              renderIDs[animationLayer] = rendering.draw_animation{
+                animation = machineEntity.name .. "-" .. LSlib.utils.directions.toString(machineEntity.direction) .. "-" .. animationLayer,
+                render_layer = renderLayer,
+                target = machineEntity,
+                surface = machineEntity.surface,
+              }
+            end
+            global.TA_data["trainAssemblers"][machineSurface][machinePositionY][machinePositionX]["renderID"] = renderIDs
+          end
+        end
+      end
+      global.TA_data.version = 4
     end
 
     --------------------------------------------------
