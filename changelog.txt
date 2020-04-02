@@ -3,6 +3,7 @@ Version: 0.2.0
 Date: 31. 03. 2020
   Features:
     - Added graphics designed by YuokiTani
+    - Added support for modded trains from "VehicleWagon2"
   Changes:
     - Updated the manual with new screenshots
     - Updated thumbnail with new screenshot

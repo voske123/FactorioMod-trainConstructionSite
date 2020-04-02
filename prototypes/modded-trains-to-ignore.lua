@@ -51,4 +51,14 @@ if mods["MultipleUnitTrainControl"] then
   end
 end
 
+if mods["VehicleWagon2"] then
+  for _,cargowagon in pairs{
+    "loaded-vehicle-wagon-tank",
+    "loaded-vehicle-wagon-car",
+    "loaded-vehicle-wagon-tarp",
+  } do
+    trainsToIgnore["cargo-wagon"][cargowagon] = true
+  end
+end
+
 return trainsToIgnore
