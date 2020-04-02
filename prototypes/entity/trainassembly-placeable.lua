@@ -72,47 +72,46 @@ trainassembly.pictures =
 {
   layers =
   {
+    -- north and south
     {
       width = 512,
       height = 512,
       scale = 0.5,
       direction_count = 4,
-      --allow_low_quality_rotation = true,
       frame_count = 1,
       line_length = 1,
       lines_per_file = 1,
       scale = 0.5,
-      shift = util.by_pixel(32, -16),
+      shift = util.by_pixel(31.5, -18),
       filenames =
       {
         "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-N.png",
-        "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-E.png",
+        "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-empty.png",
         "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-S.png",
+        "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-empty.png",
+      },
+      hr_version = nil,
+    },
+    -- east and west
+    {
+      width = 512,
+      height = 512,
+      scale = 0.5,
+      direction_count = 4,
+      frame_count = 1,
+      line_length = 1,
+      lines_per_file = 1,
+      scale = 0.5,
+      shift = util.by_pixel(30, -28),
+      filenames =
+      {
+        "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-empty.png",
+        "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-E.png",
+        "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-empty.png",
         "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-W.png",
       },
       hr_version = nil,
     },
-    --[[{
-      width = 82,
-      height = 82,
-      direction_count = 4,
-      --allow_low_quality_rotation = true,
-      frame_count = 1,
-      line_length = 4,
-      lines_per_file = 1,
-      filename = "__trainConstructionSite__/graphics/placeholders/directions.png",
-      --[[
-      filenames =
-      {
-        "__trainConstructionSite__/graphics/placeholders/direction_north.png",
-        "__trainConstructionSite__/graphics/placeholders/direction_east.png",
-        "__trainConstructionSite__/graphics/placeholders/direction_south.png",
-        "__trainConstructionSite__/graphics/placeholders/direction_west.png",
-      },
-      ]]--[[
-      hr_version = nil,
-    },
-    ]]--
   },
 }
 
