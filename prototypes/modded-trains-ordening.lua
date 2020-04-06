@@ -156,7 +156,7 @@ if mods["FactorioExtended-Plus-Transport"] then
       ["cargo-wagon-mk3"] = "b[FactorioExtended-Plus]-b[mk3]-b[cargo-wagon]",
     },
     ["fluid-wagon"] = {
-      ["fluid-wagon-mk2"] = "b[FactorioExtended-Plus]-a[mk2]-b[fluid-wagon]",
+      ["fluid-wagon-mk2"] = "b[FactorioExtended-Plus]-a[mk2]-c[fluid-wagon]",
       ["fluid-wagon-mk3"] = "b[FactorioExtended-Plus]-b[mk3]-c[fluid-wagon]",
     },
   }
@@ -173,8 +173,8 @@ end
 if mods["Electronic_Locomotives"] then
   createOrdering{
     ["locomotive"] = {
-      ["Senpais-Electric-Train"      ] = "z[Senpais_Electronic_Locomotives]-a[regular]-a",
-      ["Senpais-Electric-Train-Heavy"] = "z[Senpais_Electronic_Locomotives]-a[regular]-b",
+      ["Electronic-Standard-Locomotive" ] = "z[Senpais_Electronic_Locomotives]-a[regular]-a",
+      ["Electronic-Cargo-Locomotive"    ] = "z[Senpais_Electronic_Locomotives]-a[regular]-b",
     },
   }
 end
@@ -182,9 +182,9 @@ end
 if mods["Electronic_Battle_Locomotives"] then
   createOrdering{
     ["locomotive"] = {
-      ["Elec-Battle-Loco-1"] = "z[Senpais_Electronic_Locomotives]-b[battle]-a",
-      ["Elec-Battle-Loco-2"] = "z[Senpais_Electronic_Locomotives]-b[battle]-b",
-      ["Elec-Battle-Loco-3"] = "z[Senpais_Electronic_Locomotives]-b[battle]-c",
+      ["Electronic-Battle-Locomotive-1"] = "z[Senpais_Electronic_Locomotives]-b[battle]-a",
+      ["Electronic-Battle-Locomotive-2"] = "z[Senpais_Electronic_Locomotives]-b[battle]-b",
+      ["Electronic-Battle-Locomotive-3"] = "z[Senpais_Electronic_Locomotives]-b[battle]-c",
     },
   }
 end

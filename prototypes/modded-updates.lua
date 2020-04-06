@@ -4,7 +4,7 @@ local otherVehicleGroup = "manual-buildable-vehicles"
 
 if mods["concreted-rails"] then
   LSlib.item.setSubgroup("rail-planner", "concrete-rail", LSlib.item.getSubgroup("rail-planner", "rail"))
-  LSlib.item.setOrderstring("rail-planner", "concrete-rail", "a[rai]-b[concreted-rails]")
+  LSlib.item.setOrderstring("rail-planner", "concrete-rail", "a[rail]-b[concreted-rails]")
 end
 
 if mods["FuelTrainStop"] then
@@ -36,8 +36,8 @@ end
 if mods["RailPowerSystem"] then
   LSlib.item.setSubgroup("rail-planner", "electric-rail", LSlib.item.getSubgroup("rail-planner", "rail"))
   LSlib.item.setSubgroup("item", "prototype-connector"  , LSlib.item.getSubgroup("rail-planner", "rail"))
-  LSlib.item.setOrderstring("rail-planner", "electric-rail", "a[rai]-c[RailPowerSystem]-a[rail]")
-  LSlib.item.setOrderstring("item", "prototype-connector"  , "a[rai]-c[RailPowerSystem]-b[pole]")
+  LSlib.item.setOrderstring("rail-planner", "electric-rail", "a[rail]-c[RailPowerSystem]-a[rail]")
+  LSlib.item.setOrderstring("item", "prototype-connector"  , "a[rail]-c[RailPowerSystem]-b[pole]")
 end
 
 if mods["assembler-pipe-passthrough"] then
@@ -56,4 +56,17 @@ end
 if mods["bobwarfare"] then
   LSlib.item.setSubgroup("item-with-entity-data", "bob-tank-2", otherVehicleGroup)
   LSlib.item.setSubgroup("item-with-entity-data", "bob-tank-3", otherVehicleGroup)
+end
+
+if mods["FactorioExtended-Plus-Transport"] then
+  LSlib.item.setSubgroup("item-with-entity-data", "car-mk2", otherVehicleGroup)
+  LSlib.item.setSubgroup("item-with-entity-data", "car-mk3", otherVehicleGroup)
+  LSlib.item.setSubgroup("item-with-entity-data", "tank-mk2", otherVehicleGroup)
+  LSlib.item.setSubgroup("item-with-entity-data", "tank-mk3", otherVehicleGroup)
+  LSlib.item.setOrderstring("item-with-entity-data", "car", "b-a")
+  LSlib.item.setOrderstring("item-with-entity-data", "car-mk2", "b-b")
+  LSlib.item.setOrderstring("item-with-entity-data", "car-mk3", "b-c")
+  LSlib.item.setOrderstring("item-with-entity-data", "tank", "b-d")
+  LSlib.item.setOrderstring("item-with-entity-data", "tank-mk2", "b-e")
+  LSlib.item.setOrderstring("item-with-entity-data", "tank-mk3", "b-f")
 end

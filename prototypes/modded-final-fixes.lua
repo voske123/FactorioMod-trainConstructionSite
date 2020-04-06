@@ -9,15 +9,17 @@ if mods["Realistic_Electric_Trains"] then
 end
 
 if mods["Electronic_Locomotives"] then
-  trainConstructionSite.remote.addElectricTrain("locomotive", "Senpais-Electric-Train"      )
-  trainConstructionSite.remote.addElectricTrain("locomotive", "Senpais-Electric-Train-Heavy")
+  trainConstructionSite.remote.addElectricTrain("locomotive", "Electronic-Standard-Locomotive")
+  trainConstructionSite.remote.addElectricTrain("locomotive", "Electronic-Cargo-Locomotive"   )
 end
 
 if mods["Electronic_Battle_Locomotives"] then
-  trainConstructionSite.remote.addElectricTrain("locomotive", "Elec-Battle-Loco-1")
-  trainConstructionSite.remote.addElectricTrain("locomotive", "Elec-Battle-Loco-2")
-  trainConstructionSite.remote.addElectricTrain("locomotive", "Elec-Battle-Loco-3")
+  trainConstructionSite.remote.addElectricTrain("locomotive", "Electronic-Battle-Locomotive-1")
+  trainConstructionSite.remote.addElectricTrain("locomotive", "Electronic-Battle-Locomotive-2")
+  trainConstructionSite.remote.addElectricTrain("locomotive", "Electronic-Battle-Locomotive-3")
 end
+
+
 
 for trainType,trainData in pairs(trainConstructionSite.remoteData.electricTrains or {}) do
   for trainName,_ in pairs(trainData or {}) do
