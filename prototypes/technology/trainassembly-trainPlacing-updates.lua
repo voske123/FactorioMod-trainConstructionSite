@@ -13,6 +13,7 @@ local recipesToIgnore = {
 -- for mod compatibility we have to add these fluid recipe unlocks to the tech tree
 local trainsToIgnore = require("prototypes/modded-trains-to-ignore")
 local itemOverride   = require("prototypes/modded-trains-item-override")
+local recipeOverride   = require("prototypes/modded-trains-recipe-override")
 for _, trainType in pairs({
   "locomotive",
   "cargo-wagon",
@@ -25,7 +26,7 @@ for _, trainType in pairs({
     if (not trainsToIgnore[trainType][trainEntity.name]) and trainEntity.minable and trainEntity.minable.result then
 
       local itemName   = itemOverride[trainType][trainEntity.name] or trainEntity.minable.result
-      local recipeName = itemName -- assume the recipeName is the same as the item (for now)
+      local recipeName = recipeOverride[trainType][itemName] or itemName -- assume the recipeName is the same as the item (otherwise we need to override it manualy)
 
       if not recipesToIgnore[recipeName] then
         local fluidRecipeName = trainEntity.name .. "-fluid[" .. trainType .. "]"
@@ -84,8 +85,10 @@ for _, trainType in pairs({
         end
 
         -- if we didn't find it, we enable the recipe from the start
-        if not technologyUnlockAdded then
-          log(fluidRecipeName)
+        if technologyUnlockAdded then
+          log(string.format("Creating train parts: %s (%s)", trainEntity.name, trainType))
+        else
+          log(string.format("Error creating train parts: %s (%s)", trainEntity.name, trainType))
           data.raw.recipe[fluidRecipeName].normal.enabled = true
         end
 

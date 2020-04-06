@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.2
+Date: 02. 04. 2020
+  Bugfixes:
+    - Fixed recipes unlocked from the start when recipe name is not the same as the item name
+---------------------------------------------------------------------------------------------------
 Version: 0.2.1
 Date: 02. 04. 2020
   Bugfixes:
