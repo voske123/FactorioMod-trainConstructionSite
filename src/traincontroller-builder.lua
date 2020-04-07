@@ -447,20 +447,22 @@ function Traincontroller.Builder:onTick(event)
   --game.print(game.tick)
 
   -- Extract the controller that needs to be updated
-  local controller = global.TC_data["nextTrainControllerIterate"]
+  local controller   = util.table.deepcopy(global.TC_data["nextTrainControllerIterate"])
   local surfaceIndex = controller.surfaceIndex
   local position     = controller.position
 
   -- extract the next controller
   local nextController = util.table.deepcopy(
-    global.TC_data["trainControllers"][surfaceIndex][position.y][position.x]["nextController"]
+    global.TC_data["trainControllers"][controller.surfaceIndex][controller.position.y][controller.position.x]["nextController"]
   )
 
   -- Update the controller
   self:updateController(surfaceIndex, position)
 
   -- Increment the nextController
-  global.TC_data["nextTrainControllerIterate"] = nextController
+  if LSlib.utils.table.areEqual(controller, global.TC_data["nextTrainControllerIterate"]) then
+    global.TC_data["nextTrainControllerIterate"] = nextController
+  end
 end
 
 

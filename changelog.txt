@@ -5,6 +5,7 @@ Date: ???
     - Fixed recipes unlocked from the start when recipe name is not the same as the item name
     - Fixed crash related to picker dollies moving the trainbuilder, which is not intended
     - Fixed that the Trainbuilder would show up in the bonus gui for train breaking force
+    - Fixed crash related to replacing an invalid train controller after changing the recipe
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.1
 Date: 02. 04. 2020

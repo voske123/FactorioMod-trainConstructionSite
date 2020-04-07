@@ -18,8 +18,6 @@ trainassembly.place_result          = "trainassembly-placeable" -- the name of t
 
 --trainassembly.stack_size = 10
 
-
-
 data:extend{
   trainassembly,
 }
