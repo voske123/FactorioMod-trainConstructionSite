@@ -5,6 +5,7 @@ require "src.help"
 require "src.traindepot"
 require "src.trainassembly"
 require "src.traincontroller"
+require "src.mod-compatibility"
 
 local onConfigChanges = require("src.mod-config")
 script.on_configuration_changed(onConfigChanges)
@@ -14,17 +15,19 @@ script.on_configuration_changed(onConfigChanges)
 script.on_init(function(event)
   -- This is called once when a new save game is created or once
   -- when a save file is loaded that previously didn't contain the mod.
-  Debug          :onInit()
-  Help           :onInit()
-  Traindepot     :onInit()
-  Trainassembly  :onInit()
-  Traincontroller:onInit()
+  Debug           :onInit()
+  Help            :onInit()
+  Traindepot      :onInit()
+  Trainassembly   :onInit()
+  Traincontroller :onInit()
+  ModCompatibility:onInit()
 end)
 
 
 
 script.on_load(function()
-  Traincontroller:onLoad()
+  Traincontroller :onLoad()
+  ModCompatibility:onLoad()
 end)
 
 
