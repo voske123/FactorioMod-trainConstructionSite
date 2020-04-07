@@ -15,11 +15,13 @@ trainassembly.icon_size = util.table.deepcopy(data.raw["item"][trainassembly.min
 trainassembly.icon_mipmaps = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].icon_mipmaps)
 
 -- remove the placeable_off_grid flag
+trainassembly.flags = trainassembly.flags or {}
 for flagIndex, flagName in pairs(trainassembly.flags) do
   if flagName == "placeable-off-grid" then
     trainassembly.flags[flagIndex] = nil
   end
 end
+table.insert(trainassembly.flags, "hidden")
 
 -- selection box
 trainassembly.selection_box = {{-3, -3}, {3, 3}} -- when train is facing north
