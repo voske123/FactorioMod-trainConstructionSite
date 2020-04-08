@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.2
-Date: ???
+Date: 08. 04. 2020
   Bugfixes:
     - Fixed recipes unlocked from the start when recipe name is not the same as the item name
     - Fixed crash related to picker dollies moving the trainbuilder, which is not intended
