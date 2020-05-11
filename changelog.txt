@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.3
+Date: 11. 05. 2020
+  Features:
+    - Added depot graphics designed by YuokiTani
+  Bugfixes:
+    - Fixed behaviour did not register to script_raised_revive event
+---------------------------------------------------------------------------------------------------
 Version: 0.2.2
 Date: 08. 04. 2020
   Bugfixes:
@@ -15,7 +22,7 @@ Date: 02. 04. 2020
 Version: 0.2.0
 Date: 02. 04. 2020
   Features:
-    - Added graphics designed by YuokiTani
+    - Added controller and builder graphics designed by YuokiTani
     - Added support for modded trains from "VehicleWagon2"
   Changes:
     - Updated the manual with new screenshots

@@ -53,8 +53,8 @@ data:extend{
     type     = "sprite",
     name     = traindepotName.."-sprite1",
     filename = "__trainConstructionSite__/graphics/screenshots/traindepot-creation.png",
-    width    = 1645,
-    height   = 600,
+    width    = 1895,
+    height   = 878,
     scale    = .5,
     --shift    = {0, 32},
     flags    = {

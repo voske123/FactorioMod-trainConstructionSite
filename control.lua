@@ -58,7 +58,8 @@ end)
 
 script.on_event({defines.events.on_built_entity      ,
                  defines.events.on_robot_built_entity,
-                 defines.events.script_raised_built  }, function(event)
+                 defines.events.script_raised_built  ,
+                 defines.events.script_raised_revive }, function(event)
   -- Called when an entity gets placed.
   local createdEntity = event.created_entity or event.entity
   if createdEntity and createdEntity.valid then

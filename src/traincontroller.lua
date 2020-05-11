@@ -191,7 +191,6 @@ function Traincontroller:saveNewStructure(controllerEntity, trainBuilderIndex)
   --         to this stop. To get this behaviour, we connect it to the logistics
   --         network and make sure it has a disabled condition
   self:setTrainstopControlBehaviour(controllerEntity)
-
   --game.print(serpent.block(global.TC_data["trainControllers"]))
 
   -- STEP 3c:Keep track how many controllers are connected to a depot
