@@ -146,14 +146,14 @@ for orientation,orientation_string in pairs{
   ["south"] = "S",
   ["west" ] = "W",
 } do
-  for _,animation_layer in pairs{ "base", "overlay" } do
+  for _,animation_layer in pairs{ "-base", "-overlay", "" } do
     local animation =
     {
       type = "animation",
-      name = trainassembly.name .. "-" .. orientation .. "-" .. animation_layer,
+      name = trainassembly.name .. "-" .. orientation .. animation_layer,
       layers = util.table.deepcopy(trainassembly.animation[orientation].layers),
     }
-    animation.layers[1].filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-"..orientation_string.."-"..animation_layer..".png"
+    animation.layers[1].filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-"..orientation_string..animation_layer..".png"
     data:extend{animation}
   end
   trainassembly.animation[orientation].layers = {

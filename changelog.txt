@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.4
+Date: 26. 05. 2020
+  Bugfixes:
+    - Fixed crash related to base game update v0.18.27
+    - Fixed crash related to destroying construction sites
+---------------------------------------------------------------------------------------------------
 Version: 0.2.3
 Date: 11. 05. 2020
   Features:

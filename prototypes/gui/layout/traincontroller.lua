@@ -102,7 +102,7 @@ LSlib.gui.layout.addLabel(guiLayout, stationIDflow, "statistics-station-id-value
   ignored_by_interaction = true,
 })
 LSlib.gui.layout.addSpriteButton(guiLayout, stationIDflow, "statistics-station-id-edit", {
-  sprite = "utility/rename_icon_small",
+  sprite = "utility/rename_icon_small_white",
   style = "mini_button"               ,
 })
 

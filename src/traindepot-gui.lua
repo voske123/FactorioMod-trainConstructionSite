@@ -18,7 +18,7 @@ end
 -- Initiation of the global data
 function Traindepot.Gui:initGlobalData()
   local gui = {
-    ["version"      ] = 1, -- version of the global data
+    ["version"      ] = 2, -- version of the global data
     ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
     ["clickHandler" ] = self:initClickHandlerData(),
     ["openedEntity" ] = {} -- opened entity for each player
