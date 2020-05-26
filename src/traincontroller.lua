@@ -38,7 +38,7 @@ end
 -- Initiation of the global data
 function Traincontroller:initGlobalData()
   local TC_data = {
-    ["version"                   ] = 3, -- version of the global data
+    ["version"                   ] = 2, -- version of the global data
     ["prototypeData"             ] = self:initPrototypeData(), -- data storing info about the prototypes
 
     ["trainControllerForces"     ] = {},  -- keep track of the created forces

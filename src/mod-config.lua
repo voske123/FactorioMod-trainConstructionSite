@@ -90,17 +90,19 @@ return function(configurationData)
       global.TC_data.version = 2
     end
 
-    if global.TC_data.version == 2 then
-      log("Updating Traincontroller from version 2 to version 3.")
+    --------------------------------------------------
+    -- Traincontroller.Gui script                   --
+    --------------------------------------------------
+    if global.TC_data.Gui.version == 2 then
+      log("Updating Traincontroller from version 1 to version 2.")
       global.TC_data.Gui["prototypeData"]["trainControllerGui"] = trainControllerGui
       global.TC_data.version = 3
     end
 
     --------------------------------------------------
-    -- Traindepot script                            --
+    -- Traindepot.Gui script                        --
     --------------------------------------------------
-
-    if global.TD_data.version == 1 then
+    if global.TD_data.Gui.version == 1 then
       log("Updating Traindepot from version 1 to version 2.")
       global.TD_data.Gui["prototypeData"]["trainDepotGui"] = trainDepotGui
       global.TD_data.version = 2    
