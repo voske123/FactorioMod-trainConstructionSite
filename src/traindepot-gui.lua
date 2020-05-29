@@ -18,9 +18,8 @@ end
 -- Initiation of the global data
 function Traindepot.Gui:initGlobalData()
   local gui = {
-    ["version"      ] = 2, -- version of the global data
+    ["version"      ] = 3, -- version of the global data
     ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
-    ["clickHandler" ] = self:initClickHandlerData(),
     ["openedEntity" ] = {} -- opened entity for each player
   }
 
@@ -70,7 +69,7 @@ end
 
 
 
-function Traindepot.Gui:initClickHandlerData()
+function Traindepot.Gui:initClickHandlers()
   local clickHandlers = {}
 
   ------------------------------------------------------------------------------
@@ -208,6 +207,7 @@ function Traindepot.Gui:initClickHandlerData()
   ------------------------------------------------------------------------------
   return clickHandlers
 end
+Traindepot.Gui.clickHandlers = Traindepot.Gui:initClickHandlers()
 
 
 
@@ -242,7 +242,7 @@ end
 
 
 function Traindepot.Gui:getClickHandler(guiElementName)
-  return global.TD_data.Gui["clickHandler"][guiElementName]
+  return Traindepot.Gui.clickHandlers[guiElementName]
 end
 
 

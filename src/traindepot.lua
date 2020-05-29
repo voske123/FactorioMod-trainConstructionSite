@@ -21,7 +21,7 @@ end
 -- Initiation of the global data
 function Traindepot:initGlobalData()
   local TD_data = {
-    ["version"        ] = 1, -- version of the global data
+    ["version"        ] = 2, -- version of the global data
     ["prototypeData"  ] = self:initPrototypeData(), -- data storing info about the prototypes
 
     ["depots"         ] = {},  -- keep track of all depots and there entity data

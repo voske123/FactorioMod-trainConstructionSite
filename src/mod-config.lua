@@ -96,7 +96,21 @@ return function(configurationData)
     if global.TC_data.Gui.version == 1 then
       log("Updating Traincontroller.Gui from version 1 to version 2.")
       global.TC_data.Gui["prototypeData"]["trainControllerGui"] = trainControllerGui
-      global.TC_data.version = 2
+      global.TC_data.Gui.version = 2
+    end
+
+    if global.TC_data.Gui.version == 2 then
+      log("Updating Traincontroller.Gui from version 2 to version 3.")
+      global.TC_data.Gui["clickHandler"] = nil
+      global.TC_data.Gui.version = 3
+    end
+
+    --------------------------------------------------
+    -- Traindepot script                            --
+    --------------------------------------------------
+    if global.TD_data.version == 1 then
+      log("Updating Traindepot from version 1 to version 2.")
+      global.TD_data.version = 2
     end
 
     --------------------------------------------------
@@ -105,8 +119,24 @@ return function(configurationData)
     if global.TD_data.Gui.version == 1 then
       log("Updating Traindepot.Gui from version 1 to version 2.")
       global.TD_data.Gui["prototypeData"]["trainDepotGui"] = trainDepotGui
-      global.TD_data.version = 2    
+      global.TD_data.Gui.version = 2
     end
+
+    if global.TD_data.Gui.version == 2 then
+      log("Updating Traindepot.Gui from version 2 to version 3.")
+      global.TD_data.Gui["clickHandler"] = nil
+      global.TD_data.Gui.version = 3
+    end
+
+    --------------------------------------------------
+    -- Help.Gui script                              --
+    --------------------------------------------------
+    if global.H_data.Gui.version == 1 then
+      log("Updating Help.Gui from version 1 to version 2.")
+      global.H_data.Gui["clickHandler"] = nil
+      global.H_data.Gui.version = 2
+    end
+
   end
-end      
+end
 

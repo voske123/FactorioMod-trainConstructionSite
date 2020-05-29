@@ -18,9 +18,8 @@ end
 -- Initiation of the global data
 function Help.Gui:initGlobalData()
   local gui = {
-    ["version"      ] = 1, -- version of the global data
+    ["version"      ] = 2, -- version of the global data
     ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
-    ["clickHandler" ] = self:initClickHandlerData(),
     ["openedGui"    ] = {} -- opened entity for each player
   }
 
@@ -63,7 +62,7 @@ end
 
 
 
-function Help.Gui:initClickHandlerData()
+function Help.Gui:initClickHandlers()
   local clickHandlers = {}
 
   ------------------------------------------------------------------------------
@@ -171,6 +170,7 @@ function Help.Gui:initClickHandlerData()
   ------------------------------------------------------------------------------
   return clickHandlers
 end
+Help.Gui.clickHandlers = Help.Gui.initClickHandlers()
 
 
 
@@ -211,7 +211,7 @@ end
 
 
 function Help.Gui:getClickHandler(guiElementName)
-  return global.H_data.Gui["clickHandler"][guiElementName]
+  return Help.Gui.clickHandlers[guiElementName]
 end
 
 

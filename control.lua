@@ -94,7 +94,8 @@ end)
 
 
 
-script.on_event(defines.events.on_player_rotated_entity, function(event)
+script.on_event({defines.events.on_player_rotated_entity,
+                 Traincontroller.Gui:getRotateEventID() }, function(event)
   -- Called when player rotates an entity.
   local rotatedEntity = event.entity
   if rotatedEntity and rotatedEntity.valid then

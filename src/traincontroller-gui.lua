@@ -3,6 +3,7 @@ require("__LSlib__/LSlib")
 
 -- Create class
 Traincontroller.Gui = {}
+Traincontroller.Gui.rotateEventID = script.generate_event_name()
 
 --------------------------------------------------------------------------------
 -- Initiation of the class
@@ -19,11 +20,10 @@ end
 -- Initiation of the global data
 function Traincontroller.Gui:initGlobalData()
   local gui = {
-    ["version"       ] = 2, -- version of the global data
+    ["version"       ] = 3, -- version of the global data
     ["surfaceName"   ] = "trainConstructionSite",
     ["prototypeData" ] = self:initPrototypeData(), -- data storing info about the prototypes
-    ["clickHandler"  ] = self:initClickHandlerData(),
-    ["openedEntities"] = {} -- opened entity for each player
+    ["openedEntities"] = {}, -- opened entity for each player
   }
 
   return util.table.deepcopy(gui)
@@ -136,7 +136,7 @@ end
 
 
 
-function Traincontroller.Gui:initClickHandlerData()
+function Traincontroller.Gui:initClickHandlers()
   local clickHandlers = {}
 
   ------------------------------------------------------------------------------
@@ -223,7 +223,7 @@ function Traincontroller.Gui:initClickHandlerData()
     -- rotate the assembler
     local previous_direction = trainAssembler.direction
     trainAssembler.rotate()
-    script.raise_event(defines.events.on_player_rotated_entity, {
+    script.raise_event(Traincontroller.Gui:getRotateEventID(), {
       entity = trainAssembler,
       previous_direction = previous_direction,
       player_index = playerIndex
@@ -534,7 +534,7 @@ function Traincontroller.Gui:initClickHandlerData()
   --------------------
   return clickHandlers
 end
-
+Traincontroller.Gui.clickHandlers = Traincontroller.Gui:initClickHandlers()
 
 
 --------------------------------------------------------------------------------
@@ -590,8 +590,14 @@ end
 
 
 
+function Traincontroller.Gui:getRotateEventID()
+  return Traincontroller.Gui.rotateEventID
+end
+
+
+
 function Traincontroller.Gui:getClickHandler(guiElementName)
-  return global.TC_data.Gui["clickHandler"][guiElementName]
+  return Traincontroller.Gui.clickHandlers[guiElementName]
 end
 
 
