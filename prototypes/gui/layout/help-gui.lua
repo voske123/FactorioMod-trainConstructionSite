@@ -13,7 +13,7 @@ local guiContentName = "trainConstructionSite-help-content"
 --------------------------------------------------------------------------------
 local guiToC_frame = LSlib.gui.layout.addFrame(guiLayout, guiFlow, guiToCName.."-frame", "vertical", {
   caption = "Help menu",
-  style   = "frame_without_footer",
+  style   = "frame_with_even_small_even_paddings",
 })
 local guiToC = LSlib.gui.layout.addScrollPane(guiLayout, guiToC_frame, guiToCName, {
   style = "trainConstructionSite_help_scrollpane",
@@ -68,7 +68,7 @@ LSlib.gui.layout.addButton(guiLayout, guiToC, guiToCName..introductionName, {
 introductionName = guiContentName..introductionName
 local introductionFrame = LSlib.gui.layout.addFrame(guiLayout, guiFlow, introductionName, "vertical", {
   caption = {"gui-help.introduction"},
-  style   = "frame_without_footer",
+  style   = "frame_with_even_small_even_paddings",
 })
 local introduction = LSlib.gui.layout.addScrollPane(guiLayout, introductionFrame, introductionName.."-scrollPane", {
   style = "trainConstructionSite_help_scrollpane",
@@ -135,7 +135,7 @@ LSlib.gui.layout.addButton(guiLayout, guiToC, guiToCName..traindepotName, {
 traindepotName = guiContentName..traindepotName
 local traindepotFrame = LSlib.gui.layout.addFrame(guiLayout, guiFlow, traindepotName, "vertical", {
   caption = {"item-name.traindepot"},
-  style   = "frame_without_footer",
+  style   = "frame_with_even_small_even_paddings",
 })
 local traindepot = LSlib.gui.layout.addScrollPane(guiLayout, traindepotFrame, traindepotName.."-scrollPane", {
  style = "trainConstructionSite_help_scrollpane",
@@ -218,7 +218,7 @@ LSlib.gui.layout.addButton(guiLayout, guiToC, guiToCName..trainbuilderName, {
 trainbuilderName = guiContentName..trainbuilderName
 local trainbuilderFrame = LSlib.gui.layout.addFrame(guiLayout, guiFlow, trainbuilderName, "vertical", {
   caption = {"item-name.trainassembly"},
-  style   = "frame_without_footer",
+  style   = "frame_with_even_small_even_paddings",
 })
 local trainbuilder = LSlib.gui.layout.addScrollPane(guiLayout, trainbuilderFrame, trainbuilderName.."-scrollPane", {
  style = "trainConstructionSite_help_scrollpane",
@@ -316,7 +316,7 @@ LSlib.gui.layout.addButton(guiLayout, guiToC, guiToCName..traincontrollerName, {
 traincontrollerName = guiContentName..traincontrollerName
 local traincontrollerFrame = LSlib.gui.layout.addFrame(guiLayout, guiFlow, traincontrollerName, "vertical", {
   caption = {"item-name.traincontroller", {"item-name.trainassembly"}},
-  style   = "frame_without_footer",
+  style   = "frame_with_even_small_even_paddings",
 })
 local traincontroller = LSlib.gui.layout.addScrollPane(guiLayout, traincontrollerFrame, traincontrollerName.."-scrollPane", {
  style = "trainConstructionSite_help_scrollpane",
