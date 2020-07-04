@@ -1,6 +1,6 @@
 {
   "name": "trainConstructionSite",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "factorio_version": "0.18",
   "title": "Train construction site",
   "author": "voske_123 & lovely_santa",
@@ -8,8 +8,9 @@
   "description": "A nice, automated way of creating trains",
   "dependencies": [
         "base >= 0.18.33",
-        "LSlib >= 2020.5.26",
+        "LSlib >= 2020.7.4",
 
-        "? FARL"
+        "? FARL",
+        "? angelsindustries"
   ]
 }

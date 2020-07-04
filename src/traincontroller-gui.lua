@@ -20,7 +20,7 @@ end
 -- Initiation of the global data
 function Traincontroller.Gui:initGlobalData()
   local gui = {
-    ["version"       ] = 3, -- version of the global data
+    ["version"       ] = 4, -- version of the global data
     ["surfaceName"   ] = "trainConstructionSite",
     ["prototypeData" ] = self:initPrototypeData(), -- data storing info about the prototypes
     ["openedEntities"] = {}, -- opened entity for each player

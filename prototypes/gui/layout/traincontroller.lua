@@ -70,7 +70,7 @@ LSlib.gui.layout.addLabel(guiLayout, guiSelectedEntryFlow, "selected-depot-name"
 })
 LSlib.gui.layout.addSpriteButton(guiLayout, guiSelectedEntryFlow, "selected-depot-enter", {
   sprite = "utility/enter",
-  style = "slot_button"   ,
+  style = "tool_button"   ,
 })
 
 LSlib.gui.layout.addListbox(guiLayout, guiTabContent2, "selected-depot-list", {
@@ -102,8 +102,8 @@ LSlib.gui.layout.addLabel(guiLayout, stationIDflow, "statistics-station-id-value
   ignored_by_interaction = true,
 })
 LSlib.gui.layout.addSpriteButton(guiLayout, stationIDflow, "statistics-station-id-edit", {
-  sprite = "utility/rename_icon_small_white",
-  style = "mini_button"               ,
+  sprite = "utility/rename_icon_small_black",
+  style = "mini_button",
 })
 
 -- depot requests

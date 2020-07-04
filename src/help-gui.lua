@@ -18,7 +18,7 @@ end
 -- Initiation of the global data
 function Help.Gui:initGlobalData()
   local gui = {
-    ["version"      ] = 2, -- version of the global data
+    ["version"      ] = 3, -- version of the global data
     ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
     ["openedGui"    ] = {} -- opened entity for each player
   }

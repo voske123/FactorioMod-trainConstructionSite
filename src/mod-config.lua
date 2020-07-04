@@ -4,6 +4,7 @@ require("__LSlib__/LSlib")
 -- This is for when the mod is added into an existing game or when the mod is updated.
 local trainControllerGui = require("prototypes.gui.layout.traincontroller")
 local trainDepotGui = require("prototypes.gui.layout.traindepot")
+local helpGui = require("prototypes.gui.layout.help-gui")
 
 return function(configurationData)
   local modChanges = configurationData.mod_changes["trainConstructionSite"]
@@ -105,6 +106,12 @@ return function(configurationData)
       global.TC_data.Gui.version = 3
     end
 
+    if global.TC_data.Gui.version == 3 then
+      log("Updating Traincontroller.Gui from version 3 to version 4.")
+      global.TC_data.Gui["prototypeData"]["trainControllerGui"] = trainControllerGui
+      global.TC_data.Gui.version = 4
+    end
+
     --------------------------------------------------
     -- Traindepot script                            --
     --------------------------------------------------
@@ -128,6 +135,12 @@ return function(configurationData)
       global.TD_data.Gui.version = 3
     end
 
+    if global.TD_data.Gui.version == 3 then
+      log("Updating Traindepot.Gui from version 3 to version 4.")
+      global.TD_data.Gui["prototypeData"]["trainDepotGui"] = trainDepotGui
+      global.TD_data.Gui.version = 4
+    end
+
     --------------------------------------------------
     -- Help.Gui script                              --
     --------------------------------------------------
@@ -135,6 +148,12 @@ return function(configurationData)
       log("Updating Help.Gui from version 1 to version 2.")
       global.H_data.Gui["clickHandler"] = nil
       global.H_data.Gui.version = 2
+    end
+
+    if global.H_data.Gui.version == 2 then
+      log("Updating Help.Gui from version 2 to version 3.")
+      global.H_data.Gui["prototypeData"]["helpGui"] = helpGui
+      global.H_data.Gui.version = 3
     end
 
   end

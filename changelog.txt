@@ -1,4 +1,20 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.7
+Date: 04. 07. 2020
+  Features:
+    - Added support for modded trains from "Electronic_Angels_Locomotives"
+    - Added support for extra modded train tiers from "angelsaddons-petrotrain"
+    - Added support for extra modded train tiers from "angelsaddons-smeltingtrain"
+    - Added support for modded trains from "angelsaddons-crawlertrain"
+    - Added support for modded fuel from "angelspetrochem"
+    - Added support for modded fuel from "angelsbioprocessing"
+  Changes:
+    - Updated some sprites in the train controller gui
+    - Updated some sprites in the train depot gui
+  Bugfixes:
+    - Fixed guis still crashing in existing games (due to base game update v0.18.33)
+    - Fixed angels industries moved the vanilla train parts to a different tab
+---------------------------------------------------------------------------------------------------
 Version: 0.2.6
 Date: 27. 06. 2020
   Bugfixes:

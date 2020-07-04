@@ -32,27 +32,118 @@ createOrdering{ -- base game
 }
 
 if mods["angelsaddons-petrotrain"] then
+  local electricVersion = mods["Electronic_Angels_Locomotives"] and true or false
   createOrdering{
     ["locomotive"] = {
-      ["petro-locomotive-1"] = "y[angel]-b[petro]",
+      ["petro-locomotive-1"  ] = "y[angel]-b[petro]-a-aa",
+      ["petro-locomotive-1-2"] = "y[angel]-b[petro]-a-ab",
+      ["petro-locomotive-1-3"] = "y[angel]-b[petro]-a-ac",
+      ["petro-locomotive-1-4"] = "y[angel]-b[petro]-a-ad",
+      ["petro-locomotive-1-5"] = "y[angel]-b[petro]-a-ae",
+
+      ["electronic-petro-locomotive-1"  ] = electricVersion and "y[angel]-b[petro]-b-aa" or nil,
+      ["electronic-petro-locomotive-1-2"] = electricVersion and "y[angel]-b[petro]-b-ab" or nil,
+      ["electronic-petro-locomotive-1-3"] = electricVersion and "y[angel]-b[petro]-b-ac" or nil,
+      ["electronic-petro-locomotive-1-4"] = electricVersion and "y[angel]-b[petro]-b-ad" or nil,
+      ["electronic-petro-locomotive-1-5"] = electricVersion and "y[angel]-b[petro]-b-ae" or nil,
     },
 
     ["fluid-wagon"] = {
-      ["petro-tank1"] = "y[angel]-b[petro]",
-      ["petro-tank2"] = "y[angel]-b[petro]",
+      ["petro-tank1"  ] = "y[angel]-b[petro]-c-aa",
+      ["petro-tank1-2"] = "y[angel]-b[petro]-c-ab",
+      ["petro-tank1-3"] = "y[angel]-b[petro]-c-ac",
+      ["petro-tank1-4"] = "y[angel]-b[petro]-c-ad",
+      ["petro-tank1-5"] = "y[angel]-b[petro]-c-ae",
+
+      ["petro-tank2"  ] = "y[angel]-b[petro]-c-ba",
+      ["petro-tank2-2"] = "y[angel]-b[petro]-c-bb",
+      ["petro-tank2-3"] = "y[angel]-b[petro]-c-bc",
+      ["petro-tank2-4"] = "y[angel]-b[petro]-c-bd",
+      ["petro-tank2-5"] = "y[angel]-b[petro]-c-be",
     },
   }
 end
 
 if mods["angelsaddons-smeltingtrain"] then
+  local electricVersion = mods["Electronic_Angels_Locomotives"] and true or false
   createOrdering{
     ["locomotive"] = {
-      ["smelting-locomotive-1"     ] = "y[angel]-a[smelt]",
-      ["smelting-locomotive-tender"] = "y[angel]-a[smelt]",
+      ["smelting-locomotive-1"       ] = "y[angel]-c[smelt]-a-aa",
+      ["smelting-locomotive-1-2"     ] = "y[angel]-c[smelt]-a-ab",
+      ["smelting-locomotive-1-3"     ] = "y[angel]-c[smelt]-a-ac",
+      ["smelting-locomotive-1-4"     ] = "y[angel]-c[smelt]-a-ad",
+      ["smelting-locomotive-1-5"     ] = "y[angel]-c[smelt]-a-ae",
+
+      ["smelting-locomotive-tender"  ] = "y[angel]-c[smelt]-a-ba",
+      ["smelting-locomotive-tender-2"] = "y[angel]-c[smelt]-a-bb",
+      ["smelting-locomotive-tender-3"] = "y[angel]-c[smelt]-a-bc",
+      ["smelting-locomotive-tender-4"] = "y[angel]-c[smelt]-a-bd",
+      ["smelting-locomotive-tender-5"] = "y[angel]-c[smelt]-a-be",
+
+      ["electronic-smelting-locomotive-1"       ] = electricVersion and "y[angel]-c[smelt]-b-aa" or nil,
+      ["electronic-smelting-locomotive-1-2"     ] = electricVersion and "y[angel]-c[smelt]-b-ab" or nil,
+      ["electronic-smelting-locomotive-1-3"     ] = electricVersion and "y[angel]-c[smelt]-b-ac" or nil,
+      ["electronic-smelting-locomotive-1-4"     ] = electricVersion and "y[angel]-c[smelt]-b-ad" or nil,
+      ["electronic-smelting-locomotive-1-5"     ] = electricVersion and "y[angel]-c[smelt]-b-ae" or nil,
+
+      ["electronic-smelting-locomotive-tender"  ] = electricVersion and "y[angel]-c[smelt]-b-ba" or nil,
+      ["electronic-smelting-locomotive-tender-2"] = electricVersion and "y[angel]-c[smelt]-b-bb" or nil,
+      ["electronic-smelting-locomotive-tender-3"] = electricVersion and "y[angel]-c[smelt]-b-bc" or nil,
+      ["electronic-smelting-locomotive-tender-4"] = electricVersion and "y[angel]-c[smelt]-b-bd" or nil,
+      ["electronic-smelting-locomotive-tender-5"] = electricVersion and "y[angel]-c[smelt]-b-be" or nil,
     },
 
     ["cargo-wagon"] = {
-      ["smelting-wagon-1"] = "y[angel]-a[smelt]",
+      ["smelting-wagon-1"  ] = "y[angel]-c[smelt]-c-aa",
+      ["smelting-wagon-1-2"] = "y[angel]-c[smelt]-c-ab",
+      ["smelting-wagon-1-3"] = "y[angel]-c[smelt]-c-ac",
+      ["smelting-wagon-1-4"] = "y[angel]-c[smelt]-c-ad",
+      ["smelting-wagon-1-5"] = "y[angel]-c[smelt]-c-ae",
+    },
+  }
+end
+
+if mods["angelsaddons-crawlertrain"] then
+  local electricVersion = mods["Electronic_Angels_Locomotives"] and true or false
+  createOrdering{
+    ["locomotive"] = {
+      ["crawler-locomotive"      ] = "y[angel]-a[crawler]-a-aa",
+      ["crawler-locomotive-2"    ] = "y[angel]-a[crawler]-a-ab",
+      ["crawler-locomotive-3"    ] = "y[angel]-a[crawler]-a-ac",
+      ["crawler-locomotive-4"    ] = "y[angel]-a[crawler]-a-ad",
+      ["crawler-locomotive-5"    ] = "y[angel]-a[crawler]-a-ae",
+
+      ["crawler-locomotive-wagon"  ] = "y[angel]-a[crawler]-a-ba",
+      ["crawler-locomotive-wagon-2"] = "y[angel]-a[crawler]-a-bb",
+      ["crawler-locomotive-wagon-3"] = "y[angel]-a[crawler]-a-bc",
+      ["crawler-locomotive-wagon-4"] = "y[angel]-a[crawler]-a-bd",
+      ["crawler-locomotive-wagon-5"] = "y[angel]-a[crawler]-a-be",
+
+      ["electronic-crawler-locomotive"      ] = electricVersion and "y[angel]-a[crawler]-b-aa" or nil,
+      ["electronic-crawler-locomotive-2"    ] = electricVersion and "y[angel]-a[crawler]-b-ab" or nil,
+      ["electronic-crawler-locomotive-3"    ] = electricVersion and "y[angel]-a[crawler]-b-ac" or nil,
+      ["electronic-crawler-locomotive-4"    ] = electricVersion and "y[angel]-a[crawler]-b-ad" or nil,
+      ["electronic-crawler-locomotive-5"    ] = electricVersion and "y[angel]-a[crawler]-b-ae" or nil,
+
+      ["electronic-crawler-locomotive-wagon"  ] = electricVersion and "y[angel]-a[crawler]-b-ba" or nil,
+      ["electronic-crawler-locomotive-wagon-2"] = electricVersion and "y[angel]-a[crawler]-b-bb" or nil,
+      ["electronic-crawler-locomotive-wagon-3"] = electricVersion and "y[angel]-a[crawler]-b-bc" or nil,
+      ["electronic-crawler-locomotive-wagon-4"] = electricVersion and "y[angel]-a[crawler]-b-bd" or nil,
+      ["electronic-crawler-locomotive-wagon-5"] = electricVersion and "y[angel]-a[crawler]-b-be" or nil,
+    },
+
+    ["cargo-wagon"] = {
+      ["crawler-wagon"      ] = "y[angel]-a[crawler]-c-aa",
+      ["crawler-wagon-2"    ] = "y[angel]-a[crawler]-c-ab",
+      ["crawler-wagon-3"    ] = "y[angel]-a[crawler]-c-ac",
+      ["crawler-wagon-4"    ] = "y[angel]-a[crawler]-c-ad",
+      ["crawler-wagon-5"    ] = "y[angel]-a[crawler]-c-ae",
+
+      ["crawler-bot-wagon"  ] = "y[angel]-a[crawler]-c-ba",
+      ["crawler-bot-wagon-2"] = "y[angel]-a[crawler]-c-bb",
+      ["crawler-bot-wagon-3"] = "y[angel]-a[crawler]-c-bc",
+      ["crawler-bot-wagon-4"] = "y[angel]-a[crawler]-c-bd",
+      ["crawler-bot-wagon-5"] = "y[angel]-a[crawler]-c-be",
     },
   }
 end
@@ -188,6 +279,5 @@ if mods["Electronic_Battle_Locomotives"] then
     },
   }
 end
-
 
 return trainOrdening
