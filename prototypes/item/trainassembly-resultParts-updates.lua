@@ -49,6 +49,7 @@ for _, trainType in pairs{
         itemPlaceResult[item.type][item.name] = (settings.startup["trainController-manual-placing-trains"].value == false)
         trainEntity.fast_upgrade_group = nil
         trainEntity.next_upgrade = nil
+        trainEntity.placeable_by = {item = item.name, count = 1}
 
       else
         log(string.format("Error creating train parts: %s (%s)", trainEntity.name, trainType))

@@ -86,9 +86,9 @@ for _, trainType in pairs({
 
         -- if we didn't find it, we enable the recipe from the start
         if technologyUnlockAdded then
-          log(string.format("Creating train parts: %s (%s)", trainEntity.name, trainType))
+          log(string.format("Unlocking train parts: %s (%s)", trainEntity.name, trainType))
         else
-          log(string.format("Error creating train parts: %s (%s)", trainEntity.name, trainType))
+          log(string.format("Error unlocking train parts: %s (%s)", trainEntity.name, trainType))
           data.raw.recipe[fluidRecipeName].normal.enabled = true
         end
 

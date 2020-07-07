@@ -1,6 +1,6 @@
 {
   "name": "trainConstructionSite",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "factorio_version": "0.18",
   "title": "Train construction site",
   "author": "voske_123 & lovely_santa",
@@ -11,6 +11,7 @@
         "LSlib >= 2020.7.4",
 
         "? FARL",
-        "? angelsindustries"
+        "? angelsindustries",
+        "? space-exploration"
   ]
 }

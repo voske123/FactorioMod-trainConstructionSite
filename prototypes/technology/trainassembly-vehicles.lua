@@ -10,7 +10,13 @@ trainTechCargo.localised_description = {"technology-description.trainassembly-ca
 trainTechCargo.icon = "__trainConstructionSite__/graphics/technology/cargo-wagon.png"
 trainTechCargo.icon_size = 128
 
-trainTechCargo.prerequisites = {"trainassembly-automated-train-assembling", "logistics-2"}
+trainTechCargo.prerequisites = {"logistics-2"}
+if settings.startup["trainController-manual-placing-trains"].value then
+  table.insert(trainTechCargo.prerequisites, "railway")
+else
+  table.insert(trainTechCargo.prerequisites, "trainassembly-automated-train-assembling")
+end
+
 if data.raw["technology"]["railway"].prerequisites then -- replace logistics-2 from railway in logistics-1
   for prerequisitesIndex, prerequisite in pairs(data.raw["technology"]["railway"].prerequisites) do
     if prerequisite == "logistics-2" then

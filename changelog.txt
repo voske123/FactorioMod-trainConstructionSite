@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.8
+Date: 07. 07. 2020
+  Features:
+    - Added support for modded trains and tank from "Krastorio2"
+    - When allowed to manualy place trains, you now don't need to research the trainbuilder
+  Bugfixes:
+    - Fixed "space-exploration" was messing with rails and trains
+---------------------------------------------------------------------------------------------------
 Version: 0.2.7
 Date: 04. 07. 2020
   Features:

@@ -70,3 +70,8 @@ if mods["FactorioExtended-Plus-Transport"] then
   LSlib.item.setOrderstring("item-with-entity-data", "tank-mk2", "b-e")
   LSlib.item.setOrderstring("item-with-entity-data", "tank-mk3", "b-f")
 end
+
+if mods["Krastorio2"] then
+  LSlib.item.setSubgroup("item-with-entity-data", "kr-advanced-tank", "manual-buildable-vehicles")
+  LSlib.item.setOrderstring("item-with-entity-data", "kr-advanced-tank", "c")
+end

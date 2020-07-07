@@ -3,6 +3,7 @@
 -------------------------------------------------------------------------------
 require "modding-interface"
 local trainfuel = "trainassembly-recipefuel"
+local itemOrder = require("prototypes/modded-trains-ordening")
 
 if mods["Realistic_Electric_Trains"] then
   trainConstructionSite.remote.addElectricTrain("locomotive", "ret-electric-locomotive"    )
@@ -119,4 +120,39 @@ if mods["angelsindustries"] then
     LSlib.technology.removeIngredient("trainfuel-pellet-coke", "datacore-processing-1")
     LSlib.technology.addIngredient("trainfuel-rocket-booster", 1, "datacore-logistic-1")
   end
+end
+
+if mods["Krastorio2"] then
+  -- nuclear locomotive technology is not available in data update stage, custom fixing it here
+  LSlib.technology.addRecipeUnlock("kr-nuclear-locomotive", "kr-nuclear-locomotive-fluid[locomotive]")
+  LSlib.recipe.disable("kr-nuclear-locomotive-fluid[locomotive]")
+end
+
+if mods["space-exploration"] then
+  -- space exploration moves the base game locomotives around... fixing it here
+  for _, trainData in pairs{
+    {"locomotive", "locomotive"},
+    {"cargo-wagon", "cargo-wagon"},
+    {"fluid-wagon", "fluid-wagon"},
+    {"artillery-wagon", "artillery-wagon"}
+  } do
+    if itemOrder[trainData[1] or ""] and itemOrder[trainData[1] or ""][trainData[2] or ""] then
+      LSlib.item.setSubgroup("item-with-entity-data", trainData[2] or "", "transport")
+      LSlib.item.setOrderstring("item-with-entity-data", trainData[2] or "", itemOrder[trainData[1] or ""][trainData[2] or ""])
+    end
+  end
+
+  -- space exploration moves rail stuff around... fixing it here
+  LSlib.item.setSubgroup("rail-planner", "rail", "transport-railway")
+  LSlib.item.setOrderstring("rail-planner", "rail", "a[rail]-a[stone]")
+  LSlib.item.setSubgroup("rail-planner", "se-space-rail", "transport-railway")
+  LSlib.item.setOrderstring("rail-planner", "se-space-rail", "a[rail]-b[space]")
+  
+  LSlib.item.setSubgroup("item", "train-stop", "transport-railway")
+  LSlib.item.setOrderstring("item", "train-stop", "b[stop]-a[regular]")
+
+  LSlib.item.setSubgroup("item", "rail-signal", "transport-railway")
+  LSlib.item.setOrderstring("item", "rail-signal", "c[signal]-a[rail]")
+  LSlib.item.setSubgroup("item", "rail-chain-signal", "transport-railway")
+  LSlib.item.setOrderstring("item", "rail-chain-signal", "c[signal]-b[chain]")
 end
