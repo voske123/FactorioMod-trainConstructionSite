@@ -10,8 +10,8 @@
         "base >= 0.18.33",
         "LSlib >= 2020.7.4",
 
-        "? FARL",
-        "? angelsindustries",
-        "? space-exploration"
+        "(?) angelsindustries",
+        "(?) FARL",
+        "(?) space-exploration"
   ]
 }

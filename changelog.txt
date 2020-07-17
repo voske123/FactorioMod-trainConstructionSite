@@ -1,11 +1,18 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.8
-Date: 07. 07. 2020
+Date: 17. 07. 2020
   Features:
     - Added support for modded trains and tank from "Krastorio2"
     - When allowed to manualy place trains, you now don't need to research the trainbuilder
+    - Added support for extra modded vehicles from "Hovercrafts"
+    - Added support for extra modded vehicles from "Transport_Drones"
+    - Added support for extra modded vehicles from "laser_tanks"
+    - Added support for extra modded vehicles from "aai-programmable-vehicles"
+  Changes:
+    - All optional dependencies that are for mod loading order issues are now hidden
   Bugfixes:
     - Fixed "space-exploration" was messing with rails and trains
+    - Another attempt at fixed angels industries moved the vanilla train parts to a different tab
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.7
 Date: 04. 07. 2020

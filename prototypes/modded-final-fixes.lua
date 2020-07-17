@@ -99,6 +99,10 @@ if mods["MultipleUnitTrainControl"] then
 end
 
 if mods["angelsindustries"] then
+  -- industires overhaul changes the location of the base game subgroup
+  data.raw["item-subgroup"]["transport"].group = "transport-logistics"
+  data.raw["item-subgroup"]["transport"].order = "d"
+
   -- industries overhaul changes the order and subgroup of the vanilla trains
   data.raw["item-with-entity-data"]["locomotive"].order = trainOrdering["locomotive"]["locomotive"]
   data.raw["item-with-entity-data"]["locomotive"].subgroup = "transport"

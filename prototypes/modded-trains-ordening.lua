@@ -15,19 +15,19 @@ end
 
 createOrdering{ -- base game
   ["locomotive"] = {
-    ["locomotive"] = "a[base]-a",
+    ["locomotive"] = "aa[locomotive]-a[base]",
   },
 
   ["cargo-wagon"] = {
-    ["cargo-wagon"] = "a[base]-b",
+    ["cargo-wagon"] = "ab[cargo-wagon]-a[base]",
   },
 
   ["fluid-wagon"] = {
-    ["fluid-wagon"] = "a[base]-c",
+    ["fluid-wagon"] = "ac[fluid-wagon]-a[base]",
   },
 
   ["artillery-wagon"] = {
-    ["artillery-wagon"] = "a[base]-d",
+    ["artillery-wagon"] = "ad[artillery-wagon]-a[base]",
   },
 }
 
@@ -151,24 +151,24 @@ end
 if mods["boblogistics"] then
   createOrdering{
     ["locomotive"] = {
-      ["bob-locomotive-2"         ] = "b[boblogistics]-a[regular-mk2]-a[locomotive]",
-      ["bob-locomotive-3"         ] = "b[boblogistics]-b[regular-mk3]-a[locomotive]",
-      ["bob-armoured-locomotive"  ] = "b[boblogistics]-c[armoured-mk1]-a[locomotive]",
-      ["bob-armoured-locomotive-2"] = "b[boblogistics]-d[armoured-mk2]-a[locomotive]",
+      ["bob-locomotive-2"         ] = "aa[locomotive]-b[boblogistics]-a[regular-mk2]",
+      ["bob-locomotive-3"         ] = "aa[locomotive]-b[boblogistics]-b[regular-mk3]",
+      ["bob-armoured-locomotive"  ] = "aa[locomotive]-b[boblogistics]-c[armoured-mk1]",
+      ["bob-armoured-locomotive-2"] = "aa[locomotive]-b[boblogistics]-d[armoured-mk2]",
     },
 
     ["cargo-wagon"] = {
-      ["bob-cargo-wagon-2"         ] = "b[boblogistics]-a[regular-mk2]-b[cargo-wagon]",
-      ["bob-cargo-wagon-3"         ] = "b[boblogistics]-b[regular-mk3]-b[cargo-wagon]",
-      ["bob-armoured-cargo-wagon"  ] = "b[boblogistics]-c[armoured-mk1]-b[cargo-wagon]",
-      ["bob-armoured-cargo-wagon-2"] = "b[boblogistics]-d[armoured-mk2]-b[cargo-wagon]",
+      ["bob-cargo-wagon-2"         ] = "ab[cargo-wagon]-b[boblogistics]-a[regular-mk2]",
+      ["bob-cargo-wagon-3"         ] = "ab[cargo-wagon]-b[boblogistics]-b[regular-mk3]",
+      ["bob-armoured-cargo-wagon"  ] = "ab[cargo-wagon]-b[boblogistics]-c[armoured-mk1]",
+      ["bob-armoured-cargo-wagon-2"] = "ab[cargo-wagon]-b[boblogistics]-d[armoured-mk2]",
     },
     
     ["fluid-wagon"] = {
-      ["bob-fluid-wagon-2"         ] = "b[boblogistics]-a[regular-mk2]-c[fluid-wagon]",
-      ["bob-fluid-wagon-3"         ] = "b[boblogistics]-b[regular-mk3]-c[fluid-wagon]",
-      ["bob-armoured-fluid-wagon"  ] = "b[boblogistics]-c[armoured-mk1]-c[fluid-wagon]",
-      ["bob-armoured-fluid-wagon-2"] = "b[boblogistics]-d[armoured-mk2]-c[fluid-wagon]",
+      ["bob-fluid-wagon-2"         ] = "ac[fluid-wagon]-b[boblogistics]-a[regular-mk2]",
+      ["bob-fluid-wagon-3"         ] = "ac[fluid-wagon]-b[boblogistics]-b[regular-mk3]",
+      ["bob-armoured-fluid-wagon"  ] = "ac[fluid-wagon]-b[boblogistics]-c[armoured-mk1]",
+      ["bob-armoured-fluid-wagon-2"] = "ac[fluid-wagon]-b[boblogistics]-d[armoured-mk2]",
     },
   }
 end
@@ -239,16 +239,16 @@ end
 if mods["FactorioExtended-Plus-Transport"] then
   createOrdering{
     ["locomotive"] = {
-      ["locomotive-mk2"] = "b[FactorioExtended-Plus]-a[mk2]-a[locomotive]",
-      ["locomotive-mk3"] = "b[FactorioExtended-Plus]-b[mk3]-a[locomotive]",
+      ["locomotive-mk2"] = "aa[locomotive]-c[FactorioExtended-Plus]-a[mk2]-a[locomotive]",
+      ["locomotive-mk3"] = "aa[locomotive]-c[FactorioExtended-Plus]-b[mk3]-a[locomotive]",
     },
     ["cargo-wagon"] = {
-      ["cargo-wagon-mk2"] = "b[FactorioExtended-Plus]-a[mk2]-b[cargo-wagon]",
-      ["cargo-wagon-mk3"] = "b[FactorioExtended-Plus]-b[mk3]-b[cargo-wagon]",
+      ["cargo-wagon-mk2"] = "ab[cargo-wagon]-c[FactorioExtended-Plus]-a[mk2]-b[cargo-wagon]",
+      ["cargo-wagon-mk3"] = "ab[cargo-wagon]-c[FactorioExtended-Plus]-b[mk3]-b[cargo-wagon]",
     },
     ["fluid-wagon"] = {
-      ["fluid-wagon-mk2"] = "b[FactorioExtended-Plus]-a[mk2]-c[fluid-wagon]",
-      ["fluid-wagon-mk3"] = "b[FactorioExtended-Plus]-b[mk3]-c[fluid-wagon]",
+      ["fluid-wagon-mk2"] = "ac[fluid-wagon]-c[FactorioExtended-Plus]-a[mk2]-c[fluid-wagon]",
+      ["fluid-wagon-mk3"] = "ac[fluid-wagon]-c[FactorioExtended-Plus]-b[mk3]-c[fluid-wagon]",
     },
   }
 end
