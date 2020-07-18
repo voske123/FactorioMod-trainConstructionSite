@@ -63,7 +63,7 @@ trainassembly.crafting_categories = {"trainassembling",}
 trainassembly.crafting_speed = 0.20
 trainassembly.energy_usage = "500kW"
 trainassembly.module_specification.module_slots = 5
-trainassembly.allowed_effects = {"consumption",}
+trainassembly.allowed_effects = {"consumption", "pollution"}
 trainassembly.scale_entity_info_icon = true
 
 -- 4 way animation
