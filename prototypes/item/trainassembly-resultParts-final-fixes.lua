@@ -1,6 +1,7 @@
 
 local trainsToIgnore = require("prototypes/modded-trains-to-ignore")
 local itemOverride   = require("prototypes/modded-trains-item-override")
+--local functions      = require("prototypes/functions")
 
 -- For each train type like item we want to make an equal fluid
 -- To accuire all the itemnames, we have to iterate over the entities
@@ -18,28 +19,24 @@ for _,trainType in pairs({
       local itemName = itemOverride[trainType][trainEntity.name] or trainEntity.minable.result
       local item = data.raw["item-with-entity-data"][itemName] or data.raw["item"][itemName]
       if item then
-        -- Now that we have the item name, we create the fluid
-        local itemFluid = util.table.deepcopy(data.raw["fluid"]["crude-oil"])
-        itemFluid.auto_barrel = false -- We don't want to end up with barreling recipes
-
-
-        itemFluid.name            = itemName .. "-fluid"
-        if item.localised_name and type(item.localised_name) == "table" and item.localised_name[1] == "item-name.trainparts" then
-          itemFluid.localised_name  = util.table.deepcopy(item.localised_name)
-          itemFluid.localised_name[1] = "item-name.trainfluid"
-        else
-          itemFluid.localised_name  = {"__ENTITY__"..trainEntity.name.."__"}
-        end
-        itemFluid.icon            = item.icon
-        itemFluid.icon_size       = item.icon_size
-        itemFluid.icons           = util.table.deepcopy(item.icons)
-
-        itemFluid.order           = item.order
-        itemFluid.subgroup        = "trainparts-fluid"
-
-        data:extend{
-          itemFluid,
+        -- Now that we have the item name, we can update the icon
+        local item_icons = {
+          {
+            icon      = "__base__/graphics/icons/wooden-chest.png",
+            --icon      = "__trainConstructionSite__/graphics/item/trainparts/trainparts-chest.png",
+            icon_size = 64,
+            tint      = {r = 0.75, g = 0.75, b = 0.75}
+          }
         }
+
+        local train_layers = LSlib.item.getIcons(item.type, item.name, 32/(LSlib.item.getIconSize(item.type, item.name)[1] or 32) * 0.65)
+        for _, train_layer in pairs(train_layers) do
+          table.insert(item_icons, train_layer)
+        end
+
+        item.icon       = nil
+        item.icon_scale = nil
+        item.icons      = item_icons
       end
     end
   end

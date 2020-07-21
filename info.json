@@ -8,9 +8,13 @@
   "description": "A nice, automated way of creating trains",
   "dependencies": [
     "base >= 0.18.36",
-    "LSlib >= 2020.7.4",
+    "LSlib >= 2020.7.21",
 
-    "(?) angelsindustries",
+    "(?) angelsaddons-crawlertrain",
+    "(?) angelsaddons-petrotrain",
+    "(?) angelsaddons-smeltingtrain",
+    "(?) Electronic_Locomotives",
+    "(?) Electronic_Angels_Locomotives",
     "(?) FARL",
     "(?) space-exploration"
   ]

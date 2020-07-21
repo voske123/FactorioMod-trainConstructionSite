@@ -41,6 +41,8 @@ for _, trainType in pairs({
                 amount  = 1,
               },
             },
+            main_product = itemName .. "-fluid",
+            always_show_products = true,
           },
         }
       }

@@ -1,8 +1,13 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.9
 Date: ??
+  Features:
+    - Added crate graphic for the train parts
+    - Added some basic rolling stock statistics to the train descriptions
   Bugfixes:
     - Fixed crash due to fuel_value missing on recipe fuel due to a typo
+    - Fixed electric locomotive recipes would be unlocked at the start of the game
+    - Fixed missing case of modded locomotive localised naming
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.8
 Date: 17. 07. 2020
