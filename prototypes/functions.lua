@@ -61,7 +61,7 @@ end
 local createStorageLocalisedDescription = function(trainType, trainName, addLeadingNewLine)
   if not data.raw[trainType] then return {""} end
   local entityPrototype = data.raw[trainType][trainName]
-  if not entityPrototype then return end
+  if not entityPrototype then return {""} end
 
   local localised_description = {""}
 
@@ -74,10 +74,88 @@ local createStorageLocalisedDescription = function(trainType, trainName, addLead
   return localised_description
 end
 
+local createEquipmentLocalisedDescription = function(trainType, trainName, addLeadingNewLine)
+  if not data.raw[trainType] then return {""} end
+  local entityPrototype = data.raw[trainType][trainName]
+  if not entityPrototype then return {""} end
+
+  local equipmentGrid = entityPrototype.equipment_grid
+  if not equipmentGrid then return {""} end
+  equipmentGrid = data.raw["equipment-grid"][equipmentGrid]
+  if not equipmentGrid then return {""} end
+
+  local localised_description = {""}
+  table.insert(localised_description, createTooltipCategory("tooltip-category-equipment-grid", "equipment-grid", nil, addLeadingNewLine))
+  table.insert(localised_description, createTooltipParameter("grid-size", {"description.creates-number-entities-value", string.format("%i", equipmentGrid.width), string.format("%i", equipmentGrid.height)}, true))
+  table.insert(localised_description, createTooltipParameter("accepted-equipment", "\n", true))
+
+  local equipment = {}
+  for _, equipmentCategory in pairs(equipmentGrid.equipment_categories) do
+    for _, equipmentType in pairs{
+      "night-vision-equipment", "belt-immunity-equipment", "roboport-equipment",
+      "solar-panel-equipment", "generator-equipment", "battery-equipment",
+      "active-defense-equipment", "energy-shield-equipment", "movement-bonus-equipment",
+    } do
+      for _, equipmentPrototype in pairs(data.raw[equipmentType]) do
+        local containsCategory = false
+        for _, equipmentPrototypeCategory in pairs(equipmentPrototype.categories) do
+          if equipmentPrototypeCategory == equipmentCategory then
+            containsCategory = true
+          end
+        end
+        if containsCategory then
+          equipment[equipmentType] = equipment[equipmentType] or {}
+          equipment[equipmentType][equipmentPrototype.name] = equipmentPrototype.take_result or equipmentPrototype.name
+        end
+      end
+    end
+  end
+  local items = {}
+  local itemsCount = 0
+  for equipmentType, equipmentTypeData in pairs(equipment) do
+    for equipmentName, itemName in pairs(equipmentTypeData) do
+      local item = data.raw["item"][itemName]
+      if item then
+        local itemSubgroup =  data.raw["item-subgroup"][item.subgroup or ""] or {}
+        local itemGroup = data.raw["item-group"][itemSubgroup.group or ""] or {}
+        local orderString = string.format("%s-%s-%s", itemGroup.order or "z", itemSubgroup.order or "z", item.order or "z")
+        if items[orderString] then
+          local orderIndex = 1
+          while items[string.format("%s-%i", orderString, orderIndex)] do
+            orderIndex = orderIndex + 1
+          end
+          orderString = string.format("%s-%i", orderString, orderIndex)
+        end
+        items[orderString] = itemName
+        itemsCount = itemsCount + 1
+      end
+    end
+  end
+  local localised_items = {""}
+  local localised_itemsRow = {""}
+  local localised_itemsCount = 0
+  table.insert(localised_itemsRow, "[font=default-game][color=#00000000]")
+  for _,itemName in pairs(items) do
+    table.insert(localised_itemsRow, string.format(" [img=item/%s]", itemName))
+    localised_itemsCount = localised_itemsCount + 1
+    if localised_itemsCount % 10 == 0 or localised_itemsCount == itemsCount then
+      if localised_itemsCount == itemsCount then
+        table.insert(localised_itemsRow, "[/color][/font]")
+      end
+      table.insert(localised_items, util.table.deepcopy(localised_itemsRow))
+      localised_itemsRow = {"", "[font=default-tiny-bold]\n \n[/font]"}
+    end
+  end
+  table.insert(localised_description, localised_items)
+  table.insert(localised_description, "[font=default-tiny-bold]\n[/font]")
+
+  return localised_description
+end
+
 local createVehicleLocalisedDescription = function(trainType, trainName, addLeadingNewLine)
   if not data.raw[trainType] then return {""} end
   local entityPrototype = data.raw[trainType][trainName]
-  if not entityPrototype then return end
+  if not entityPrototype then return {""} end
 
   local localised_description = {""}
 
@@ -94,7 +172,7 @@ end
 local createEnergySourceLocalisedDescription = function(trainType, trainName, addLeadingNewLine)
   if not data.raw[trainType] then return {""} end
   local entityPrototype = data.raw[trainType][trainName]
-  if not entityPrototype then return end
+  if not entityPrototype then return {""} end
 
   local localised_description = {""}
 
@@ -129,13 +207,23 @@ local createTrainLocalisedDescription = function(trainType, trainName, addLeadin
   local localised_description = {""}
   local requireNewLine = addLeadingNewLine
 
+  -- inventory size
   if trainType == "cargo-wagon" or trainType == "fluid-wagon" then
     table.insert(localised_description, createStorageLocalisedDescription(trainType, trainName, requireNewLine))
     requireNewLine = true
   end
+  -- equipment grid
+  if data.raw[trainType] and data.raw[trainType][trainName] and data.raw[trainType][trainName].equipment_grid then
+    table.insert(localised_description, createEquipmentLocalisedDescription(trainType, trainName, requireNewLine))
+    requireNewLine = true
+  end
+  -- vehicle stats
   table.insert(localised_description, createVehicleLocalisedDescription(trainType, trainName, requireNewLine))
+  requireNewLine = true
+  -- energy source
   if trainType == "locomotive" then
-    table.insert(localised_description, createEnergySourceLocalisedDescription(trainType, trainName, true))
+    table.insert(localised_description, createEnergySourceLocalisedDescription(trainType, trainName, requireNewLine))
+    requireNewLine = true
   end
 
   return localised_description
