@@ -167,6 +167,46 @@ for orientation,orientation_string in pairs{
   }
 end
 
+-- apply the rendering from the machine to working visualisations since that's a thing now...
+trainassembly.working_visualisations = {}
+local render_layer =
+{
+  ["-base"   ] = "lower-object", -- 124
+  -- @Bilka said:
+  -- "item-in-inserter-hand" = 134
+  -- "higher-object-above"   = 132
+  ["-overlay"] = "item-in-inserter-hand" -- 133
+}
+for _,animation_layer in pairs{ "-base", "-overlay", "" } do
+  local animation = {}
+  for orientation,orientation_string in pairs{
+    ["north"] = "N",
+    ["east" ] = "E",
+    ["south"] = "S",
+    ["west" ] = "W",
+  } do
+    animation[string.format("%s_animation", orientation)] =
+    {
+      layers = util.table.deepcopy(data.raw["animation"][trainassembly.name .. "-" .. orientation .. animation_layer].layers),
+    }
+
+    -- delete the sprite, since we don't need it anymore
+    data.raw["animation"][trainassembly.name .. "-" .. orientation .. animation_layer].layers[1] =
+    {
+      filename = "__core__/graphics/empty.png",
+      priority = "very-low",
+      width = 1,
+      height = 1,
+      frame_count = 1,
+    }
+  end
+  animation.render_layer = render_layer[animation_layer]
+  animation.always_draw = true
+  if animation.render_layer then
+    table.insert(trainassembly.working_visualisations, animation)
+  end
+end
+
 data:extend{
   util.table.deepcopy(trainassembly),
 }

@@ -37,7 +37,7 @@ for _, trainType in pairs{
       local item = data.raw["item-with-entity-data"][itemName] or data.raw["item"][itemName]
 
       if item and data.raw[trainType][item.place_result] then
-        log(string.format("Creating train parts: %s (%s)", trainEntity.name, trainType))
+        --log(string.format("Creating train parts: %s (%s)", trainEntity.name, trainType))
         data.raw[trainType][item.place_result].order = item.order
 
         item.subgroup = "transport"
@@ -46,6 +46,8 @@ for _, trainType in pairs{
         -- create dummy item for placeable_by
         local itemDummy = util.table.deepcopy(item)
         itemDummy.name = itemDummy.name.."-trainConstructionSiteDummy"
+        itemDummy.flags = itemDummy.flags or {}
+        table.insert(itemDummy.flags, "hidden")
         data:extend{itemDummy}
 
         item.localised_name        = item.localised_name and {"item-name.trainparts", item.localised_name} or {"item-name.trainparts", "__ENTITY__"..trainEntity.name.."__"}

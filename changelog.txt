@@ -4,10 +4,13 @@ Date: ??
   Features:
     - Added crate graphic for the train parts
     - Added some basic rolling stock statistics to the train descriptions
+    - Updated the train assembler graphics use new working_visual definitions instead of rendering
+      them seperately using the renderer
   Bugfixes:
     - Fixed crash due to fuel_value missing on recipe fuel due to a typo
     - Fixed electric locomotive recipes would be unlocked at the start of the game
     - Fixed missing case of modded locomotive localised naming
+    - Fixed error in the train assembler east overlay graphic as it was rendering wrong
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.8
 Date: 17. 07. 2020

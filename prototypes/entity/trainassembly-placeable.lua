@@ -46,7 +46,7 @@ trainassembly.connection_distance = -5
 -- no need to fix this becose this item gets replaced when its build.
 
 -- drawing box (for graphics)
-trainassembly.drawing_box = {{-3, -3}, {3, 3}} -- drawing box covering the extra tile
+trainassembly.drawing_box = {{-5, -5}, {5, 5}} -- drawing box covering the extra tile
 
 -- graphics
 trainassembly.front_light = nil
