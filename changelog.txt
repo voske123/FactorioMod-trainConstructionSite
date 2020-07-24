@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.9
-Date: ??
+Date: 24. 07. 2020
   Features:
     - Added crate graphic for the train parts
     - Added some basic rolling stock statistics to the train descriptions

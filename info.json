@@ -8,7 +8,7 @@
   "description": "A nice, automated way of creating trains",
   "dependencies": [
     "base >= 0.18.36",
-    "LSlib >= 2020.7.21",
+    "LSlib >= 2020.7.24",
 
     "(?) angelsaddons-crawlertrain",
     "(?) angelsaddons-petrotrain",
