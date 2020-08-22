@@ -129,7 +129,13 @@ if mods["aai-programmable-vehicles"] then
 
   data.raw["item-subgroup"]["ai-vehicles"].group = "transport-logistics"
   data.raw["item-subgroup"]["ai-vehicles"].order = "cc-a"
-  
+
   data.raw["item-subgroup"]["ai-vehicles-reverse"].group = "transport-logistics"
   data.raw["item-subgroup"]["ai-vehicles-reverse"].order = "cc-b"
+end
+
+if mods["Cannon_Spidertron"] then
+  LSlib.item.setSubgroup("item-with-entity-data", "cannon-spidertron", otherVehicleGroup)
+  LSlib.item.setOrderstring("item-with-entity-data", "cannon-spidertron", string.format("b-%s",
+    LSlib.item.getOrderstring("item-with-entity-data", "cannon-spidertron") or "z[error]"))
 end

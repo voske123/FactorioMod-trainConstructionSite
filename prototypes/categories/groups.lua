@@ -36,15 +36,17 @@ data.raw["item-subgroup"]["transport"].order = "d"
 for _, vehicleName in pairs{
   "car",
   "tank",
+  "spidertron",
 } do
 
   if data.raw["item-with-entity-data"][vehicleName] then
     data.raw["item-with-entity-data"][vehicleName].subgroup = "manual-buildable-vehicles"
-    data.raw["item-with-entity-data"][vehicleName].order = "b"
+    data.raw["item-with-entity-data"][vehicleName].order = "b-"..data.raw["item-with-entity-data"][vehicleName].order
   end
 end
 
-
+data.raw["spidertron-remote"]["spidertron-remote"].subgroup = "manual-buildable-vehicles"
+data.raw["spidertron-remote"]["spidertron-remote"].order = "b-"..data.raw["spidertron-remote"]["spidertron-remote"].order
 
 
 

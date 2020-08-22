@@ -31,7 +31,7 @@ createOrdering{ -- base game
   },
 }
 
-if mods["angelsaddons-petrotrain"] then
+if mods["angelsaddons-petrotrain"] or mods["angelsaddons-mobility"] then
   local electricVersion = mods["Electronic_Angels_Locomotives"] and true or false
   createOrdering{
     ["locomotive"] = {
@@ -64,7 +64,7 @@ if mods["angelsaddons-petrotrain"] then
   }
 end
 
-if mods["angelsaddons-smeltingtrain"] then
+if mods["angelsaddons-smeltingtrain"] or mods["angelsaddons-mobility"] then
   local electricVersion = mods["Electronic_Angels_Locomotives"] and true or false
   createOrdering{
     ["locomotive"] = {
@@ -103,7 +103,7 @@ if mods["angelsaddons-smeltingtrain"] then
   }
 end
 
-if mods["angelsaddons-crawlertrain"] then
+if mods["angelsaddons-crawlertrain"] or mods["angelsaddons-mobility"] then
   local electricVersion = mods["Electronic_Angels_Locomotives"] and true or false
   createOrdering{
     ["locomotive"] = {
@@ -163,7 +163,7 @@ if mods["boblogistics"] then
       ["bob-armoured-cargo-wagon"  ] = "ab[cargo-wagon]-b[boblogistics]-c[armoured-mk1]",
       ["bob-armoured-cargo-wagon-2"] = "ab[cargo-wagon]-b[boblogistics]-d[armoured-mk2]",
     },
-    
+
     ["fluid-wagon"] = {
       ["bob-fluid-wagon-2"         ] = "ac[fluid-wagon]-b[boblogistics]-a[regular-mk2]",
       ["bob-fluid-wagon-3"         ] = "ac[fluid-wagon]-b[boblogistics]-b[regular-mk3]",

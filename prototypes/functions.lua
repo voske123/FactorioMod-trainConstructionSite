@@ -162,7 +162,7 @@ local createVehicleLocalisedDescription = function(trainType, trainName, addLead
   table.insert(localised_description, createTooltipCategory("tooltip-category-vehicle", "vehicle", nil, addLeadingNewLine))
   if trainType == "locomotive" then
     table.insert(localised_description, createTooltipParameter("max-speed", {"", string.format("%.0f", entityPrototype.max_speed * 259/1.2), {"si-unit-kilometer-per-hour"}}, true))
-    table.insert(localised_description, createTooltipParameter("acceleration-power", LSlib.utils.units.getLocalisedUnit(convertEnergyStringToValue(entityPrototype.max_power), {"si-unit-symbol-watt"}), true))
+    table.insert(localised_description, createTooltipParameter("acceleration-power", LSlib.utils.units.getLocalisedUnit(convertEnergyStringToValue(entityPrototype.max_power), {"si-unit-symbol-watt"}, 2), true))
   end
   table.insert(localised_description, createTooltipParameter("weight", {"", string.format("%i", entityPrototype.weight)}, true))
 
@@ -193,11 +193,11 @@ local createEnergySourceLocalisedDescription = function(trainType, trainName, ad
     else
       table.insert(localised_description, createTooltipCategory("tooltip-category-consumes", "consumes", {"", " ", {string.format("fuel-category-name.%s", entityPrototype.burner.fuel_category or entityPrototype.burner.fuel_categories[1])}}, addLeadingNewLine))
     end
-    table.insert(localised_description, createTooltipParameter("max-energy-consumption", LSlib.utils.units.getLocalisedUnit(convertEnergyStringToValue(entityPrototype.max_power), {"si-unit-symbol-watt"}), true))
-  
+    table.insert(localised_description, createTooltipParameter("max-energy-consumption", LSlib.utils.units.getLocalisedUnit(convertEnergyStringToValue(entityPrototype.max_power), {"si-unit-symbol-watt"}, 2), true))
+
   elseif entityPrototype.energy_source and entityPrototype.energy_source.type == "electric" then
     table.insert(localised_description, createTooltipCategory("tooltip-category-electricity", "consumes", {"", " ", {"tooltip-category.electricity"}}, addLeadingNewLine))
-    table.insert(localised_description, createTooltipParameter("max-energy-consumption", LSlib.utils.units.getLocalisedUnit(convertEnergyStringToValue(entityPrototype.max_power), {"si-unit-symbol-watt"}), true))
+    table.insert(localised_description, createTooltipParameter("max-energy-consumption", LSlib.utils.units.getLocalisedUnit(convertEnergyStringToValue(entityPrototype.max_power), {"si-unit-symbol-watt"}, 2), true))
   end
 
   return localised_description

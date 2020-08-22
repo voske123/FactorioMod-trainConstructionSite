@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.10
+Date: 22. 08. 2020
+  Features:
+    - Updated to factorio 1.0
+    - Added support for spidertron from "Cannon_Spidertron"
+  Bugfixes:
+    - Fixed rounding error in train vehicle description
+---------------------------------------------------------------------------------------------------
 Version: 0.2.9
 Date: 24. 07. 2020
   Features:
