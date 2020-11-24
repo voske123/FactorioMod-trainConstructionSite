@@ -1,6 +1,6 @@
 {
   "name": "trainConstructionSite",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "factorio_version": "1.0",
   "title": "Train construction site",
   "author": "voske_123 & lovely_santa",
@@ -13,9 +13,15 @@
     "(?) angelsaddons-crawlertrain",
     "(?) angelsaddons-petrotrain",
     "(?) angelsaddons-smeltingtrain",
+    "(?) angelsaddons-mobility",
+
+    "(?) Battle_Locomotives",
     "(?) Electronic_Locomotives",
+    "(?) Electronic_Battle_Locomotives",
     "(?) Electronic_Angels_Locomotives",
+
     "(?) FARL",
+    "(?) ElectricTrain",
     "(?) space-exploration"
   ]
 }

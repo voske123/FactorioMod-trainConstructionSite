@@ -236,6 +236,14 @@ if mods["FARL"] then
   }
 end
 
+if mods["RailPowerSystem"] then
+  createOrdering{
+    ["locomotive"] = {
+      ["hybrid-train"] = "z[RailPowerSystem]-a[hybrid-train]",
+    },
+  }
+end
+
 if mods["FactorioExtended-Plus-Transport"] then
   createOrdering{
     ["locomotive"] = {
@@ -253,10 +261,20 @@ if mods["FactorioExtended-Plus-Transport"] then
   }
 end
 
-if mods["RailPowerSystem"] then
+if mods["ElectricTrain"] then
   createOrdering{
     ["locomotive"] = {
-      ["hybrid-train"] = "z[RailPowerSystem]-a[hybrid-train]",
+      ["et-electric-locomotive-1"] = "aa[locomotive]-d[ElectricTrain]-a[mk1]-a[locomotive]",
+      ["et-electric-locomotive-2"] = "aa[locomotive]-d[ElectricTrain]-b[mk2]-a[locomotive]",
+      ["et-electric-locomotive-3"] = "aa[locomotive]-d[ElectricTrain]-c[mk3]-a[locomotive]",
+    },
+    ["cargo-wagon"] = {
+      ["et-cargo-wagon-2"] = "ab[cargo-wagon]-d[ElectricTrain]-a[mk2]-b[cargo-wagon]",
+      ["et-cargo-wagon-3"] = "ab[cargo-wagon]-d[ElectricTrain]-b[mk3]-b[cargo-wagon]",
+    },
+    ["fluid-wagon"] = {
+      ["et-fluid-wagon-2"] = "ac[fluid-wagon]-d[ElectricTrain]-a[mk2]-c[fluid-wagon]",
+      ["et-fluid-wagon-3"] = "ac[fluid-wagon]-d[ElectricTrain]-b[mk3]-c[fluid-wagon]",
     },
   }
 end
@@ -270,12 +288,31 @@ if mods["Electronic_Locomotives"] then
   }
 end
 
+if mods["Electronic_Factorio_Extended_Locomotives"] then
+  createOrdering{
+    ["locomotive"] = {
+      ["electronic-locomotive-mk2"] = "aa[locomotive]-c[FactorioExtended-Plus]-a[mk2]-b[electric-locomotive]",
+      ["electronic-locomotive-mk3"] = "aa[locomotive]-c[FactorioExtended-Plus]-b[mk3]-b[electric-locomotive]",
+    },
+  }
+end
+
+if mods["Battle_Locomotives"] then
+  createOrdering{
+    ["locomotive"] = {
+      ["Battle-Locomotive-1"] = "z[Senpais_Electronic_Locomotives]-b[battle]-a",
+      ["Battle-Locomotive-2"] = "z[Senpais_Electronic_Locomotives]-b[battle]-c",
+      ["Battle-Locomotive-3"] = "z[Senpais_Electronic_Locomotives]-b[battle]-e",
+    },
+  }
+end
+
 if mods["Electronic_Battle_Locomotives"] then
   createOrdering{
     ["locomotive"] = {
-      ["Electronic-Battle-Locomotive-1"] = "z[Senpais_Electronic_Locomotives]-b[battle]-a",
-      ["Electronic-Battle-Locomotive-2"] = "z[Senpais_Electronic_Locomotives]-b[battle]-b",
-      ["Electronic-Battle-Locomotive-3"] = "z[Senpais_Electronic_Locomotives]-b[battle]-c",
+      ["Electronic-Battle-Locomotive-1"] = "z[Senpais_Electronic_Locomotives]-b[battle]-b",
+      ["Electronic-Battle-Locomotive-2"] = "z[Senpais_Electronic_Locomotives]-b[battle]-d",
+      ["Electronic-Battle-Locomotive-3"] = "z[Senpais_Electronic_Locomotives]-b[battle]-f",
     },
   }
 end

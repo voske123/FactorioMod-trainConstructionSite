@@ -16,12 +16,19 @@ if mods["Electronic_Locomotives"] then
   trainConstructionSite.remote.addElectricTrain("locomotive", "Electronic-Cargo-Locomotive"   )
 end
 
+if mods["Electronic_Factorio_Extended_Locomotives"] then
+  trainConstructionSite.remote.addElectricTrain("locomotive", "electronic-locomotive-mk2")
+  trainConstructionSite.remote.addElectricTrain("locomotive", "electronic-locomotive-mk3")
+end
+
 if mods["Electronic_Angels_Locomotives"] then
-  if mods["angelsaddons-crawlertrain"] then
+  if mods["angelsaddons-crawlertrain"] or (mods["angelsaddons-mobility"] and angelsmods.addons.mobility.crawlertrain.enabled) then
     local loconame = "electronic-crawler-locomotive"
     local locowagonname = "electronic-crawler-locomotive-wagon"
 
-    for i = 1, angelsmods.addons.crawlertrain.tier_amount do
+    local tier_amount = (mods["angelsaddons-crawlertrain"] and angelsmods.addons.crawlertrain.tier_amount) or
+                        (mods["angelsaddons-mobility"] and angelsmods.addons.mobility.crawlertrain.tier_amount)
+    for i = 1, tier_amount do
       if i == 1 then
         trainConstructionSite.remote.addElectricTrain("locomotive", loconame)
         trainConstructionSite.remote.addElectricTrain("locomotive", locowagonname)
@@ -32,10 +39,12 @@ if mods["Electronic_Angels_Locomotives"] then
     end
   end
 
-  if mods["angelsaddons-petrotrain"] then
+  if mods["angelsaddons-petrotrain"] or (mods["angelsaddons-mobility"] and angelsmods.addons.mobility.petrotrain.enabled) then
     local loconame = "electronic-petro-locomotive-1"
 
-    for i = 1, angelsmods.addons.petrotrain.tier_amount do
+    local tier_amount = (mods["angelsaddons-petrotrain"] and angelsmods.addons.petrotrain.tier_amount) or
+                        (mods["angelsaddons-mobility"] and angelsmods.addons.mobility.petrotrain.tier_amount)
+    for i = 1, tier_amount do
       if i == 1 then
         trainConstructionSite.remote.addElectricTrain("locomotive", loconame)
       else
@@ -44,11 +53,13 @@ if mods["Electronic_Angels_Locomotives"] then
     end
   end
 
-  if mods["angelsaddons-smeltingtrain"] then
+  if mods["angelsaddons-smeltingtrain"] or (mods["angelsaddons-mobility"] and angelsmods.addons.mobility.smeltingtrain.enabled) then
     local loconame = "electronic-smelting-locomotive-1"
     local locowagonname = "electronic-smelting-locomotive-tender"
 
-    for i = 1, angelsmods.addons.smeltingtrain.tier_amount do
+    local tier_amount = (mods["angelsaddons-smeltingtrain"] and angelsmods.addons.smeltingtrain.tier_amount) or
+                        (mods["angelsaddons-mobility"] and angelsmods.addons.mobility.smeltingtrain.tier_amount)
+    for i = 1, tier_amount do
       if i == 1 then
         trainConstructionSite.remote.addElectricTrain("locomotive", loconame)
         trainConstructionSite.remote.addElectricTrain("locomotive", locowagonname)
@@ -64,6 +75,12 @@ if mods["Electronic_Battle_Locomotives"] then
   trainConstructionSite.remote.addElectricTrain("locomotive", "Electronic-Battle-Locomotive-1")
   trainConstructionSite.remote.addElectricTrain("locomotive", "Electronic-Battle-Locomotive-2")
   trainConstructionSite.remote.addElectricTrain("locomotive", "Electronic-Battle-Locomotive-3")
+end
+
+if mods["ElectricTrain"] then
+  trainConstructionSite.remote.addElectricTrain("locomotive", "et-electric-locomotive-1")
+  trainConstructionSite.remote.addElectricTrain("locomotive", "et-electric-locomotive-2")
+  trainConstructionSite.remote.addElectricTrain("locomotive", "et-electric-locomotive-3")
 end
 
 for trainType,trainData in pairs(trainConstructionSite.remoteData.electricTrains or {}) do
@@ -151,7 +168,7 @@ if mods["space-exploration"] then
   LSlib.item.setOrderstring("rail-planner", "rail", "a[rail]-a[stone]")
   LSlib.item.setSubgroup("rail-planner", "se-space-rail", "transport-railway")
   LSlib.item.setOrderstring("rail-planner", "se-space-rail", "a[rail]-b[space]")
-  
+
   LSlib.item.setSubgroup("item", "train-stop", "transport-railway")
   LSlib.item.setOrderstring("item", "train-stop", "b[stop]-a[regular]")
 

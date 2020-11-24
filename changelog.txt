@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.11
+Date: 27. 08. 2020
+  Features:
+    - Added support for modded trains from "Electric Train"
+    - Added support for modded trains from "Electronic_Factorio_Extended_Locomotives"
+  Bugfixes:
+    - Fixed crash related to not finding any burnable fuel category
+    - Fixed ordeing for trains from "Battle_Locomotives"
+    - Fixed support for electric trains from "Electronic_Angels_Locomotives"
+---------------------------------------------------------------------------------------------------
 Version: 0.2.10
 Date: 22. 08. 2020
   Features:
