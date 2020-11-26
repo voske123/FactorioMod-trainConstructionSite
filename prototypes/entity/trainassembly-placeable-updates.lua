@@ -1,7 +1,7 @@
 
 -- collision masks
 local extraLayer1 = "layer-15" -- for rails
-local extraLayer2 = "layer-12" -- for belts
+local extraLayer2 = "transport-belt-layer" -- for belts
 
 --add collision mask to the trainassembler itself
 for _,extraLayer in pairs{extraLayer1, extraLayer2} do

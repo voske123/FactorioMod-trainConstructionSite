@@ -79,7 +79,7 @@ guiStyles["traincontroller_color_picker_button_flow"] = {
 
 guiStyles["traincontroller_color_indicator_button_housing"] = {
   type = "button_style",
-  parent = "icon_button",
+  parent = "tool_button",
 
   padding = 0,
 }
@@ -111,8 +111,8 @@ guiStyles["traincontroller_color_indicator_button_color"] = {
     scale = 1,
   },
 
-  width=guiStyles["icon_button"].size - 2 * guiStyles["icon_button"].default_graphical_set.corner_size,
-  height=guiStyles["icon_button"].size - 2 * guiStyles["icon_button"].default_graphical_set.corner_size,
+  width=guiStyles["tool_button"].size - 2 * guiStyles["button"].default_graphical_set.base.corner_size,
+  height=guiStyles["tool_button"].size - 2 * guiStyles["button"].default_graphical_set.base.corner_size,
 
   padding = 0,
 }

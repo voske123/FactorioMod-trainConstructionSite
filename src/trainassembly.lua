@@ -991,7 +991,7 @@ function Trainassembly:onBuildEntity(createdEntity, playerIndex)
       } do
         machineRenderID[animationLayer] = rendering.draw_animation{
           animation = machineEntity.name .. "-" .. LSlib.utils.directions.toString(machineEntity.direction) .. "-" .. animationLayer,
-          render_layer = renderLayer,
+          render_layer = tostring(renderLayer),
           target = machineEntity,
           surface = machineEntity.surface,
         }

@@ -3,7 +3,7 @@ local guiLayout = LSlib.gui.layout.create("center")
 
 local guiFrame = LSlib.gui.layout.addFrame(guiLayout, "root", "traindepot-gui", "vertical", {
   --caption = {"item-name.traindepot"},
-  style   = "frame_with_even_small_even_paddings",
+  style   = "inside_shallow_frame_with_padding",
 })
 
 local guiFrameHeaderFlow = LSlib.gui.layout.addFlow(guiLayout, guiFrame, "traindepot-gui-header", "horizontal", {

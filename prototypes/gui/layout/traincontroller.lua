@@ -7,7 +7,7 @@ local guiFlow = LSlib.gui.layout.addFlow(guiLayout, "root", "traincontroller-gui
 
 local guiFrame = LSlib.gui.layout.addFrame(guiLayout, guiFlow, "traincontroller-mainframe", "vertical", {
   --caption = {"item-name.traincontroller", {[1] = "item-name.trainassembly"}},
-  style   = "frame_with_even_small_even_paddings",
+  style   = "inside_shallow_frame_with_padding",
 })
 
 local guiFrameHeaderFlow = LSlib.gui.layout.addFlow(guiLayout, guiFrame, "traincontroller-mainframe-gui-header", "horizontal", {
