@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.14
+Date: 29. 11. 2020
+  Bugfixes:
+    - Fixed hidden train signals were invalid due to base game changes in 1.1.0
+  Modding:
+    - Moved the hidden train recipe fuel item to the unsorted category and added a description
+---------------------------------------------------------------------------------------------------
 Version: 0.2.13
 Date: 27. 11. 2020
   Features:

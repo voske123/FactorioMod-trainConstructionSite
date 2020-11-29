@@ -38,7 +38,7 @@ end
 -- Initiation of the global data
 function Traincontroller:initGlobalData()
   local TC_data = {
-    ["version"                   ] = 2, -- version of the global data
+    ["version"                   ] = 3, -- version of the global data
     ["prototypeData"             ] = self:initPrototypeData(), -- data storing info about the prototypes
 
     ["trainControllerForces"     ] = {},  -- keep track of the created forces
@@ -83,9 +83,8 @@ function Traincontroller:createControllerForces()
     -- create the force and set it friendly
     local friendlyForceName = self:getControllerForceName(forceName)
     if not game.forces[friendlyForceName] then
-      game.create_force(friendlyForceName)
-          .set_friend(forceName, true)
-      --game.forces[forceName].set_friend(friendlyForceName, true)
+      game.create_force(friendlyForceName).set_friend(forceName, true)
+      game.forces[forceName].set_friend(friendlyForceName, true)
     end
 
     -- save the created force in the data structure
@@ -538,29 +537,31 @@ function Traincontroller:getHiddenEntityData(position, direction)
   -- STEP 1: Get the orientation offset depending on the orientation
   local signalOffsetX = 0
   local signalOffsetY = 0
+  local signalAdditionalOffsetX = 0
+  local signalAdditionalOffsetY = 0
   local mapviewOffsetX = 0
   local mapviewOffsetY = 0
 
   if direction == defines.direction.north then
-    signalOffsetX = -1
-    --signalOffsetY = 0
-    --mapviewOffsetX = 0
-    --mapviewOffsetY = 0
+    signalOffsetX = -0.5
+    signalOffsetY = 0.5
+    signalAdditionalOffsetX = -3
+    --signalAdditionalOffsetY = 0
   elseif direction == defines.direction.east then
-    --signalOffsetX = 0
-    signalOffsetY = -1
-    --mapviewOffsetX = 0
-    --mapviewOffsetY = 0
+    signalOffsetX = -0.5
+    signalOffsetY = -0.5
+    --signalAdditionalOffsetX = 0
+    signalAdditionalOffsetY = -3
   elseif direction == defines.direction.south then
-    signalOffsetX = 1
-    --signalOffsetY = 0
-    --mapviewOffsetX = 0
-    --mapviewOffsetY = 0
+    signalOffsetX = 0.5
+    signalOffsetY = -0.5
+    signalAdditionalOffsetX = 3
+    --signalAdditionalOffsetY = 0
   elseif direction == defines.direction.west then
-    --signalOffsetX = 0
-    signalOffsetY = 1
-    --mapviewOffsetX = 0
-    --mapviewOffsetY = 0
+    signalOffsetX = 0.5
+    signalOffsetY = 0.5
+    --signalAdditionalOffsetX = 0
+    signalAdditionalOffsetY = 3
   end
 
   -- STEP 2: Return the list with hidden entities
@@ -568,16 +569,16 @@ function Traincontroller:getHiddenEntityData(position, direction)
     [1] = { -- signal on the same side of the track
       name     = self:getControllerSignalEntityName(),
       position = {
-        x = position.x + signalOffsetX * 1,
-        y = position.y + signalOffsetY * 1,
+        x = position.x + signalOffsetX,
+        y = position.y + signalOffsetY,
       },
       direction = LSlib.utils.directions.oposite(direction),
     },
     [2] = { -- signal on the other side of the track
       name     = self:getControllerSignalEntityName(),
       position = {
-        x = position.x + signalOffsetX * 3,
-        y = position.y + signalOffsetY * 3,
+        x = position.x + signalOffsetX + signalAdditionalOffsetX,
+        y = position.y + signalOffsetY + signalAdditionalOffsetY,
       },
       direction = direction,
     },

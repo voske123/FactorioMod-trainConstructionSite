@@ -49,6 +49,8 @@ trainassemblyTrainfuel.flags = trainassemblyTrainfuel.flags or {}
 table.insert(trainassemblyTrainfuel.flags, "hidden")
 table.insert(trainassemblyTrainfuel.flags, "hide-from-bonus-gui")
 table.insert(trainassemblyTrainfuel.flags, "hide-from-fuel-tooltip")
+trainassemblyTrainfuel.localised_description = {"item-description.trainassemblyfuel"}
+trainassemblyTrainfuel.subgroup = "other"
 
 -- STEP 4: add both items to the game
 data:extend{

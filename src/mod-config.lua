@@ -6,6 +6,8 @@ local trainControllerGui = require("prototypes.gui.layout.traincontroller")
 local trainDepotGui = require("prototypes.gui.layout.traindepot")
 local helpGui = require("prototypes.gui.layout.help-gui")
 
+require("src.traincontroller")
+
 return function(configurationData)
   local modChanges = configurationData.mod_changes["trainConstructionSite"]
   if modChanges and modChanges.new_version ~= (modChanges.old_version or "") then
@@ -89,6 +91,32 @@ return function(configurationData)
         Traincontroller.Builder:deactivateOnTick()
       end
       global.TC_data.version = 2
+    end
+
+    if global.TC_data.version == 2 then
+      log("Updating Traincontroller from version 2 to version 3.")
+      for surfaceIndex, surfaceData in pairs(global.TC_data["trainControllers"] or {}) do
+        for controllerPositionY, controllerPositionData in pairs(surfaceData) do
+          for controllerPositionX, controllerData in pairs(controllerPositionData) do
+            for _, hiddenEntity in pairs(controllerData["entity-hidden"]) do
+              if hiddenEntity.valid then
+                hiddenEntity.destroy()
+              end
+            end
+            controllerData["entity-hidden"] = {}
+            local controllerEntity = controllerData["entity"]
+            for hiddenEntityIndex, hiddenEntityData in pairs(Traincontroller:getHiddenEntityData(controllerEntity.position, controllerEntity.direction)) do
+              controllerData["entity-hidden"][hiddenEntityIndex] = controllerEntity.surface.create_entity{
+                name      = hiddenEntityData.name,
+                position  = hiddenEntityData.position,
+                direction = hiddenEntityData.direction,
+                force     = Traincontroller:getDepotForceName(controllerEntity.force.name)
+              }
+            end
+          end
+        end
+      end
+      global.TC_data.version = 3
     end
 
     --------------------------------------------------
