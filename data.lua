@@ -36,3 +36,4 @@ require "prototypes.gui.styles.traindepot"
 require "prototypes.gui.styles.traincontroller"
 
 require "prototypes.tips-and-tricks.traindepot"
+require "prototypes.tips-and-tricks.trainbuilder"
