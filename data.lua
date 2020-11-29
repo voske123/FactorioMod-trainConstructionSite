@@ -34,3 +34,5 @@ require "prototypes.gui.sprites.traincontroller"
 require "prototypes.gui.styles.help-gui"
 require "prototypes.gui.styles.traindepot"
 require "prototypes.gui.styles.traincontroller"
+
+require "prototypes.tips-and-tricks.traindepot"
