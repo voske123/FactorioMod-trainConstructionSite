@@ -8,6 +8,7 @@ data:extend(
       localised_description = {"",
         {"tips-and-tricks-font-setup.TCS-header", {"tips-and-tricks-item-description.traindepot-1-h"}},
         {"tips-and-tricks-item-description.traindepot-1-1"},
+        {"tips-and-tricks-font-setup.TCS-paragraph", {"tips-and-tricks-item-description.traindepot-1-2"}},
         {"tips-and-tricks-font-setup.TCS-paragraph", {"tips-and-tricks-font-setup.TCS-header", {"tips-and-tricks-item-description.traindepot-2-h"}}},
         {"tips-and-tricks-item-description.traindepot-2-1"},
         {"tips-and-tricks-font-setup.TCS-paragraph", {"tips-and-tricks-item-description.traindepot-2-2"}},
