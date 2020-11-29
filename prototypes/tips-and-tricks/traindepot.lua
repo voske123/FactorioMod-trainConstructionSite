@@ -30,23 +30,17 @@ data:extend(
       simulation = {
         init =
         [[
-          global.player = game.create_test_player{name = "Voske_123"}
-          global.player.color = {70, 192, 181}
-          global.character = global.player.character
-          game.camera_player = global.player
-          game.camera_zoom = 0.8
-          
           local surface = game.surfaces[1]
           global.rail_position = {x=14, y=0}
           local rail_length = 100
-                    
+          game.camera_position = {0, global.rail_position.y - 1}
+          game.camera_zoom = 0.8
+          
           for x = -rail_length + global.rail_position.x, rail_length + global.rail_position.x, 2 do
             surface.create_entity{name = "straight-rail", position = {x, global.rail_position.y - 7}, direction = 2}
             surface.create_entity{name = "straight-rail", position = {x, global.rail_position.y - 1}, direction = 2}
             surface.create_entity{name = "straight-rail", position = {x, global.rail_position.y + 5}, direction = 2}
           end
-          
-          global.player.teleport({0, global.rail_position.y + 2}, global.player.surface) 
           
           global.traindepot = {
             surface.create_entity{name = "traindepot", position = {global.rail_position.x, global.rail_position.y - 5}, direction = 2, force = "player", raise_build = true},
