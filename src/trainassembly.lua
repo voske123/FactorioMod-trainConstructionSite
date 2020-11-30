@@ -402,16 +402,16 @@ function Trainassembly:deleteBuilding(machineEntity)
 
     if (trainAssemblerNW and (not trainAssemblerSE)) or (trainAssemblerSE and (not trainAssemblerNW)) then -- only one neighbour
 
-    local trainBuilderIndex = global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"]
-    Traincontroller:onTrainbuilderAltered(trainBuilderIndex)
+      local trainBuilderIndex = global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"]
+      Traincontroller:onTrainbuilderAltered(trainBuilderIndex)
 
-    -- delete the assembler out of the trainbuilder
-    for locationIndex, location in pairs(global.TA_data["trainBuilders"][trainBuilderIndex]) do
-      if location["surfaceIndex"] == machineSurface.index and location["position"].y == machinePosition.y and location["position"].x == machinePosition.x then
-        table.remove(global.TA_data["trainBuilders"][trainBuilderIndex], locationIndex)
-        break
+      -- delete the assembler out of the trainbuilder
+      for locationIndex, location in pairs(global.TA_data["trainBuilders"][trainBuilderIndex]) do
+        if location["surfaceIndex"] == machineSurface.index and location["position"].y == machinePosition.y and location["position"].x == machinePosition.x then
+          table.remove(global.TA_data["trainBuilders"][trainBuilderIndex], locationIndex)
+          break
+        end
       end
-    end
 
     else -- there are two neighbours
 
@@ -432,7 +432,7 @@ function Trainassembly:deleteBuilding(machineEntity)
           break
         end
       end
-
+      
       for locationIndex, location in pairs(global.TA_data["trainBuilders"][trainBuilderIndex]) do
         local needToMove = false
 
