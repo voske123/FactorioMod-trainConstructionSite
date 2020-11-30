@@ -35,19 +35,18 @@ data:extend(
           game.surfaces[1].build_checkerboard({{-area_size, -area_size}, {area_size, area_size}})
 
           global.player = game.create_test_player{name = "Voske_123"}
-          global.player.character.color = {70, 192, 181}
+          global.player.color = {70, 192, 181}
           global.player.teleport({0.5, 6.5})
-          global.player.character.orientation = 0.5
+          global.player.character.direction = defines.direction.south
           game.camera_alt_info = true
           game.camera_player = global.player 
           game.camera_zoom = 0.5
           game.camera_player_cursor_position = global.player.position
 
           local surface = game.surfaces[1]
-          for x = -40, 40 ,2 do
+          for x = -40, 40, 2 do
             surface.create_entity{name = "straight-rail", position = {x, 1}, direction = 2}
           end
-
           
           surface.create_entity{name = "trainassembly-machine", position = {-17, 1}, direction = 6}.set_recipe("locomotive-fluid[locomotive]")
           surface.create_entity{name = "trainassembly-machine", position = {-10, 1},  direction = 6}.set_recipe("artillery-wagon-fluid[artillery-wagon]")
