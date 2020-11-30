@@ -5,6 +5,7 @@ Date: 29. 11. 2020
     - Added tips and tricks for traindepot
   Changes:
     - Streamlined the styling of the UIs to be more in line with base game v1.1.0
+    - The traincontroller now shows the color LED next to the status
   Bugfixes:
     - Fixed hidden train signals were invalid due to base game changes in v1.1.0
     - Fixed crashes related to the color picker UI

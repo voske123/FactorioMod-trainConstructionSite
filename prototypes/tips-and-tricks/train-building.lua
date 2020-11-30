@@ -3,7 +3,7 @@ data:extend(
     {
       type = "tips-and-tricks-item",
       name = "TCS-train-building",
-      tag = "[item=locomotive]",
+      tag = "[entity=locomotive]",
       localised_name = {"tips-and-tricks-item-name.TCS-train-building"},
       localised_description = {"",
         {"tips-and-tricks-font-setup.TCS-header", {"tips-and-tricks-item-description.TCS-introduction-1-h"}},
