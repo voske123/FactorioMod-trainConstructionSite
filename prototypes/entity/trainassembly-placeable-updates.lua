@@ -13,6 +13,7 @@ end
 for _, railData in pairs(data.raw["curved-rail"]) do
   railData.collision_mask = collision_mask_util.get_mask(railData)
   collision_mask_util.add_layer(railData.collision_mask, extraLayer1)
+  railData.selection_priority = 49 -- default is 50
 end
 
 --add collision mask to signals

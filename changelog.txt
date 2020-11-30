@@ -8,6 +8,7 @@ Date: 29. 11. 2020
   Bugfixes:
     - Fixed hidden train signals were invalid due to base game changes in v1.1.0
     - Fixed crashes related to the color picker UI
+    - Fixed trains were almost unselectable on curved rails
   Modding:
     - Moved the hidden train recipe fuel item to the unsorted category and added a description
 ---------------------------------------------------------------------------------------------------

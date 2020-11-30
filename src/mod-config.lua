@@ -3,7 +3,6 @@ require("__LSlib__/LSlib")
 -- To make sure everything is inline with the technology tree when the mod is added.
 -- This is for when the mod is added into an existing game or when the mod is updated.
 local trainControllerGui = require("prototypes.gui.layout.traincontroller")
-local trainControllerGui2 = require("prototypes.gui.layout.traincontroller")
 local trainDepotGui = require("prototypes.gui.layout.traindepot")
 local helpGui = require("prototypes.gui.layout.help-gui")
 
