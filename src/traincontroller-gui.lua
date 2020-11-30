@@ -20,7 +20,7 @@ end
 -- Initiation of the global data
 function Traincontroller.Gui:initGlobalData()
   local gui = {
-    ["version"       ] = 4, -- version of the global data
+    ["version"       ] = 5, -- version of the global data
     ["surfaceName"   ] = "trainConstructionSite",
     ["prototypeData" ] = self:initPrototypeData(), -- data storing info about the prototypes
     ["openedEntities"] = {}, -- opened entity for each player
@@ -676,7 +676,7 @@ end
 function Traincontroller.Gui:destroyGui(playerIndex)
   -- make sure the color picker is closed first
   local colorPickerElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("traincontroller-color-picker"))
-  if colorPickerElement.visible then
+  if colorPickerElement and colorPickerElement.visible then
     -- simulate clicking discard
     self:getClickHandler("traincontroller-color-picker-button-discard")(nil, playerIndex)
   end

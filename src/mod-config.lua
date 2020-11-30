@@ -3,6 +3,7 @@ require("__LSlib__/LSlib")
 -- To make sure everything is inline with the technology tree when the mod is added.
 -- This is for when the mod is added into an existing game or when the mod is updated.
 local trainControllerGui = require("prototypes.gui.layout.traincontroller")
+local trainControllerGui2 = require("prototypes.gui.layout.traincontroller")
 local trainDepotGui = require("prototypes.gui.layout.traindepot")
 local helpGui = require("prototypes.gui.layout.help-gui")
 
@@ -140,6 +141,18 @@ return function(configurationData)
       global.TC_data.Gui.version = 4
     end
 
+    if global.TC_data.Gui.version == 4 then
+      log("Updating Traincontroller.Gui from version 4 to version 5.")
+      for playerIndex, _ in pairs(game.players) do
+        if Traincontroller.Gui:hasOpenedGui(playerIndex) then
+          game.players[playerIndex].opened = Traincontroller.Gui:destroyGui(playerIndex)
+          Traincontroller.Gui:setOpenedControllerEntity(playerIndex, nil)
+        end
+      end
+      global.TC_data.Gui["prototypeData"] = Traincontroller.Gui:initPrototypeData()
+      global.TC_data.Gui.version = 5
+    end
+
     --------------------------------------------------
     -- Traindepot script                            --
     --------------------------------------------------
@@ -167,6 +180,18 @@ return function(configurationData)
       log("Updating Traindepot.Gui from version 3 to version 4.")
       global.TD_data.Gui["prototypeData"]["trainDepotGui"] = trainDepotGui
       global.TD_data.Gui.version = 4
+    end
+
+    if global.TD_data.Gui.version == 4 then
+      log("Updating Traindepot.Gui from version 4 to version 5.")
+      for playerIndex, _ in pairs(game.players) do 
+        if Traindepot.Gui:hasOpenedGui(playerIndex) then
+          Traindepot.Gui:setOpenedEntity(playerIndex, nil)
+          game.players[playerIndex].opened = Traindepot.Gui:destroyGui(playerIndex)
+        end
+      end
+      global.TD_data.Gui["prototypeData"] = Traindepot.Gui:initPrototypeData()
+      global.TD_data.Gui.version = 5
     end
 
     --------------------------------------------------
