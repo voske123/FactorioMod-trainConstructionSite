@@ -5,10 +5,10 @@ LSlib.styles.addFillerFrameStyles()
 local guiStyles = data.raw["gui-style"]["default"]
 
 -- traincontroller custom styles -----------------------------------------------
-guiStyles["traincontroller_contentFlow"] = {
-  type   = "horizontal_flow_style",
-
-  horizontal_spacing = 0,
+guiStyles["traincontroller_contentFlowingFrame"] = {
+  type   = "frame_style",
+  parent = "window_content_frame_packed",
+  graphical_set = {},
 }
 
 guiStyles["traincontroller_contentFrame"] = {
@@ -82,6 +82,7 @@ guiStyles["traincontroller_color_indicator_button_housing"] = {
   parent = "tool_button",
 
   padding = 0,
+  size = guiStyles["slot_button"].size
 }
 
 guiStyles["traincontroller_color_indicator_button_housing_pressed"] = {
@@ -95,7 +96,7 @@ guiStyles["traincontroller_color_indicator_button_housing_pressed"] = {
 guiStyles["traincontroller_color_indicator_button_color"] = {
   type = "progressbar_style",
   --parent = "progressbar",
-  bar_width = 36,
+  bar_width = guiStyles["slot_button"].size - 2*2,
   bar =
   {
     filename = "__core__/graphics/gui.png",
@@ -111,8 +112,8 @@ guiStyles["traincontroller_color_indicator_button_color"] = {
     scale = 1,
   },
 
-  width=guiStyles["tool_button"].size - 2 * guiStyles["button"].default_graphical_set.base.corner_size,
-  height=guiStyles["tool_button"].size - 2 * guiStyles["button"].default_graphical_set.base.corner_size,
+  width=32,--guiStyles["slot_button"].size - 2 * guiStyles["button"].default_graphical_set.base.corner_size,
+  height=32,--guiStyles["slot_button"].size - 2 * guiStyles["button"].default_graphical_set.base.corner_size,
 
   padding = 0,
 }
@@ -131,8 +132,8 @@ guiStyles["traincontroller_color_indicator_button_sprite"] = {
   width  = guiStyles["traincontroller_color_indicator_button_color"].width ,
   height = guiStyles["traincontroller_color_indicator_button_color"].height,
 
-  left_padding   = math.floor(0.5 + .1   * guiStyles["traincontroller_color_indicator_button_color"].width ),
-  rigth_padding  = math.floor(0.5 + .125 * guiStyles["traincontroller_color_indicator_button_color"].width ),
-  top_padding    = math.floor(0.5 + .125 * guiStyles["traincontroller_color_indicator_button_color"].height),
-  bottom_padding = math.floor(0.5 + .125 * guiStyles["traincontroller_color_indicator_button_color"].height),
+  left_padding   = 2,--math.floor(0.5 + .1   * guiStyles["traincontroller_color_indicator_button_color"].width ),
+  rigth_padding  = 2,--math.floor(0.5 + .125 * guiStyles["traincontroller_color_indicator_button_color"].width ),
+  top_padding    = 2,--math.floor(0.5 + .125 * guiStyles["traincontroller_color_indicator_button_color"].height),
+  bottom_padding = 2,--math.floor(0.5 + .125 * guiStyles["traincontroller_color_indicator_button_color"].height),
 }

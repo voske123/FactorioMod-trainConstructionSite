@@ -1,13 +1,13 @@
 
-local guiLayout = LSlib.gui.layout.create("center")
+local guiLayout = LSlib.gui.layout.create("screen")
 
-local guiFlow = LSlib.gui.layout.addFlow(guiLayout, "root", "traincontroller-gui", "horizontal", {
-  style = "traincontroller_contentFlow", -- no padding
+local guiFlow = LSlib.gui.layout.addFrame(guiLayout, "root", "traincontroller-gui", "horizontal", {
+  style = "traincontroller_contentFlowingFrame", -- no padding
 })
 
 local guiFrame = LSlib.gui.layout.addFrame(guiLayout, guiFlow, "traincontroller-mainframe", "vertical", {
   --caption = {"item-name.traincontroller", {[1] = "item-name.trainassembly"}},
-  style   = "inside_shallow_frame_with_padding",
+  style   = "frame",
 })
 
 local guiFrameHeaderFlow = LSlib.gui.layout.addFlow(guiLayout, guiFrame, "traincontroller-mainframe-gui-header", "horizontal", {
@@ -19,14 +19,14 @@ LSlib.gui.layout.addLabel(guiLayout, guiFrameHeaderFlow, "traincontroller-mainfr
   style   = "LSlib_default_frame_title",
   ignored_by_interaction = true,
 })
-LSlib.gui.layout.addFrame(guiLayout, guiFrameHeaderFlow, "traincontroller-mainframe-gui-header-filler", "vertical", {
-  style = "LSlib_default_header_filler",
-  ignored_by_interaction = true,
+LSlib.gui.layout.addEmptyWidget(guiLayout, guiFrameHeaderFlow, "traincontroller-mainframe-gui-header-filler", {
+  drag_target = guiFlow,
+  style       = "LSlib_default_draggable_header",
 })
-LSlib.gui.layout.addSpriteButton(guiLayout, guiFrameHeaderFlow, "traincontroller-help", {
-  sprite = "utility/questionmark"      ,
-  style = "LSlib_default_header_button",
-})
+--LSlib.gui.layout.addSpriteButton(guiLayout, guiFrameHeaderFlow, "traincontroller-help", {
+--  sprite = "utility/questionmark"      ,
+--  style = "LSlib_default_header_button",
+--})
 
 local guiTabContent = LSlib.gui.layout.addTabs(guiLayout, guiFrame, "traincontroller-tab", {
   { -- first tab
@@ -149,9 +149,13 @@ controllerFlow = LSlib.gui.layout.addFlow(guiLayout, controllerFlow, "statistics
 local colorPicker = LSlib.gui.layout.addFrame(guiLayout, guiFlow, "traincontroller-color-picker", "vertical", {
   visible = false
 })
-LSlib.gui.layout.addFrame(guiLayout, colorPicker, "traincontroller-color-picker-button-filler", "vertical", {
-  style = "LSlib_default_header_filler",
-  ignored_by_interaction = true,
+--LSlib.gui.layout.addFrame(guiLayout, colorPicker, "traincontroller-color-picker-button-filler", "vertical", {
+--  style = "LSlib_default_header_filler",
+--  ignored_by_interaction = true,
+--})
+LSlib.gui.layout.addEmptyWidget(guiLayout, colorPicker, "traincontroller-color-picker-button-filler", {
+  drag_target = guiFlow,
+  style       = "LSlib_default_draggable_header",
 })
 
 for _,color in pairs{"red", "green", "blue"} do

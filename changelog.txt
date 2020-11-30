@@ -1,8 +1,13 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.14
 Date: 29. 11. 2020
+  Features:
+    - Added tips and tricks for traindepot
+  Changes:
+    - Streamlined the styling of the UIs to be more in line with base game v1.1.0
   Bugfixes:
-    - Fixed hidden train signals were invalid due to base game changes in 1.1.0
+    - Fixed hidden train signals were invalid due to base game changes in v1.1.0
+    - Fixed crashes related to the color picker UI
   Modding:
     - Moved the hidden train recipe fuel item to the unsorted category and added a description
 ---------------------------------------------------------------------------------------------------
@@ -14,7 +19,7 @@ Date: 27. 11. 2020
 Version: 0.2.12
 Date: 26. 11. 2020
   Features:
-    - Updated to factorio 1.1
+    - Updated to factorio v1.1.0
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.11
 Date: 27. 08. 2020

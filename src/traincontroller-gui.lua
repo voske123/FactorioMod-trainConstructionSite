@@ -255,7 +255,7 @@ function Traincontroller.Gui:initClickHandlers()
         local colorPickerIndexFrame = colorPickerFrame[string.format(colorName, "flow-"..colorIndex)]
         local colorPickerIndexValue = math.floor(.5 + (color[colorIndex] or 0) * 255)
         colorPickerIndexFrame[string.format(colorName, "slider"   )].slider_value = colorPickerIndexValue
-        colorPickerIndexFrame[string.format(colorName, "textfield")].text         = colorPickerIndexValue
+        colorPickerIndexFrame[string.format(colorName, "textfield")].text         = ""..colorPickerIndexValue
       end
 
       -- set the entity-preview entity
@@ -301,14 +301,17 @@ function Traincontroller.Gui:initClickHandlers()
 
     -- also remove the entity-preview entity
     local entityRadius = 10
-    game.surfaces[Traincontroller.Gui:getControllerSurfaceName()].find_entities_filtered{
+    local entity = game.surfaces[Traincontroller.Gui:getControllerSurfaceName()].find_entities_filtered{
       name      = "straight-rail",
       invert    = true,
       position  = {x = 3*entityRadius*playerIndex,
                    y = 0                         },
       radius    = entityRadius,
       limit     = 1,
-    }[1].destroy()
+    }[1]
+    if entity then
+      entity.destroy()
+    end
 
     -- STEP 2: find the selected one
     local clickedElementStyle        = "traincontroller_color_indicator_button_housing"
@@ -457,7 +460,7 @@ function Traincontroller.Gui:initClickHandlers()
     local clickedElementValue = math.floor(.5 + clickedElement.slider_value)
     local textfieldElement = clickedElement.parent["traincontroller-color-picker-textfield"]
     if tonumber(textfieldElement.text) ~= clickedElementValue then
-      textfieldElement.text = clickedElementValue
+      textfieldElement.text = ""..clickedElementValue
     else
       return -- no update required
     end
