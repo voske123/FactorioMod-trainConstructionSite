@@ -331,7 +331,7 @@ function Traincontroller.Builder:buildNextTrain(trainBuilderIndex)
                 r = createdEntityColor.r,
                 g = createdEntityColor.g,
                 b = createdEntityColor.b,
-                a = 127/255, -- hardcoded for vanilla trains
+                a = createdEntity.color and createdEntity.color.a or 127/255, -- hardcoded for vanilla trains
               }
 
             end

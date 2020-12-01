@@ -382,9 +382,22 @@ function Traincontroller.Gui:initClickHandlers()
         -- STEP 4: save the machine tint
         local controllerEntity = Traincontroller.Gui:getOpenedControllerEntity(playerIndex)
         local trainAssemblerLocation = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(controllerEntity))[tonumber(assemblerElementIndex)]
-        Trainassembly:setMachineTint(Trainassembly:getMachineEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position), colorElement[colorElement.name].style.color)
+        local trainAssemblerEntity = Trainassembly:getMachineEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position)
+        Trainassembly:setMachineTint(trainAssemblerEntity, colorElement[colorElement.name].style.color)
 
-        -- STEP 5: update opened UI's
+        -- STEP 5: update the color of the build entity (if any)
+        local createdEntity = Trainassembly:getCreatedEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position)
+        if createdEntity then
+          local createdEntityColor = Trainassembly:getMachineTint(trainAssemblerEntity)
+          createdEntity.color = {
+            r = createdEntityColor.r,
+            g = createdEntityColor.g,
+            b = createdEntityColor.b,
+            a = createdEntity.color and createdEntity.color.a or 127/255, -- hardcoded for vanilla trains
+          }
+        end
+
+        -- STEP 6: update opened UI's
         Traincontroller.Gui:updateOpenedGuis(controllerEntity)
 
         break -- no need to look further

@@ -1126,6 +1126,36 @@ function Trainassembly:onPlayerRotatedEntity(rotatedEntity)
     local createdTrainEntity = self:getCreatedEntity(rotatedEntity.surface.index, rotatedEntity.position)
     if createdTrainEntity and createdTrainEntity.valid then
       createdTrainEntity.rotate()
+      if createdTrainEntity.direction ~= newDirection then
+        local createdTrainEntityStats = {
+          type               = createdTrainEntity.type,
+          name               = createdTrainEntity.name,
+          surface            = createdTrainEntity.surface,
+          position           = createdTrainEntity.position,
+          direction          = newDirection,
+          force              = createdTrainEntity.force,
+          snap_to_train_stop = false,
+          color              = createdTrainEntity.color
+        }
+        createdTrainEntity.destroy{raise_destroy=true}
+        createdTrainEntity = createdTrainEntityStats.surface.create_entity(createdTrainEntityStats)
+        local rotatedEntityRecipe = rotatedEntity.get_recipe()
+        if rotatedEntityRecipe then
+          for _,ingredient in pairs(rotatedEntityRecipe.ingredients) do
+            if ingredient.name == "trainassembly-recipefuel" then
+              createdTrainEntity.get_fuel_inventory().insert{
+                name  = "trainassembly-trainfuel",
+                count = ingredient.amount,
+              }
+            end
+          end
+        end
+        createdTrainEntity.color = createdTrainEntityStats.color
+        script.raise_event(defines.events.script_raised_built, {
+          entity = createdTrainEntity
+        })
+        Trainassembly:setCreatedEntity(rotatedEntity.surface.index, rotatedEntity.position, createdTrainEntity)
+      end
     end
   end
 end

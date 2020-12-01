@@ -19,6 +19,8 @@ Date: 01. 12. 2020
     - Fixed trains were almost unselectable on curved rails
     - Fixed ingame error message due to invalid data structure, could not find the reason why...
     - Fixed deconstructing the traincontroller would not return the build train to the trainbuilder
+    - Fixed that rotating the trainbuilder would not rotate the created rolling stock
+    - Fixed that changing the trainbuilder color would not color the created rolling stock directly
   Modding:
     - Moved the hidden train recipe fuel item to the unsorted category and added a description
 ---------------------------------------------------------------------------------------------------
