@@ -16,6 +16,7 @@ Date: 01. 12. 2020
     - Fixed crashes related to the color picker UI
     - Fixed trains were almost unselectable on curved rails
     - Fixed ingame error message due to invalid data structure, could not find the reason why...
+    - Fixed deconstructing the traincontroller would not return the build train to the trainbuilder
   Modding:
     - Moved the hidden train recipe fuel item to the unsorted category and added a description
 ---------------------------------------------------------------------------------------------------

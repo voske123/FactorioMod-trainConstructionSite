@@ -550,6 +550,18 @@ function Trainassembly:deleteCreatedTrainEntity(machineSurfaceIndex, machinePosi
   if createdTrainEntity and createdTrainEntity.valid then
     createdTrainEntity.destroy()
     self:setCreatedEntity(machineSurfaceIndex, machinePosition, nil)
+
+    -- attempt to put the train back in the recipe result.
+    local machineEntity = self:getMachineEntity(machineSurfaceIndex, machinePosition)
+    if machineEntity and machineEntity.valid then
+      local machineRecipe = machineEntity.get_recipe()
+      if machineRecipe then
+        machineEntity.insert_fluid({
+          name = machineRecipe.products[1].name,
+          amount = 1
+        })
+      end
+    end
   end
 end
 
