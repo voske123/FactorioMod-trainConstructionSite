@@ -2,7 +2,10 @@
 Version: 0.2.14
 Date: 29. 11. 2020
   Features:
+    - Added tips and tricks for train building
     - Added tips and tricks for traindepot
+    - Added tips and tricks for trainbuilder
+    - Added tips and tricks for traincontroller
   Changes:
     - Streamlined the styling of the UIs to be more in line with base game v1.1.0
     - The traincontroller now shows the color LED next to the status

@@ -81,13 +81,13 @@ data:extend(
                     wait_conditions = 
                     {
                       {
-                        type = "passenger_not_present",
+                        type = "passenger_present",
                         compare_type = "and",
                       }
                     }
                   }
                 }
-              }              
+              }
               global.player.cursor_stack.clear()
               state_3()
             end)
