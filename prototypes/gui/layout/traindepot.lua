@@ -23,6 +23,10 @@ LSlib.gui.layout.addEmptyWidget(guiLayout, guiFrameHeaderFlow, "traindepot-gui-h
 --  sprite = "utility/questionmark"      ,
 --  style = "LSlib_default_header_button",
 --})
+LSlib.gui.layout.addSpriteButton(guiLayout, guiFrameHeaderFlow, "traindepot-close", {
+  sprite = "utility/close_white"      ,
+  style = "LSlib_default_header_button",
+})
 
 local guiTabContent = LSlib.gui.layout.addTabs(guiLayout, guiFrame, "traindepot-tab", {
   { -- first tab

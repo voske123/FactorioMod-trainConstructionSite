@@ -4,7 +4,6 @@ require("__LSlib__/LSlib")
 -- This is for when the mod is added into an existing game or when the mod is updated.
 local trainControllerGui = require("prototypes.gui.layout.traincontroller")
 local trainDepotGui = require("prototypes.gui.layout.traindepot")
-local helpGui = require("prototypes.gui.layout.help-gui")
 
 require("src.traincontroller")
 
@@ -196,18 +195,27 @@ return function(configurationData)
     --------------------------------------------------
     -- Help.Gui script                              --
     --------------------------------------------------
-    if global.H_data.Gui.version == 1 then
-      log("Updating Help.Gui from version 1 to version 2.")
-      global.H_data.Gui["clickHandler"] = nil
-      global.H_data.Gui.version = 2
+    if global.H_data.Gui then
+      if global.H_data.Gui.version then
+        log("Removing Help.Gui version "..(global.H_data.Gui.version or "unknown")..".")
+      end
+      for player_index, _ in pairs(game.players) do
+        if global.H_data.Gui["openedGui"][playerIndex] then
+          global.H_data.Gui["openedGui"][playerIndex].destroy()
+        end
+      end
+      global.H_data.Gui = nil
     end
 
-    if global.H_data.Gui.version == 2 then
-      log("Updating Help.Gui from version 2 to version 3.")
-      global.H_data.Gui["prototypeData"]["helpGui"] = helpGui
-      global.H_data.Gui.version = 3
+    --------------------------------------------------
+    -- Help script                                  --
+    --------------------------------------------------
+    if global.H_data then
+      if global.H_data.version then
+        log("Removing Help version "..(global.H_data.version or "unknown")..".")
+      end
+      global.H_data = nil
     end
 
   end
 end
-

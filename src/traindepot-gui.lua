@@ -81,7 +81,18 @@ function Traindepot.Gui:initClickHandlers()
     game.players[playerIndex].opened = Traindepot.Gui:destroyGui(playerIndex)
 
     -- open the new UI
-    Help.Gui:openGui(playerIndex)
+    --Help.Gui:openGui(playerIndex)
+  end
+
+
+
+  ------------------------------------------------------------------------------
+  -- close button handler
+  ------------------------------------------------------------------------------
+  clickHandlers["traindepot-close"] = function(clickedElement, playerIndex)
+    -- close this UI
+    Traindepot.Gui:setOpenedEntity(playerIndex, nil)
+    game.players[playerIndex].opened = Traindepot.Gui:destroyGui(playerIndex)
   end
 
 

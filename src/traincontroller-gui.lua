@@ -148,7 +148,18 @@ function Traincontroller.Gui:initClickHandlers()
     Traincontroller.Gui:setOpenedControllerEntity(playerIndex, nil)
 
     -- open the new UI
-    Help.Gui:openGui(playerIndex)
+    --Help.Gui:openGui(playerIndex)
+  end
+
+
+
+  ------------------------------------------------------------------------------
+  -- close button handler
+  ------------------------------------------------------------------------------
+  clickHandlers["traincontroller-close"] = function(clickedElement, playerIndex)
+    -- close this UI
+    game.players[playerIndex].opened = Traincontroller.Gui:destroyGui(playerIndex)
+    Traincontroller.Gui:setOpenedControllerEntity(playerIndex, nil)
   end
 
 

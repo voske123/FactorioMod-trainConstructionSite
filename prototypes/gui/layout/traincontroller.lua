@@ -27,6 +27,10 @@ LSlib.gui.layout.addEmptyWidget(guiLayout, guiFrameHeaderFlow, "traincontroller-
 --  sprite = "utility/questionmark"      ,
 --  style = "LSlib_default_header_button",
 --})
+LSlib.gui.layout.addSpriteButton(guiLayout, guiFrameHeaderFlow, "traincontroller-close", {
+  sprite = "utility/close_white"      ,
+  style = "LSlib_default_header_button",
+})
 
 local guiTabContent = LSlib.gui.layout.addTabs(guiLayout, guiFrame, "traincontroller-tab", {
   { -- first tab

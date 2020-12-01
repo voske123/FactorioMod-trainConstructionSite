@@ -1,7 +1,6 @@
 require("__LSlib__/LSlib")
 
 require "src.debug"
-require "src.help"
 require "src.traindepot"
 require "src.trainassembly"
 require "src.traincontroller"
@@ -16,7 +15,6 @@ script.on_init(function(event)
   -- This is called once when a new save game is created or once
   -- when a save file is loaded that previously didn't contain the mod.
   Debug           :onInit()
-  Help            :onInit()
   Traindepot      :onInit()
   Trainassembly   :onInit()
   Traincontroller :onInit()
@@ -49,7 +47,6 @@ end)
 
 script.on_event(defines.events.on_player_left_game, function(event)
   -- Called after a player leaves the game.
-  Help           .Gui:onPlayerLeftGame(event.player_index)
   Traindepot     .Gui:onPlayerLeftGame(event.player_index)
   Traincontroller.Gui:onPlayerLeftGame(event.player_index)
 end)
@@ -123,13 +120,6 @@ end)
 
 
 
-script.on_event(defines.events.on_mod_item_opened, function(event)
-  -- Called when the player opens a GUI.
-  Help:onOpenItem(event.item, event.player_index)
-end)
-
-
-
 script.on_event(defines.events.on_gui_opened, function(event)
   -- Called when the player opens a GUI.
   Traindepot     .Gui:onOpenEntity(event.entity, event.player_index)
@@ -140,7 +130,6 @@ end)
 
 script.on_event(defines.events.on_gui_closed, function(event)
   -- Called when the player closes a GUI.
-  Help           .Gui:onCloseEntity(event.element, event.player_index)
   Traindepot     .Gui:onCloseEntity(event.element, event.player_index)
   Traincontroller.Gui:onCloseEntity(event.element, event.player_index)
   --Traincontroller.Gui:onCloseEntity(event.entity , event.player_index)
@@ -154,7 +143,6 @@ script.on_event({--defines.events.on_gui_elem_changed           , -- Called when
                  defines.events.on_gui_selection_state_changed, -- Called when selection state is changed (dropdown/listbox)
                  defines.events.on_gui_click                  }, function(event)
   -- Called when the player clicks on a GUI.
-  Help           .Gui:onClickElement(event.element, event.player_index)
   Traindepot     .Gui:onClickElement(event.element, event.player_index)
   Traincontroller.Gui:onClickElement(event.element, event.player_index)
 end)
