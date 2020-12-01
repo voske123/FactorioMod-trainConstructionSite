@@ -139,3 +139,33 @@ if mods["Cannon_Spidertron"] then
   LSlib.item.setOrderstring("item-with-entity-data", "cannon-spidertron", string.format("b-%s",
     LSlib.item.getOrderstring("item-with-entity-data", "cannon-spidertron") or "z[error]"))
 end
+
+if mods["JunkTrain3"] then
+  local transportRailway = util.table.deepcopy(data.raw["item-subgroup"]["transport"])
+  transportRailway.name = "TCS-JunkTrain"
+  transportRailway.group = "transport-logistics"
+  transportRailway.order = "a-b[JunkTrain]"
+  data:extend({transportRailway})
+
+  LSlib.item.setSubgroup("rail-planner", "scrap-rail", transportRailway.name)
+  LSlib.item.setOrderstring("rail-planner", "scrap-rail",
+    LSlib.item.getOrderstring("rail-planner", "rail") or "z[error]")
+
+  LSlib.item.setSubgroup("item", "train-stop-scrap", transportRailway.name)
+  LSlib.item.setOrderstring("item", "train-stop-scrap",
+    LSlib.item.getOrderstring("item", "train-stop") or "z[error]")
+
+  LSlib.item.setSubgroup("item", "rail-signal-scrap", transportRailway.name)
+  LSlib.item.setOrderstring("item", "rail-signal-scrap",
+    LSlib.item.getOrderstring("item", "rail-signal") or "z[error]")
+
+  LSlib.item.setSubgroup("item", "rail-chain-signal-scrap", transportRailway.name)
+  LSlib.item.setOrderstring("item", "rail-chain-signal-scrap",
+    LSlib.item.getOrderstring("item", "rail-chain-signal") or "z[error]")
+
+  LSlib.item.setSubgroup("item", "JunkTrain", transportRailway.name)
+  LSlib.item.setOrderstring("item", "JunkTrain", "d-a")
+
+  LSlib.item.setSubgroup("item", "ScrapTrailer", transportRailway.name)
+  LSlib.item.setOrderstring("item", "ScrapTrailer", "d-b")
+end

@@ -61,4 +61,17 @@ if mods["VehicleWagon2"] then
   end
 end
 
+if mods["JunkTrain3"] then
+  for _,locomotive in pairs{
+    "JunkTrain",
+  } do
+    trainsToIgnore["locomotive"][locomotive] = true
+  end
+  for _,cargowagon in pairs{
+    "ScrapTrailer",
+  } do
+    trainsToIgnore["cargo-wagon"][cargowagon] = true
+  end
+end
+
 return trainsToIgnore

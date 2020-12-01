@@ -6,6 +6,7 @@ Date: 01. 12. 2020
     - Added tips and tricks for traindepot
     - Added tips and tricks for trainbuilder
     - Added tips and tricks for traincontroller
+    - Added support for modded trains from "Junk Train"
   Changes:
     - Streamlined the styling of the UIs to be more in line with base game v1.1.0
     - The traincontroller now shows the color LED next to the status
