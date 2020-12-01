@@ -41,7 +41,7 @@ for _, trainType in pairs{
         data.raw[trainType][item.place_result].order = item.order
 
         item.subgroup = "transport"
-        item.order    = (itemOrder[trainType][item.name] and itemOrder[trainType][item.name].."-" or "") .. item.order
+        item.order    = (itemOrder[trainType][item.name] and (itemOrder[trainType][item.name].."-") or "") .. (item.order or trainEntity.order or "z[unknown]")
         
         -- create dummy item for placeable_by
         local itemDummy = util.table.deepcopy(item)
@@ -49,8 +49,8 @@ for _, trainType in pairs{
         itemDummy.flags = itemDummy.flags or {}
         table.insert(itemDummy.flags, "hidden")
         data:extend{itemDummy}
-
-        item.localised_name        = item.localised_name and {"item-name.trainparts", item.localised_name} or {"item-name.trainparts", "__ENTITY__"..trainEntity.name.."__"}
+        
+        item.localised_name        = (item.localised_name and {"item-name.trainparts", item.localised_name}) or (trainEntity.localised_name and {"item-name.trainparts", trainEntity.localised_name}) or {"item-name.trainparts", "__ENTITY__"..trainEntity.name.."__"}
         item.localised_description = {"item-description.trainparts", {"", string.format("[img=item/%s] ", itemDummy.name), util.table.deepcopy(item.localised_name[2])}}
 
         -- Add item to remove the place_result.

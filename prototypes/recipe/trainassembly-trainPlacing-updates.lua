@@ -59,6 +59,12 @@ for _, trainType in pairs({
       -- Now we update the existing recipe. We need to update the localised_name...
       local recipeName = recipeOverride[trainType][trainEntity.name] or itemName
       if item then
+        if data.raw.recipe[recipeName] then
+          data.raw.recipe[recipeName].icon = nil
+          data.raw.recipe[recipeName].icon_size = nil
+          data.raw.recipe[recipeName].icon_mipmaps = nil
+          data.raw.recipe[recipeName].icons = nil
+        end
         LSlib.recipe.setLocalisedName(recipeName, util.table.deepcopy(item.localised_name))
         LSlib.recipe.setMainResult(recipeName, itemName)
         LSlib.recipe.setShowProduct(recipeName, true)

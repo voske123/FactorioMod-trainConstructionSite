@@ -317,4 +317,24 @@ if mods["Electronic_Battle_Locomotives"] then
   }
 end
 
+if mods["fast_trans"] then
+  createOrdering{
+    ["locomotive"] = {
+      ["fast-one"] = "aa[locomotive]-e[fast_trans]-a",
+      ["fast-one-mk2"] = "aa[locomotive]-e[fast_trans]-b",
+      ["fast-one-mk3"] = "aa[locomotive]-e[fast_trans]-c",
+    },
+
+    ["cargo-wagon"] = {
+      ["cargo-wagon-immortal-mk2"         ] = "ab[cargo-wagon]-e[fast_trans]-a",
+      ["cargo-wagon-immortal-mk3"         ] = "ab[cargo-wagon]-e[fast_trans]-b",
+    },
+
+    ["fluid-wagon"] = {
+      ["fluid-wagon-immortal-mk2"         ] = "ac[fluid-wagon]-e[fast_trans]-a",
+      ["fluid-wagon-immortal-mk3"         ] = "ac[fluid-wagon]-e[fast_trans]-b",
+    },
+  }
+end
+
 return trainOrdening

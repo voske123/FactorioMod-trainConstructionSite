@@ -169,3 +169,21 @@ if mods["JunkTrain3"] then
   LSlib.item.setSubgroup("item", "ScrapTrailer", transportRailway.name)
   LSlib.item.setOrderstring("item", "ScrapTrailer", "d-b")
 end
+
+if mods["fast_trans"] then
+  -- fix localisation from __ENTITY__ to __ITEM__
+  for _, itemName in pairs{
+    "cargo-wagon-immortal-mk2",
+    "cargo-wagon-immortal-mk3",
+    "fluid-wagon-immortal-mk2",
+    "fluid-wagon-immortal-mk3"
+  } do
+    local item = data.raw["item-with-entity-data"][itemName]
+    if item then
+      item.localised_name = {"item-name.trainparts", {"item-name."..itemName}}
+      item.localised_description = {"item-description.trainparts", {"", string.format("[img=item/%s] ", itemName.."-trainConstructionSiteDummy"), {"item-name."..itemName}}}
+      data.raw.recipe[itemName].localised_name = item.localised_name
+      data.raw.fluid[itemName.."-fluid"].localised_name = {"item-name."..itemName}
+    end
+  end
+end
