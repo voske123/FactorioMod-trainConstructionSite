@@ -15,6 +15,7 @@ Date: 01. 12. 2020
     - Fixed hidden train signals were invalid due to base game changes in v1.1.0
     - Fixed crashes related to the color picker UI
     - Fixed trains were almost unselectable on curved rails
+    - Fixed ingame error message due to invalid data structure, could not find the reason why...
   Modding:
     - Moved the hidden train recipe fuel item to the unsorted category and added a description
 ---------------------------------------------------------------------------------------------------

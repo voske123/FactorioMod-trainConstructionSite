@@ -19,7 +19,7 @@ end
 -- Initiation of the global data
 function Trainassembly:initGlobalData()
   local TA_data = {
-    ["version"] = 4, -- version of the global data
+    ["version"] = 5, -- version of the global data
     ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
 
     ["trainAssemblers"] = {}, -- keep track of all assembling machines

@@ -80,6 +80,53 @@ return function(configurationData)
       global.TA_data.version = 4
     end
 
+    if global.TA_data.version == 4 then
+      log("Updating Trainassembly from version 4 to version 5.")
+      local trainBuilderIndices = {}
+      for machineSurface,machineSurfaceData in pairs(global.TA_data and global.TA_data["trainAssemblers"] or {}) do
+        for machinePositionY, machinePositionData in pairs(machineSurfaceData) do
+          for machinePositionX, machineData in pairs(machinePositionData) do
+            trainBuilderIndices[machineData.trainBuilderIndex] = (trainBuilderIndices[machineData.trainBuilderIndex] or 0) + 1
+            if machineData.createdEntity and machineData.createdEntity.valid then
+            else
+              machineData.createdEntity = nil
+            end
+          end
+        end
+      end
+      for trainBuilderIndex, trainBuilder in pairs(global.TA_data and global.TA_data["trainBuilders"] or {}) do
+        if trainBuilderIndices[trainBuilderIndex] then
+        else
+          local newTrainBuilder = {}
+          for _, trainAssembler in pairs(trainBuilder) do
+            local found = false
+            for machineSurface,machineSurfaceData in pairs(global.TA_data and global.TA_data["trainAssemblers"] or {}) do
+              if trainAssembler.surfaceIndex == machineSurface then
+                for machinePositionY, machinePositionData in pairs(machineSurfaceData) do
+                  if trainAssembler.position.y == machinePositionY then
+                    for machinePositionX, machineData in pairs(machinePositionData) do
+                      if trainAssembler.position.x == machinePositionX then
+                        found = true
+                      end
+                    end
+                  end
+                end
+              end
+            end
+            if not found then
+              table.insert(newTrainBuilder, util.table.deepcopy(trainAssembler))
+            end
+          end
+          if #newTrainBuilder > 0 then
+            global.TA_data["trainBuilders"][trainBuilderIndex] = newTrainBuilder
+          else
+            global.TA_data["trainBuilders"][trainBuilderIndex] = nil
+          end
+        end
+      end
+      global.TA_data.version = 5
+    end
+
     --------------------------------------------------
     -- Traincontroller script                       --
     --------------------------------------------------
@@ -111,6 +158,40 @@ return function(configurationData)
                 direction = hiddenEntityData.direction,
                 force     = Traincontroller:getDepotForceName(controllerEntity.force.name)
               }
+            end
+            if global.TA_data["trainBuilders"][controllerData.trainBuilderIndex] then
+            else
+              local controllerEntity = controllerData.entity
+              if controllerEntity and controllerEntity.valid then
+                local entityDirection = controllerEntity.direction
+                local entitySearchDirection = {
+                  x = (entityDirection == defines.direction.west  and 1 or 0) + (entityDirection == defines.direction.east  and -1 or 0),
+                  y = (entityDirection == defines.direction.north and 1 or 0) + (entityDirection == defines.direction.south and -1 or 0),
+                }
+                local entityPosition = controllerEntity.position
+                local newBuilderIndex = Trainassembly:getTrainBuilderIndex(controllerData.entity.surface.find_entities_filtered{
+                  name     = Trainassembly:getMachineEntityName(),
+                  force    = createdEntityForceName,
+                  area     = {
+                    { entityPosition.x + 3.5*entitySearchDirection.x - 1.5*entitySearchDirection.y , entityPosition.y + 3.5*entitySearchDirection.y + 1.5*entitySearchDirection.x },
+                    { entityPosition.x + 5.5*entitySearchDirection.x - 2.5*entitySearchDirection.y , entityPosition.y + 5.5*entitySearchDirection.y + 2.5*entitySearchDirection.x },
+                  },
+                  limit    = 1,
+                }[1])
+                if newBuilderIndex == controllerData.trainBuilderIndex then
+                  Traincontroller:onTrainbuilderAltered(controllerData.trainBuilderIndex)
+                else
+                  controllerData.trainBuilderIndex = newBuilderIndex
+                end
+              end
+            end
+            local builderStates = Traincontroller.Builder:initGlobalData()["builderStates"]
+            if controllerData["controllerStatus"] == builderStates["idle"] or
+               controllerData["controllerStatus"] == builderStates["dispatch"] then
+              if Traincontroller.Builder:getBuildTrain(controllerData.trainBuilderIndex) then
+              else
+                controllerData["controllerStatus"] = builderStates["building"]
+              end
             end
           end
         end
