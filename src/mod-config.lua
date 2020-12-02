@@ -276,7 +276,7 @@ return function(configurationData)
     --------------------------------------------------
     -- Help.Gui script                              --
     --------------------------------------------------
-    if global.H_data.Gui then
+    if global.H_data and global.H_data.Gui then
       if global.H_data.Gui.version then
         log("Removing Help.Gui version "..(global.H_data.Gui.version or "unknown")..".")
       end
