@@ -12,7 +12,7 @@ trainassembly.icon_size             = 64
 trainassembly.icon_mipmaps          = 1
 
 trainassembly.subgroup              = "transport-railway"
-trainassembly.order                 = "d[trainbuilder]-b[builder]"
+trainassembly.order                 = "d[trainbuilder]-a[construction]-a[builder]"
 
 trainassembly.place_result          = "trainassembly-placeable" -- the name of the placable entity
 

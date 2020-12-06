@@ -10,7 +10,7 @@ traincontroller.icons                 = nil
 traincontroller.icon_size             = 64
 traincontroller.icon_mipmaps          = 1
 
-traincontroller.order                 = "d[trainbuilder]-c[controller]"
+traincontroller.order                 = "d[trainbuilder]-a[construction]-b[controller]"
 
 traincontroller.place_result          = traincontroller.name
 

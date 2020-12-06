@@ -135,7 +135,7 @@ traincontrollerSignal.name = traincontroller.name .. "-signal"
 traincontrollerSignal.icon = traincontroller.icon
 traincontrollerSignal.icon_size = traincontroller.icon_size
 traincontrollerSignal.icons = util.table.deepcopy(traincontroller.icons)
-traincontrollerSignal.icon_mipmaps = 1
+traincontrollerSignal.icon_mipmaps = traincontroller.icon_mipmaps
 
 traincontrollerSignal.collision_box  = nil
 traincontrollerSignal.collision_mask = {}

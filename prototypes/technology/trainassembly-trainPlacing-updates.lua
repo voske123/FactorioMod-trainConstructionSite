@@ -6,7 +6,7 @@ local recipesToIgnore = {
   -- base game
   ["locomotive"     ] = true,
   ["cargo-wagon"    ] = true,
-  ["fluid-wagon    "] = true,
+  ["fluid-wagon"    ] = true,
   ["artillery-wagon"] = true,
 }
 

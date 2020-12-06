@@ -19,7 +19,8 @@ trainassembly.icon_size = util.table.deepcopy(data.raw["item"][trainassembly.min
 trainassembly.icon_mipmaps = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].icon_mipmaps)
 
 -- define the order since this entity doesn't have a dedicated item
-trainassembly.order = data.raw["item"][trainassembly.minable.result].order
+trainassembly.subgroup = "other"
+trainassembly.order = "z-"..data.raw["item"][trainassembly.minable.result].order
 
 -- make sure you can't blueprint it, becose you can't let robots place trains anyway
 table.insert(trainassembly.flags, "not-blueprintable")
@@ -257,6 +258,7 @@ trainassembly.animation =
   height = 1,
   frame_count = 1,
 }
+trainassembly.working_visualisations = nil
 
 data:extend{
   trainassembly,
