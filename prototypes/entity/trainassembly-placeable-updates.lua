@@ -7,6 +7,9 @@ local extraLayer2 = "transport-belt-layer" -- for belts
 --add collision mask to the trainassembler itself
 for _,extraLayer in pairs{extraLayer1, extraLayer2} do
   collision_mask_util.add_layer(data.raw["locomotive"]["trainassembly-placeable"].collision_mask, extraLayer)
+  if mods["trainDeconstructionSite"] then
+    collision_mask_util.add_layer(data.raw["locomotive"]["traindisassembly-placeable"].collision_mask, extraLayer)
+  end
 end
 
 --add collision mask to curved rails

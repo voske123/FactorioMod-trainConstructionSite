@@ -132,7 +132,6 @@ script.on_event(defines.events.on_gui_closed, function(event)
   -- Called when the player closes a GUI.
   Traindepot     .Gui:onCloseEntity(event.element, event.player_index)
   Traincontroller.Gui:onCloseEntity(event.element, event.player_index)
-  --Traincontroller.Gui:onCloseEntity(event.entity , event.player_index)
 end)
 
 
