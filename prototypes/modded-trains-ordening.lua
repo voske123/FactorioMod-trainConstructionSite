@@ -218,12 +218,17 @@ if mods["Armored-train"] then
     },
 
     ["cargo-wagon"] = {
-      ["armored-platform-mk1"        ] = "y[Armored-train]-b[armored-platform]-a[platform]",
-      ["armored-platform-minigun-mk1"] = "y[Armored-train]-b[armored-platform]-b[minigun]",
-      ["armored-platform-rocket-mk1" ] = "y[Armored-train]-b[armored-platform]-c[rocket]",
-      ["armored-wagon-mk1"           ] = "y[Armored-train]-b[armored-wagon]-a[wagon]",
-      ["armored-wagon-cannon-mk1"    ] = "y[Armored-train]-b[armored-wagon]-b[cannon]",
-      ["armored-wagon-chaingun-mk1"  ] = "y[Armored-train]-b[armored-wagon]-c[chaingun]",
+      --["armored-platform-mk1"        ] = "y[Armored-train]-b[armored-platform]-a[platform]",
+      --["armored-platform-minigun-mk1"] = "y[Armored-train]-b[armored-platform]-b[minigun]",
+      --["armored-platform-rocket-mk1" ] = "y[Armored-train]-b[armored-platform]-c[rocket]",
+      --["armored-wagon-mk1"           ] = "y[Armored-train]-b[armored-wagon]-a[wagon]",
+      --["armored-wagon-cannon-mk1"    ] = "y[Armored-train]-b[armored-wagon]-b[cannon]",
+      --["armored-wagon-chaingun-mk1"  ] = "y[Armored-train]-b[armored-wagon]-c[chaingun]",
+      ["minigun-platform-mk1"     ] = "y[Armored-train]-a[armored-platform]-a[minigun]",
+      ["rocket-platform-mk1"      ] = "y[Armored-train]-a[armored-platform]-b[rocket]",
+      ["radar-platform-mk1"       ] = "y[Armored-train]-a[armored-platform]-c[radar]",
+      ["cannon-wagon-mk1"      ] = "y[Armored-train]-b[armored-wagon]-a[cannon]",
+      ["flamethrower-wagon-mk1"] = "y[Armored-train]-b[armored-wagon]-b[flamethrower]",
     },
   }
 end

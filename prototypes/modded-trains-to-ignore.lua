@@ -37,7 +37,7 @@ end
 
 if mods["Armored-train"] then
   for _,cargowagon in pairs{
-    "armored-platform-radar-mk1",
+    --"armored-platform-radar-mk1",
   } do
     trainsToIgnore["cargo-wagon"][cargowagon] = true
   end

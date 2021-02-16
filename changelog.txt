@@ -3,6 +3,8 @@ Version: 0.2.17
 Date: ??
   Changes:
     - Added new technology icon for train construction
+  Buxfixes:
+    - Fixed support for modded trains from "Armored-train"
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.16
 Date: 02. 12. 2020

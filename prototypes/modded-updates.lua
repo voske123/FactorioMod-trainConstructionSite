@@ -14,12 +14,12 @@ end
 
 if mods["Armored-train"] then
   for _,itemName in pairs{ -- turret ingredients
-    "platform-minigun-turret-mk1",
-    "wagon-cannon-turret-mk1"    ,
-    "platform-rocket-turret-mk1" ,
+    --"platform-minigun-turret-mk1",
+    --"wagon-cannon-turret-mk1"    ,
+    --"platform-rocket-turret-mk1" ,
   } do
     LSlib.item.setSubgroup("item", itemName, LSlib.item.getSubgroup("item", "gun-turret"))
-    LSlib.item.setOrderstring("item", itemName, "b[turret]-a[gun-turret]-h[Armored-train]-"..LSlib.item.getSubgroup("item", itemName))
+    LSlib.item.setOrderstring("item", itemName, "b[turret]-a[gun-turret]-h[Armored-train]-"..(LSlib.item.getSubgroup("item", itemName) or "z[unknownSubgroup]"))
   end
 end
 
