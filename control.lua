@@ -4,6 +4,7 @@ require "src.debug"
 require "src.traindepot"
 require "src.trainassembly"
 require "src.traincontroller"
+require "src.trainfuel"
 require "src.mod-compatibility"
 
 local onConfigChanges = require("src.mod-config")
@@ -79,6 +80,7 @@ script.on_event({defines.events.on_player_mined_entity,
     Traindepot     :onRemoveEntity(removedEntity)
     Trainassembly  :onRemoveEntity(removedEntity)
     Traincontroller:onRemoveEntity(removedEntity)
+    TrainFuel      :onRemoveEntity(removedEntity, event.buffer)
   end
 end)
 

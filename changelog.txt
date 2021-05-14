@@ -5,6 +5,8 @@ Date: ??
     - Added new technology icon for train construction
   Buxfixes:
     - Fixed support for modded trains from "Armored-train"
+    - Fixed the player could obtain the actual trian fuel when deconstructing a train inside the
+      builder building before the train has left.
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.16
 Date: 02. 12. 2020
