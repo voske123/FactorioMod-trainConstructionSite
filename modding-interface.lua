@@ -25,3 +25,26 @@ trainConstructionSite.remote.addElectricTrain = function(entityType, entityName)
 
   trainConstructionSite.remoteData.electricTrains[entityType][entityName] = true
 end
+
+trainConstructionSite.remote.addCustomFuelTrain = function(entityType, entityName, customFuelName)
+  -- Register a train to use a specific type of fuel, instead of trainfuel. This
+  -- The main usage for this is modded trains that take only a specific type of fuel.
+  --
+  -- Arguments:
+  --     - entityType: type of the entity (for example "locomotive")
+  --     - entityName: name of the entity (for example "ht-locomotive")
+  --     - customFuelName: name of the entity (for example "nexelit-battery")
+  --
+  -- Timing:
+  --     - Registering a train needs to be done before __trainConstructionSite__/data-final-fixes.lua
+  --
+  -- Example:
+  --     - trainConstructionSite.remote.addCustomFuelTrain("locomotive", "ht-locomotive", "nexelit-battery")
+
+  trainConstructionSite.remoteData.customFuelTrains =
+    trainConstructionSite.remoteData.customFuelTrains or {}
+  trainConstructionSite.remoteData.customFuelTrains[entityType] =
+    trainConstructionSite.remoteData.customFuelTrains[entityType] or {}
+
+  trainConstructionSite.remoteData.customFuelTrains[entityType][entityName] = customFuelName
+end

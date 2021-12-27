@@ -322,6 +322,11 @@ function Traincontroller.Builder:buildNextTrain(trainBuilderIndex)
                     name  = "trainassembly-trainfuel",
                     count = ingredient.amount,
                   }
+                elseif Trainassembly:isFuelItem(ingredient.name) then
+                  createdEntity.get_fuel_inventory().insert{
+                    name  = ingredient.name,
+                    count = ingredient.amount,
+                  }
                 end
               end
 

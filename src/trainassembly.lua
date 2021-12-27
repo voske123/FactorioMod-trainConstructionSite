@@ -26,6 +26,7 @@ function Trainassembly:initGlobalData()
 
     ["trainBuilders"] = {}, -- keep track of all builders that contain one or more trainAssemblers
     ["nextTrainBuilderIndex"] = 1, -- next free space in the trainBuilders table
+    ["fuelItems"] = {}, -- cache to more efficiently decide if an item is fuel or not
   }
 
   return util.table.deepcopy(TA_data)
@@ -1167,4 +1168,20 @@ function Trainassembly:onPlayerChangedSettings(sourceEntity, destinationEntity)
      destinationEntity.name == self:getMachineEntityName() then
     self:setMachineTint(destinationEntity, self:getMachineTint(sourceEntity))
   end
+end
+
+
+
+function Trainassembly:isFuelItem(itemName)
+  -- Attempt to return cached value.
+  -- If value doesn't exist, calculate it (expensive), cache it, and return
+  global.TA_data["fuelItems"] = global.TA_data["fuelItems"] or {}
+  isFuelItem = global.TA_data["fuelItems"][itemName]
+
+  if isFuelItem == nil then
+    isFuelItem = (game.item_prototypes[itemName].fuel_value > 0)
+    global.TA_data["fuelItems"][itemName] = isFuelItem
+  end
+
+  return isFuelItem
 end
