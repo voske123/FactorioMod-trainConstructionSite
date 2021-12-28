@@ -83,9 +83,20 @@ if mods["ElectricTrain"] then
   trainConstructionSite.remote.addElectricTrain("locomotive", "et-electric-locomotive-3")
 end
 
+if mods["pyhightech"] then
+  trainConstructionSite.remote.addCustomFuelTrain("locomotive", "ht-locomotive", "nexelit-battery")
+end
+
 for trainType,trainData in pairs(trainConstructionSite.remoteData.electricTrains or {}) do
   for trainName,_ in pairs(trainData or {}) do
     LSlib.recipe.removeIngredient(trainName.."-fluid["..trainType.."]", trainfuel)
+  end
+end
+
+for trainType,trainData in pairs(trainConstructionSite.remoteData.customFuelTrains or {}) do
+  for trainName,customFuelName in pairs(trainData or {}) do
+    LSlib.recipe.removeIngredient(trainName.."-fluid["..trainType.."]", trainfuel)
+    LSlib.recipe.addIngredient(trainName.."-fluid["..trainType.."]", customFuelName)
   end
 end
 

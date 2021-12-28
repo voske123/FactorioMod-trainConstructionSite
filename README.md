@@ -48,7 +48,7 @@ Assembling a train requires heavy duty tools, so you must provide some power to 
 ## 3.3 Recipe requirements
 Each train requires parts to be build. These parts can be made seperatly with the same ingredients as you would make a train without this mod present.
 
-The train needs to be able to drive away, which means the locomotives require fuel. As we didn't want to limit your fuel options, we chose to make a generic fuel item that can be made out of all other fueling items.
+The train needs to be able to drive away, which means the locomotives require fuel. As we didn't want to limit your fuel options, we chose to make a generic fuel item that can be made out of all other fueling items. Modded trains using specific custom fuel require that fuel directly.
 
 The Trainbuilder has a blue arrow, showing the direction of the building. This is usefull when building trains carriages where the orientation matters (for example the Locomotive or Artillery Wagon).
 ![Direction preview](https://raw.githubusercontent.com/voske123/FactorioMod-trainConstructionSite/master/graphics/screenshots/trainassembly-direction.png)
