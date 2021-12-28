@@ -1176,7 +1176,7 @@ function Trainassembly:isFuelItem(itemName)
   -- Attempt to return cached value.
   -- If value doesn't exist, calculate it (expensive), cache it, and return
   global.TA_data["fuelItems"] = global.TA_data["fuelItems"] or {}
-  isFuelItem = global.TA_data["fuelItems"][itemName]
+  local isFuelItem = global.TA_data["fuelItems"][itemName]
 
   if isFuelItem == nil then
     isFuelItem = (game.item_prototypes[itemName].fuel_value > 0)
