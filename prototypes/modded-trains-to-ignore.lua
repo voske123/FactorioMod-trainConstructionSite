@@ -22,6 +22,12 @@ if mods["creative-mod"] then
 end
 
 if mods["cargo-ships"] then
+  for _,locomotive in pairs{
+    "cargo_ship_engine",
+    "boat_engine"      ,
+  } do
+    trainsToIgnore["locomotive"][locomotive] = true
+  end
   for _,cargowagon in pairs{
     "cargo_ship",
     "boat"      ,
