@@ -1,4 +1,3 @@
-
 --making the cargo wagon technology and unlocking the wagon parts and fluid
 
 local trainTechCargo = util.table.deepcopy(data.raw["technology"]["fluid-wagon"])

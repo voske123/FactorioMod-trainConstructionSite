@@ -32,4 +32,13 @@ if mods["fast_trans"] then
   }
 end
 
+if mods["RenaiTransportation"] then
+  addrecipeOverride{
+    ["cargo-wagon"] = {
+      ["RTPayloadWagonItem"] = "RTPayloadWagonRecipe",
+      ["RTImpactWagonItem"] = "RTImpactWagonRecipe",
+    },
+  }
+end
+
 return recipeOverride
