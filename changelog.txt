@@ -2,12 +2,13 @@
 Version: 0.2.18
 Date: 27. 01. 2022
   Changes:
-    - Added support for mod "SchallOverseasRailway".
+    - Added compatibility for mod "SchallOverseasRailway"
+    - Added compatibility for mod "Renai-Transportation"
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.17
 Date: 28. 12. 2021
   Changes:
-    - Added support for modded trains with custom fuel.
+    - Added support for modded trains with custom fuel
     - Added support for pyhightech trains
     - Added new technology icon for train construction
   Buxfixes:
