@@ -14,7 +14,7 @@ end
 
 --add collision mask to curved rails
 for _, railData in pairs(data.raw["curved-rail"]) do
-  railData.collision_mask = collision_mask_util.get_mask(railData)
+  railData.collision_mask = util.table.deepcopy(collision_mask_util.get_mask(railData))
   collision_mask_util.add_layer(railData.collision_mask, extraLayer1)
   railData.selection_priority = 49 -- default is 50
 end
@@ -22,7 +22,7 @@ end
 --add collision mask to signals
 for _, signalType in pairs({"rail-signal", "rail-chain-signal"}) do
   for _, signalData in pairs(data.raw[signalType]) do
-    signalData.collision_mask = collision_mask_util.get_mask(signalData)
+    signalData.collision_mask = util.table.deepcopy(collision_mask_util.get_mask(signalData))
     collision_mask_util.add_layer(signalData.collision_mask, extraLayer1)
   end
 end
@@ -32,7 +32,7 @@ for _, beltType in pairs({
   "transport-belt",
 }) do
     for _, beltEntity in pairs(data.raw[beltType]) do
-      beltEntity.collision_mask = collision_mask_util.get_mask(beltEntity)
+      beltEntity.collision_mask = util.table.deepcopy(collision_mask_util.get_mask(beltEntity))
       collision_mask_util.add_layer(beltEntity.collision_mask, extraLayer2)
   end
 end
@@ -41,7 +41,10 @@ for _, beltType in pairs({
   "splitter",
 }) do
   for _, beltEntity in pairs(data.raw[beltType]) do
-    beltEntity.collision_mask = collision_mask_util.get_mask(beltEntity)
+    beltEntity.collision_mask = util.table.deepcopy(collision_mask_util.get_mask(beltEntity))
     collision_mask_util.add_layer(beltEntity.collision_mask, extraLayer2)
   end
 end
+
+log(serpent.block(data.raw["locomotive"]["trainassembly-placeable"].collision_mask))
+log(serpent.block(data.raw["straight-rail"]["straight-rail"].collision_mask))
