@@ -4,6 +4,7 @@ Date: 27. 01. 2022
   Changes:
     - Added compatibility for mod "SchallOverseasRailway"
     - Added compatibility for mod "Renai-Transportation"
+    - Added extended compatibility for mod "Cargo Ships"
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.17
 Date: 28. 12. 2021

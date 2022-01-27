@@ -188,3 +188,13 @@ if mods["space-exploration"] then
   LSlib.item.setSubgroup("item", "rail-chain-signal", "transport-railway")
   LSlib.item.setOrderstring("item", "rail-chain-signal", "c[signal]-b[chain]")
 end
+
+  -- Cargo ships change the order to fit in Transport Logistics instead of Logistics
+
+if mods ["cargo-ships"] then
+  local subgroup = data.raw["item-subgroup"]["water_transport"]
+  if subgroup then
+    subgroup.group = "transport-logistics"
+    subgroup.order = "i[water]"
+  end
+end
