@@ -45,6 +45,3 @@ for _, beltType in pairs({
     collision_mask_util.add_layer(beltEntity.collision_mask, extraLayer2)
   end
 end
-
-log(serpent.block(data.raw["locomotive"]["trainassembly-placeable"].collision_mask))
-log(serpent.block(data.raw["straight-rail"]["straight-rail"].collision_mask))
