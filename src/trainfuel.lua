@@ -11,7 +11,7 @@ function TrainFuel:onRemoveEntity(removedEntity, removedInventory)
   -- obtain the 'wrong' trainfuel type.
   --
   -- Player experience: Do not obtain any train fuel at all
-  if removedEntity.type == "locomotive" then
+  if (removedEntity.type == "locomotive" and removedInventory) then
     removedInventory.remove{
       name = "trainassembly-trainfuel",
       amount = 100 -- all the fuel
