@@ -28,25 +28,29 @@ trainassemblyTrainfuel.icons          = {
     scale     = 0.8,
   }
 }
+trainassemblyTrainfuel.icon_mipmaps   = 1
+
 trainassemblyTrainfuel.subgroup       = "trainassembler-fuel"
 trainassemblyTrainfuel.order          = "b"
 
 -- STEP 2: create a duplicate of this item and remove the fuel information
 local trainassemblyRecipefuel = util.table.deepcopy(trainassemblyTrainfuel)
 
-trainassemblyRecipefuel.name                          = "trainassembly-recipefuel"
-trainassemblyRecipefuel.fuel_value                    = nil
-trainassemblyRecipefuel.fuel_category                 = nil
-trainassemblyRecipefuel.fuel_acceleration_multiplier  = nil
-trainassemblyRecipefuel.fuel_top_speed_multiplier     = nil
-trainassemblyRecipefuel.fuel_glow_color               = nil
-trainassemblyRecipefuel.fuel_emission_multiplier      = nil
+trainassemblyRecipefuel.name                         = "trainassembly-recipefuel"
+trainassemblyRecipefuel.fuel_value                   = nil
+trainassemblyRecipefuel.fuel_category                = nil
+trainassemblyRecipefuel.fuel_acceleration_multiplier = nil
+trainassemblyRecipefuel.fuel_top_speed_multiplier    = nil
+trainassemblyRecipefuel.fuel_glow_color              = nil
+trainassemblyRecipefuel.fuel_emissions_multiplier    = nil
 
 -- STEP 3: make sure the player only can see the recipefuel
 trainassemblyTrainfuel.flags = trainassemblyTrainfuel.flags or {}
 table.insert(trainassemblyTrainfuel.flags, "hidden")
 table.insert(trainassemblyTrainfuel.flags, "hide-from-bonus-gui")
 table.insert(trainassemblyTrainfuel.flags, "hide-from-fuel-tooltip")
+trainassemblyTrainfuel.localised_description = {"item-description.trainassemblyfuel"}
+trainassemblyTrainfuel.subgroup = "other"
 
 -- STEP 4: add both items to the game
 data:extend{

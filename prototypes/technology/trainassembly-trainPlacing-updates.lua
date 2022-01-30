@@ -1,17 +1,19 @@
 local recipesToIgnore = {
   -- trainConstructionSite
   ["trainassembly"] = true,
+  ["traindisassembly"] = mods["trainDeconstructionSite"] and true or nil,
 
   -- base game
   ["locomotive"     ] = true,
   ["cargo-wagon"    ] = true,
-  ["fluid-wagon    "] = true,
+  ["fluid-wagon"    ] = true,
   ["artillery-wagon"] = true,
 }
 
 -- for mod compatibility we have to add these fluid recipe unlocks to the tech tree
 local trainsToIgnore = require("prototypes/modded-trains-to-ignore")
 local itemOverride   = require("prototypes/modded-trains-item-override")
+local recipeOverride   = require("prototypes/modded-trains-recipe-override")
 for _, trainType in pairs({
   "locomotive",
   "cargo-wagon",
@@ -24,12 +26,13 @@ for _, trainType in pairs({
     if (not trainsToIgnore[trainType][trainEntity.name]) and trainEntity.minable and trainEntity.minable.result then
 
       local itemName   = itemOverride[trainType][trainEntity.name] or trainEntity.minable.result
-      local recipeName = itemName -- assume the recipeName is the same as the item (for now)
+      local recipeName = recipeOverride[trainType][itemName] or itemName -- assume the recipeName is the same as the item (otherwise we need to override it manualy)
 
       if not recipesToIgnore[recipeName] then
         local fluidRecipeName = trainEntity.name .. "-fluid[" .. trainType .. "]"
 
         -- now search all tech, to find the recipe that unlocks the item
+        local technologyUnlockAdded = false
         for technologyName, technology in pairs(data.raw.technology) do
           for effectIndex, effect in pairs(technology.effects or {}) do
             if effect.type == "unlock-recipe" and effect.recipe == recipeName then
@@ -42,11 +45,14 @@ for _, trainType in pairs({
               end
 
               -- if it is not present, we can add it
-              if not fluidRecipePresent then
+              if fluidRecipePresent then
+                technologyUnlockAdded = true
+              else
                 table.insert(technology.effects, effectIndex + 1, {
                   type   = effect.type    ,
                   recipe = fluidRecipeName,
                 })
+                technologyUnlockAdded = true
 
                 -- add new prerequisites
                 if not technology.prerequisites then
@@ -76,6 +82,14 @@ for _, trainType in pairs({
 
             end
           end
+        end
+
+        -- if we didn't find it, we enable the recipe from the start
+        if technologyUnlockAdded then
+          --log(string.format("Unlocking train parts: %s (%s)", trainEntity.name, trainType))
+        else
+          log(string.format("Error unlocking train parts: %s (%s)", trainEntity.name, trainType))
+          data.raw.recipe[fluidRecipeName].normal.enabled = true
         end
 
       end

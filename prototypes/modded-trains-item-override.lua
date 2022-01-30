@@ -21,11 +21,16 @@ if mods["Armored-train"] then
 
     ["cargo-wagon"] = {
       --["armored-platform-mk1"        ] = "armored-platform-mk1",
-      ["armored-platform-minigun-mk1"] = "armored-platform-minigun-mk1",
-      ["armored-platform-rocket-mk1" ] = "armored-platform-rocket-mk1" ,
+      --["armored-platform-minigun-mk1"] = "armored-platform-minigun-mk1",
+      --["armored-platform-rocket-mk1" ] = "armored-platform-rocket-mk1" ,
       --["armored-wagon-mk1"           ] = "armored-wagon-mk1",
-      ["armored-wagon-cannon-mk1"    ] = "armored-wagon-cannon-mk1",
-      ["armored-wagon-chaingun-mk1"  ] = "armored-wagon-chaingun-mk1",
+      --["armored-wagon-cannon-mk1"    ] = "armored-wagon-cannon-mk1",
+      --["armored-wagon-chaingun-mk1"  ] = "armored-wagon-chaingun-mk1",
+      ["minigun-platform-mk1"  ] = "minigun-platform-mk1",
+      ["rocket-platform-mk1"   ] = "rocket-platform-mk1",
+      ["radar-platform-mk1"    ] = "radar-platform-mk1",
+      ["cannon-wagon-mk1"      ] = "cannon-wagon-mk1",
+      ["flamethrower-wagon-mk1"] = "flamethrower-wagon-mk1"
     },
   }
 end

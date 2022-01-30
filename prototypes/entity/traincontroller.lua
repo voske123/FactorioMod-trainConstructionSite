@@ -11,6 +11,9 @@ traincontroller.localised_description = util.table.deepcopy(data.raw["item"][tra
 traincontroller.icon = data.raw["item"][traincontroller.minable.result].icon
 traincontroller.icon_size = data.raw["item"][traincontroller.minable.result].icon_size
 traincontroller.icons = util.table.deepcopy(data.raw["item"][traincontroller.minable.result].icons)
+traincontroller.icon_mipmaps = util.table.deepcopy(data.raw["item"][traincontroller.minable.result].icon_mipmaps)
+
+traincontroller.drawing_box = traincontroller.selection_box
 
 --traincontroller.map_color          = data.raw["utility-constants"]["default"].chart.default_friendly_color
 --traincontroller.friendly_map_color = traincontroller.map_color
@@ -27,10 +30,54 @@ traincontroller.rail_overlay_animations = {
   hr_version = nil,
 }
 traincontroller.animations = {
-  filename = "__trainConstructionSite__/graphics/placeholders/2x2.png",
-  width = 128,
-  height = 128,
-  hr_version = nil,
+  north =
+  {
+    filename = "__trainConstructionSite__/graphics/entity/traincontroller/traincontroller-N.png",
+    priority = "high",
+    width = 192,
+    height = 192,
+    frame_count = 1,
+    line_length = 1,
+    scale = 0.59,
+    shift = util.by_pixel(12, -12),
+    hr_version = nil,
+  },
+  east =
+  {
+    filename = "__trainConstructionSite__/graphics/entity/traincontroller/traincontroller-E.png",
+    priority = "high",
+    width = 192,
+    height = 192,
+    frame_count = 1,
+    line_length = 1,
+    scale = 0.59,
+    shift = util.by_pixel(12, -12),
+    hr_version = nil,
+  },
+  south =
+  {
+    filename = "__trainConstructionSite__/graphics/entity/traincontroller/traincontroller-S.png",
+    priority = "high",
+    width = 192,
+    height = 192,
+    frame_count = 1,
+    line_length = 1,
+    scale = 0.59,
+    shift = util.by_pixel(12, -12),
+    hr_version = nil,
+  },
+  west =
+  {
+    filename = "__trainConstructionSite__/graphics/entity/traincontroller/traincontroller-W.png",
+    priority = "high",
+    width = 192,
+    height = 192,
+    frame_count = 1,
+    line_length = 1,
+    scale = 0.59,
+    shift = util.by_pixel(14, -12),
+    hr_version = nil,
+  },
 }
 traincontroller.top_animations = {
   filename = "__core__/graphics/empty.png",
@@ -88,6 +135,7 @@ traincontrollerSignal.name = traincontroller.name .. "-signal"
 traincontrollerSignal.icon = traincontroller.icon
 traincontrollerSignal.icon_size = traincontroller.icon_size
 traincontrollerSignal.icons = util.table.deepcopy(traincontroller.icons)
+traincontrollerSignal.icon_mipmaps = traincontroller.icon_mipmaps
 
 traincontrollerSignal.collision_box  = nil
 traincontrollerSignal.collision_mask = {}

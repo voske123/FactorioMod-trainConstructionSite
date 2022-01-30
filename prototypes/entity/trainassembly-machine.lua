@@ -16,15 +16,18 @@ trainassembly.localised_description = util.table.deepcopy(data.raw["item"][train
 trainassembly.icon = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].icon)
 trainassembly.icons = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].icons)
 trainassembly.icon_size = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].icon_size)
+trainassembly.icon_mipmaps = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].icon_mipmaps)
 
 -- define the order since this entity doesn't have a dedicated item
-trainassembly.order = data.raw["item"][trainassembly.minable.result].order
+trainassembly.subgroup = "other"
+trainassembly.order = "z-"..data.raw["item"][trainassembly.minable.result].order
 
 -- make sure you can't blueprint it, becose you can't let robots place trains anyway
 table.insert(trainassembly.flags, "not-blueprintable")
 
 -- selection box
 trainassembly.selection_box = {{-3, -3}, {3, 3}}
+trainassembly.drawing_box = {{-3, -5}, {3, 3}}
 
 -- collision mask & box
 trainassembly.collision_mask = util.table.deepcopy(data.raw["locomotive"]["trainassembly-placeable"].collision_mask)
@@ -72,24 +75,16 @@ trainassembly.animation =
     layers =
     {
       {
-        filename = "__trainConstructionSite__/graphics/placeholders/6x6.png",
+        --filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-N-base.png",
         priority = "high",
-        width = 256,
-        height = 256,
+        width = 512,
+        height = 512,
         frame_count = 1,
         line_length = 1,
-        --shift = util.by_pixel(0, 4),
+        scale = 0.5,
+        shift = util.by_pixel(31.5, -18),
         hr_version = nil,
       },
-      --[[{
-        filename = "__trainConstructionSite__/graphics/placeholders/direction_north.png",
-        width = 82,
-        height = 82,
-        frame_count = 1,
-        line_length = 1,
-        shift = util.by_pixel(0, -32*1.25),
-        hr_version = nil,
-      },]]
     },
   },
   east =
@@ -97,24 +92,16 @@ trainassembly.animation =
     layers =
     {
       {
-        filename = "__trainConstructionSite__/graphics/placeholders/6x6.png",
+        --filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-E-base.png",
         priority = "high",
-        width = 256,
-        height = 256,
+        width = 512,
+        height = 512,
         frame_count = 1,
         line_length = 1,
-        --shift = util.by_pixel(0, 4),
+        scale = 0.5,
+        shift = util.by_pixel(30, -28),
         hr_version = nil,
       },
-      --[[{
-        filename = "__trainConstructionSite__/graphics/placeholders/direction_east.png",
-        width = 82,
-        height = 82,
-        frame_count = 1,
-        line_length = 1,
-        shift = util.by_pixel(0, -32*1.25),
-        hr_version = nil,
-      },]]
     },
   },
   south =
@@ -122,24 +109,16 @@ trainassembly.animation =
     layers =
     {
       {
-        filename = "__trainConstructionSite__/graphics/placeholders/6x6.png",
+        --filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-S-base.png",
         priority = "high",
-        width = 256,
-        height = 256,
+        width = 512,
+        height = 512,
         frame_count = 1,
         line_length = 1,
-        --shift = util.by_pixel(0, 4),
+        scale = 0.5,
+        shift = util.by_pixel(31.5, -18),
         hr_version = nil,
       },
-      --[[{
-        filename = "__trainConstructionSite__/graphics/placeholders/direction_south.png",
-        width = 82,
-        height = 82,
-        frame_count = 1,
-        line_length = 1,
-        shift = util.by_pixel(0, -32*1.25),
-        hr_version = nil,
-      },]]
     },
   },
   west =
@@ -147,43 +126,86 @@ trainassembly.animation =
     layers =
     {
       {
-        filename = "__trainConstructionSite__/graphics/placeholders/6x6.png",
+        --filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-W-base.png",
         priority = "high",
-        width = 256,
-        height = 256,
+        width = 512,
+        height = 512,
         frame_count = 1,
         line_length = 1,
-        --shift = util.by_pixel(0, 4),
+        scale = 0.5,
+        shift = util.by_pixel(30, -28),
         hr_version = nil,
       },
-      --[[{
-        filename = "__trainConstructionSite__/graphics/placeholders/direction_west.png",
-        width = 82,
-        height = 82,
-        frame_count = 1,
-        line_length = 1,
-        shift = util.by_pixel(0, -32*1.25),
-        hr_version = nil,
-      },]]
     },
   },
 }
 
 -- split the rendering from the machine
-for _,orientation in pairs{"north", "east", "south", "west"} do
-  data:extend{{
-    type = "animation",
-    name = trainassembly.name .. "-" .. orientation,
-    layers = util.table.deepcopy(trainassembly.animation[orientation].layers),
-  }}
-  trainassembly.animation[orientation] =
-  {
-    filename = "__core__/graphics/empty.png",
-    priorit = "very-low",
-    width = 1,
-    height = 1,
-    frame_count = 1,
+for orientation,orientation_string in pairs{
+  ["north"] = "N",
+  ["east" ] = "E",
+  ["south"] = "S",
+  ["west" ] = "W",
+} do
+  for _,animation_layer in pairs{ "-base", "-overlay", "" } do
+    local animation =
+    {
+      type = "animation",
+      name = trainassembly.name .. "-" .. orientation .. animation_layer,
+      layers = util.table.deepcopy(trainassembly.animation[orientation].layers),
+    }
+    animation.layers[1].filename = "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-"..orientation_string..animation_layer..".png"
+    data:extend{animation}
+  end
+  trainassembly.animation[orientation].layers = {
+    {
+      filename = "__core__/graphics/empty.png",
+      priority = "very-low",
+      width = 1,
+      height = 1,
+      frame_count = 1,
+    }
   }
+end
+
+-- apply the rendering from the machine to working visualisations since that's a thing now...
+trainassembly.working_visualisations = {}
+local render_layer =
+{
+  ["-base"   ] = "lower-object", -- 124
+  -- @Bilka said:
+  -- "item-in-inserter-hand" = 134
+  -- "higher-object-above"   = 132
+  ["-overlay"] = "item-in-inserter-hand" -- 133
+}
+for _,animation_layer in pairs{ "-base", "-overlay", "" } do
+  local animation = {}
+  for orientation,orientation_string in pairs{
+    ["north"] = "N",
+    ["east" ] = "E",
+    ["south"] = "S",
+    ["west" ] = "W",
+  } do
+    animation[string.format("%s_animation", orientation)] =
+    {
+      layers = util.table.deepcopy(data.raw["animation"][trainassembly.name .. "-" .. orientation .. animation_layer].layers),
+    }
+
+    -- delete the sprite, since we don't need it anymore
+    data.raw["animation"][trainassembly.name .. "-" .. orientation .. animation_layer].layers[1] =
+    {
+      filename = "__core__/graphics/empty.png",
+      priority = "very-low",
+      width = 1,
+      height = 1,
+      frame_count = 1,
+    }
+  end
+  animation.render_layer = render_layer[animation_layer]
+  animation.always_draw = true
+  if animation.render_layer then
+    table.insert(trainassembly.working_visualisations, animation)
+  end
 end
 
 data:extend{
@@ -236,6 +258,7 @@ trainassembly.animation =
   height = 1,
   frame_count = 1,
 }
+trainassembly.working_visualisations = nil
 
 data:extend{
   trainassembly,

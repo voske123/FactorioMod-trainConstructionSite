@@ -13,14 +13,27 @@ local function createRecipeIcons(itemPrototypeName)
   return recipeIcons
 end
 
+if mods["aai-industry"] and type(aai_processed_fuel_ignore) == "table" then
+  table.insert(aai_processed_fuel_ignore, "trainassembly-trainfuel")
+end
+
 -- We want to create different fuel recipes to create the fuel to initialy fuel the train.
 -- We make a fuel for each of the next items:
 for fuelOrder, fuelIngredient in pairs{
-  mods["aai-industry"  ] and {"vehicle-fuel", 40, "fuel-processing"          } or nil,
-  mods["Bio_Industries"] and {"pellet-coke" , 10, "bi-tech-coal-processing-2"} or nil,
+  mods["aai-industry"       ] and {"processed-fuel", 40, "fuel-processing"} or nil,
+  mods["Bio_Industries"     ] and {"pellet-coke" , 10, "bi-tech-coal-processing-2"} or nil,
+
+  mods["angelsbioprocessing"] and {"wood-pellets", 25, "bio-wood-processing"} or nil,
+  mods["angelspetrochem"    ] and {"coal-crushed", 100, "angels-coal-processing"} or nil,
+  mods["angelspetrochem"    ] and {"solid-coke", 80, "angels-coal-processing"} or nil,
+  mods["angelspetrochem"    ] and {"solid-carbon", 45, "angels-coal-processing"} or nil,
+  mods["angelsbioprocessing"] and {"wood-charcoal", 35, "bio-wood-processing-2"} or nil,
+  mods["angelspetrochem"    ] and {"rocket-booster", 20, "rocket-booster-1"} or nil,
+  mods["angelsbioprocessing"] and {"wood-bricks", 10, "bio-wood-processing-3"} or nil,
+  mods["angelspetrochem"    ] and {"pellet-coke", 65, "angels-coal-cracking"} or nil,
 } do
 
-  -- For this item we create a fuel recipe
+  -- For this item we create a fuel recipe & technology to unlock it
   data:extend{
     {
       type = "recipe",
@@ -48,7 +61,7 @@ for fuelOrder, fuelIngredient in pairs{
 
       -- We have to add a order string to the recipe becose we have multiple
       -- recipes resulting in the same item.
-      order = "b-"..fuelOrder,
+      order = string.format("b-%02d",fuelOrder),
     },
   }
   data:extend{

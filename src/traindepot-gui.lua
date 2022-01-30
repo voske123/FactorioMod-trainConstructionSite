@@ -18,9 +18,8 @@ end
 -- Initiation of the global data
 function Traindepot.Gui:initGlobalData()
   local gui = {
-    ["version"      ] = 1, -- version of the global data
+    ["version"      ] = 5, -- version of the global data
     ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
-    ["clickHandler" ] = self:initClickHandlerData(),
     ["openedEntity" ] = {} -- opened entity for each player
   }
 
@@ -70,7 +69,7 @@ end
 
 
 
-function Traindepot.Gui:initClickHandlerData()
+function Traindepot.Gui:initClickHandlers()
   local clickHandlers = {}
 
   ------------------------------------------------------------------------------
@@ -82,7 +81,18 @@ function Traindepot.Gui:initClickHandlerData()
     game.players[playerIndex].opened = Traindepot.Gui:destroyGui(playerIndex)
 
     -- open the new UI
-    Help.Gui:openGui(playerIndex)
+    --Help.Gui:openGui(playerIndex)
+  end
+
+
+
+  ------------------------------------------------------------------------------
+  -- close button handler
+  ------------------------------------------------------------------------------
+  clickHandlers["traindepot-close"] = function(clickedElement, playerIndex)
+    -- close this UI
+    Traindepot.Gui:setOpenedEntity(playerIndex, nil)
+    game.players[playerIndex].opened = Traindepot.Gui:destroyGui(playerIndex)
   end
 
 
@@ -208,6 +218,7 @@ function Traindepot.Gui:initClickHandlerData()
   ------------------------------------------------------------------------------
   return clickHandlers
 end
+Traindepot.Gui.clickHandlers = Traindepot.Gui:initClickHandlers()
 
 
 
@@ -242,7 +253,7 @@ end
 
 
 function Traindepot.Gui:getClickHandler(guiElementName)
-  return global.TD_data.Gui["clickHandler"][guiElementName]
+  return Traindepot.Gui.clickHandlers[guiElementName]
 end
 
 

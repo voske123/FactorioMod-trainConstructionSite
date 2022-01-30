@@ -1,9 +1,9 @@
 
-local guiLayout = LSlib.gui.layout.create("center")
+local guiLayout = LSlib.gui.layout.create("screen")
 
 local guiFrame = LSlib.gui.layout.addFrame(guiLayout, "root", "traindepot-gui", "vertical", {
   --caption = {"item-name.traindepot"},
-  style   = "frame_without_footer"  ,
+  style   = "frame",
 })
 
 local guiFrameHeaderFlow = LSlib.gui.layout.addFlow(guiLayout, guiFrame, "traindepot-gui-header", "horizontal", {
@@ -15,12 +15,16 @@ LSlib.gui.layout.addLabel(guiLayout, guiFrameHeaderFlow, "traindepot-gui-header-
   style   = "LSlib_default_frame_title",
   ignored_by_interaction = true,
 })
-LSlib.gui.layout.addFrame(guiLayout, guiFrameHeaderFlow, "traindepot-gui-header-filler", "vertical", {
-  style = "LSlib_default_header_filler",
-  ignored_by_interaction = true,
+LSlib.gui.layout.addEmptyWidget(guiLayout, guiFrameHeaderFlow, "traindepot-gui-header-filler", {
+  drag_target = guiFrame,
+  style       = "LSlib_default_draggable_header",
 })
-LSlib.gui.layout.addSpriteButton(guiLayout, guiFrameHeaderFlow, "traindepot-help", {
-  sprite = "utility/questionmark"      ,
+--LSlib.gui.layout.addSpriteButton(guiLayout, guiFrameHeaderFlow, "traindepot-help", {
+--  sprite = "utility/questionmark"      ,
+--  style = "LSlib_default_header_button",
+--})
+LSlib.gui.layout.addSpriteButton(guiLayout, guiFrameHeaderFlow, "traindepot-close", {
+  sprite = "utility/close_white"      ,
   style = "LSlib_default_header_button",
 })
 
@@ -65,7 +69,7 @@ LSlib.gui.layout.addTextfield(guiLayout, guiNewEntryFlow, "selected-depot-name",
 })
 LSlib.gui.layout.addSpriteButton(guiLayout, guiNewEntryFlow, "selected-depot-enter", {
   sprite = "utility/enter",
-  style = "slot_button"   ,
+  style = "tool_button"   ,
 })
 
 LSlib.gui.layout.addListbox(guiLayout, guiTabContent2, "selected-depot-list", {
@@ -97,7 +101,7 @@ LSlib.gui.layout.addLabel(guiLayout, stationIDflow, "statistics-station-id-value
   ignored_by_interaction = true,
 })
 LSlib.gui.layout.addSpriteButton(guiLayout, stationIDflow, "statistics-station-id-edit", {
-  sprite = "utility/rename_icon_small",
+  sprite = "utility/rename_icon_small_black",
   style = "mini_button"               ,
 })
 

@@ -1,19 +1,204 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.18
+Date: 27. 01. 2022
+  Changes:
+    - Added compatibility for mod "SchallOverseasRailway"
+    - Added compatibility for mod "Renai-Transportation"
+    - Added extended compatibility for mod "Cargo Ships"
+    - Added compatibility for mod "Editor Extensions"
+---------------------------------------------------------------------------------------------------
+Version: 0.2.17
+Date: 28. 12. 2021
+  Changes:
+    - Added support for modded trains with custom fuel
+    - Added support for pyhightech trains
+    - Added new technology icon for train construction
+  Buxfixes:
+    - Fixed support for modded trains from "Armored-train"
+    - Fixed support for modded locomotives from "cargo-ships"
+    - Fixed the player could obtain the actual trian fuel when deconstructing a train inside the
+      builder building before the train has left.
+---------------------------------------------------------------------------------------------------
+Version: 0.2.16
+Date: 02. 12. 2020
+  Bugfixes:
+    - Fixed an error in the migration script when loading a map that didnt have TCS before
+---------------------------------------------------------------------------------------------------
+Version: 0.2.15
+Date: 02. 12. 2020
+  Bugfixes:
+    - Adjusted a locale error in the tips and tricks from the trainbuilder
+---------------------------------------------------------------------------------------------------
+Version: 0.2.14
+Date: 01. 12. 2020
+  Features:
+    - Added tips and tricks for train building
+    - Added tips and tricks for traindepot
+    - Added tips and tricks for trainbuilder
+    - Added tips and tricks for traincontroller
+    - Added support for modded train from "Junk Train"
+    - Added support for modded train from "fast_trans"
+  Changes:
+    - Streamlined the styling of the UIs to be more in line with base game v1.1.0
+    - The traincontroller now shows the color LED next to the status
+    - Removed the trainbuilder manual as it is obsolete (use tips and tricks instead)
+    - Added a close button to the traincontroller UI and the traindepot UI
+  Bugfixes:
+    - Fixed hidden train signals were invalid due to base game changes in v1.1.0
+    - Fixed crashes related to the color picker UI
+    - Fixed trains were almost unselectable on curved rails
+    - Fixed ingame error message due to invalid data structure, could not find the reason why...
+    - Fixed deconstructing the traincontroller would not return the build train to the trainbuilder
+    - Fixed that rotating the trainbuilder would not rotate the created rolling stock
+    - Fixed that changing the trainbuilder color would not color the created rolling stock directly
+  Modding:
+    - Moved the hidden train recipe fuel item to the unsorted category and added a description
+---------------------------------------------------------------------------------------------------
+Version: 0.2.13
+Date: 27. 11. 2020
+  Features:
+    - Dynamically changing collision_masks with basegame features
+---------------------------------------------------------------------------------------------------
+Version: 0.2.12
+Date: 26. 11. 2020
+  Features:
+    - Updated to factorio v1.1.0
+---------------------------------------------------------------------------------------------------
+Version: 0.2.11
+Date: 27. 08. 2020
+  Features:
+    - Added support for modded trains from "Electric Train"
+    - Added support for modded trains from "Electronic_Factorio_Extended_Locomotives"
+  Bugfixes:
+    - Fixed crash related to not finding any burnable fuel category
+    - Fixed ordeing for trains from "Battle_Locomotives"
+    - Fixed support for electric trains from "Electronic_Angels_Locomotives"
+---------------------------------------------------------------------------------------------------
+Version: 0.2.10
+Date: 22. 08. 2020
+  Features:
+    - Updated to factorio 1.0
+    - Added support for spidertron from "Cannon_Spidertron"
+  Bugfixes:
+    - Fixed rounding error in train vehicle description
+---------------------------------------------------------------------------------------------------
+Version: 0.2.9
+Date: 24. 07. 2020
+  Features:
+    - Added crate graphic for the train parts
+    - Added some basic rolling stock statistics to the train descriptions
+    - Updated the train assembler graphics use new working_visual definitions instead of rendering
+      them seperately using the renderer
+  Bugfixes:
+    - Fixed crash due to fuel_value missing on recipe fuel due to a typo
+    - Fixed electric locomotive recipes would be unlocked at the start of the game
+    - Fixed missing case of modded locomotive localised naming
+    - Fixed error in the train assembler east overlay graphic as it was rendering wrong
+---------------------------------------------------------------------------------------------------
+Version: 0.2.8
+Date: 17. 07. 2020
+  Features:
+    - Added support for modded trains and tank from "Krastorio2"
+    - When allowed to manualy place trains, you now don't need to research the trainbuilder
+    - Added support for extra modded vehicles from "Hovercrafts"
+    - Added support for extra modded vehicles from "Transport_Drones"
+    - Added support for extra modded vehicles from "laser_tanks"
+    - Added support for extra modded vehicles from "aai-programmable-vehicles"
+  Changes:
+    - All optional dependencies that are for mod loading order issues are now hidden
+  Bugfixes:
+    - Fixed "space-exploration" was messing with rails and trains
+    - Another attempt at fixed angels industries moved the vanilla train parts to a different tab
+---------------------------------------------------------------------------------------------------
+Version: 0.2.7
+Date: 04. 07. 2020
+  Features:
+    - Added support for modded trains from "Electronic_Angels_Locomotives"
+    - Added support for extra modded train tiers from "angelsaddons-petrotrain"
+    - Added support for extra modded train tiers from "angelsaddons-smeltingtrain"
+    - Added support for modded trains from "angelsaddons-crawlertrain"
+    - Added support for modded fuel from "angelspetrochem"
+    - Added support for modded fuel from "angelsbioprocessing"
+  Changes:
+    - Updated some sprites in the train controller gui
+    - Updated some sprites in the train depot gui
+  Bugfixes:
+    - Fixed guis still crashing in existing games (due to base game update v0.18.33)
+    - Fixed angels industries moved the vanilla train parts to a different tab
+---------------------------------------------------------------------------------------------------
+Version: 0.2.6
+Date: 27. 06. 2020
+  Bugfixes:
+    - Fixed guis crashing (due to base game update v0.18.33)
+---------------------------------------------------------------------------------------------------
+Version: 0.2.5
+Date: 29. 05. 2020
+  Bugfixes:
+    - Fixed crash when trying to rotate the assemblers through the GUI (due to base game v0.18.28)
+    - Fixed gui not reacting to button presses (due to base game update v0.18.28)
+---------------------------------------------------------------------------------------------------
+Version: 0.2.4
+Date: 27. 05. 2020
+  Bugfixes:
+    - Fixed crash related to base game update v0.18.27
+    - Fixed crash related to destroying construction sites
+---------------------------------------------------------------------------------------------------
+Version: 0.2.3
+Date: 11. 05. 2020
+  Features:
+    - Added depot graphics designed by YuokiTani
+  Bugfixes:
+    - Fixed behaviour did not register to script_raised_revive event
+---------------------------------------------------------------------------------------------------
+Version: 0.2.2
+Date: 08. 04. 2020
+  Bugfixes:
+    - Fixed recipes unlocked from the start when recipe name is not the same as the item name
+    - Fixed crash related to picker dollies moving the trainbuilder, which is not intended
+    - Fixed that the Trainbuilder would show up in the bonus gui for train breaking force
+    - Fixed crash related to replacing an invalid train controller after changing the recipe
+---------------------------------------------------------------------------------------------------
+Version: 0.2.1
+Date: 02. 04. 2020
+  Bugfixes:
+    - Fixed crash on linux due to too big sprites
+---------------------------------------------------------------------------------------------------
+Version: 0.2.0
+Date: 02. 04. 2020
+  Features:
+    - Added controller and builder graphics designed by YuokiTani
+    - Added support for modded trains from "VehicleWagon2"
+  Changes:
+    - Updated the manual with new screenshots
+    - Updated thumbnail with new screenshot
+  Bugfixes:
+    - Fixed crash related due to residual data after deleting the last Traincontroller
+---------------------------------------------------------------------------------------------------
+Version: 0.1.18
+Date: 22. 03. 2020
+  Bugfixes:
+    - Fixed modded trains did not have a fluid recipe if they didn't have a technology to unlock them
+---------------------------------------------------------------------------------------------------
+Version: 0.1.17
+Date: 14. 03. 2020
+  Bugfixes:
+    - Fixed an issue with AAI Industry mod
+---------------------------------------------------------------------------------------------------
 Version: 0.1.16
 Date: 04. 03. 2020
   Bugfixes:
     - Added next_upgrade=nil where it was necesary
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 Version: 0.1.15
 Date: 02. 01. 2020
   Features:
-      - Updated to factorio 0.18
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    - Updated to factorio 0.18
+---------------------------------------------------------------------------------------------------
 Version: 0.1.14
 Date: 07. 12. 2019
   Features:
-      - Added support for modded fuel from "AAI industries"
-      - Added support for modded fuel from "Bio Industries"
+    - Added support for modded fuel from "AAI industries"
+    - Added support for modded fuel from "Bio Industries"
   Changes:
     - Changed stack size of manual from 10 to 1 to prevent creating 9 duplicates by accident
     - Changed required amount of fuel to craft trainfuel

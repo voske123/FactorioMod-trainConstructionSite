@@ -12,13 +12,16 @@ trainassembly.localised_description = util.table.deepcopy(data.raw["item"][train
 trainassembly.icon = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].icon)
 trainassembly.icons = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].icons)
 trainassembly.icon_size = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].icon_size)
+trainassembly.icon_mipmaps = util.table.deepcopy(data.raw["item"][trainassembly.minable.result].icon_mipmaps)
 
 -- remove the placeable_off_grid flag
+trainassembly.flags = trainassembly.flags or {}
 for flagIndex, flagName in pairs(trainassembly.flags) do
   if flagName == "placeable-off-grid" then
     trainassembly.flags[flagIndex] = nil
   end
 end
+table.insert(trainassembly.flags, "hidden")
 
 -- selection box
 trainassembly.selection_box = {{-3, -3}, {3, 3}} -- when train is facing north
@@ -43,7 +46,7 @@ trainassembly.connection_distance = -5
 -- no need to fix this becose this item gets replaced when its build.
 
 -- drawing box (for graphics)
-trainassembly.drawing_box = {{-3, -3}, {3, 3}} -- drawing box covering the extra tile
+trainassembly.drawing_box = {{-5, -5}, {5, 5}} -- drawing box covering the extra tile
 
 -- graphics
 trainassembly.front_light = nil
@@ -71,47 +74,46 @@ trainassembly.pictures =
 {
   layers =
   {
+    -- north and south
     {
-      width = 256,
-      height = 256,
+      width = 512,
+      height = 512,
+      scale = 0.5,
       direction_count = 4,
-      --allow_low_quality_rotation = true,
       frame_count = 1,
-      line_length = 4,
+      line_length = 1,
       lines_per_file = 1,
-      filename = "__trainConstructionSite__/graphics/placeholders/6x6-4.png",
-      --[[
+      scale = 0.5,
+      shift = util.by_pixel(31.5, -18),
       filenames =
       {
-        "__trainConstructionSite__/graphics/placeholders/6x6.png",
-        "__trainConstructionSite__/graphics/placeholders/6x6.png",
-        "__trainConstructionSite__/graphics/placeholders/6x6.png",
-        "__trainConstructionSite__/graphics/placeholders/6x6.png",
+        "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-N.png",
+        "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-empty.png",
+        "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-S.png",
+        "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-empty.png",
       },
-      ]]--
       hr_version = nil,
     },
-    --[[{
-      width = 82,
-      height = 82,
+    -- east and west
+    {
+      width = 512,
+      height = 512,
+      scale = 0.5,
       direction_count = 4,
-      --allow_low_quality_rotation = true,
       frame_count = 1,
-      line_length = 4,
+      line_length = 1,
       lines_per_file = 1,
-      filename = "__trainConstructionSite__/graphics/placeholders/directions.png",
-      --[[
+      scale = 0.5,
+      shift = util.by_pixel(30, -28),
       filenames =
       {
-        "__trainConstructionSite__/graphics/placeholders/direction_north.png",
-        "__trainConstructionSite__/graphics/placeholders/direction_east.png",
-        "__trainConstructionSite__/graphics/placeholders/direction_south.png",
-        "__trainConstructionSite__/graphics/placeholders/direction_west.png",
+        "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-empty.png",
+        "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-E.png",
+        "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-empty.png",
+        "__trainConstructionSite__/graphics/entity/trainassembly/trainassembly-W.png",
       },
-      ]]--[[
       hr_version = nil,
     },
-    ]]--
   },
 }
 

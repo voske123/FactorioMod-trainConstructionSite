@@ -1,15 +1,28 @@
 {
   "name": "trainConstructionSite",
-  "version": "0.1.16",
-  "factorio_version": "0.18",
+  "version": "0.2.18",
+  "factorio_version": "1.1",
   "title": "Train construction site",
   "author": "voske_123 & lovely_santa",
   "homepage": "https://mods.factorio.com/mod/trainConstructionSite",
   "description": "A nice, automated way of creating trains",
   "dependencies": [
-        "base >= 0.18.01",
-        "LSlib >= 2020.1.24",
+    "base >= 1.1.3",
+    "LSlib >= 2020.11.29",
 
-        "? FARL"
+    "(?) angelsaddons-crawlertrain",
+    "(?) angelsaddons-petrotrain",
+    "(?) angelsaddons-smeltingtrain",
+    "(?) angelsaddons-mobility",
+
+    "(?) Battle_Locomotives",
+    "(?) Electronic_Locomotives",
+    "(?) Electronic_Battle_Locomotives",
+    "(?) Electronic_Angels_Locomotives",
+
+    "(?) FARL",
+    "(?) ElectricTrain",
+    "(?) space-exploration",
+    "(?) SchallOverseasRailway"
   ]
 }

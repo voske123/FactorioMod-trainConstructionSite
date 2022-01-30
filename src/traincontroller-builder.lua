@@ -322,6 +322,11 @@ function Traincontroller.Builder:buildNextTrain(trainBuilderIndex)
                     name  = "trainassembly-trainfuel",
                     count = ingredient.amount,
                   }
+                elseif Trainassembly:isFuelItem(ingredient.name) then
+                  createdEntity.get_fuel_inventory().insert{
+                    name  = ingredient.name,
+                    count = ingredient.amount,
+                  }
                 end
               end
 
@@ -331,7 +336,7 @@ function Traincontroller.Builder:buildNextTrain(trainBuilderIndex)
                 r = createdEntityColor.r,
                 g = createdEntityColor.g,
                 b = createdEntityColor.b,
-                a = 127/255, -- hardcoded for vanilla trains
+                a = createdEntity.color and createdEntity.color.a or 127/255, -- hardcoded for vanilla trains
               }
 
             end
@@ -447,20 +452,22 @@ function Traincontroller.Builder:onTick(event)
   --game.print(game.tick)
 
   -- Extract the controller that needs to be updated
-  local controller = global.TC_data["nextTrainControllerIterate"]
+  local controller   = util.table.deepcopy(global.TC_data["nextTrainControllerIterate"])
   local surfaceIndex = controller.surfaceIndex
   local position     = controller.position
 
   -- extract the next controller
   local nextController = util.table.deepcopy(
-    global.TC_data["trainControllers"][surfaceIndex][position.y][position.x]["nextController"]
+    global.TC_data["trainControllers"][controller.surfaceIndex][controller.position.y][controller.position.x]["nextController"]
   )
 
   -- Update the controller
   self:updateController(surfaceIndex, position)
 
   -- Increment the nextController
-  global.TC_data["nextTrainControllerIterate"] = nextController
+  if LSlib.utils.table.areEqual(controller, global.TC_data["nextTrainControllerIterate"]) then
+    global.TC_data["nextTrainControllerIterate"] = nextController
+  end
 end
 
 

@@ -1,10 +1,11 @@
 require("__LSlib__/LSlib")
 
 require "src.debug"
-require "src.help"
 require "src.traindepot"
 require "src.trainassembly"
 require "src.traincontroller"
+require "src.trainfuel"
+require "src.mod-compatibility"
 
 local onConfigChanges = require("src.mod-config")
 script.on_configuration_changed(onConfigChanges)
@@ -14,17 +15,18 @@ script.on_configuration_changed(onConfigChanges)
 script.on_init(function(event)
   -- This is called once when a new save game is created or once
   -- when a save file is loaded that previously didn't contain the mod.
-  Debug          :onInit()
-  Help           :onInit()
-  Traindepot     :onInit()
-  Trainassembly  :onInit()
-  Traincontroller:onInit()
+  Debug           :onInit()
+  Traindepot      :onInit()
+  Trainassembly   :onInit()
+  Traincontroller :onInit()
+  ModCompatibility:onInit()
 end)
 
 
 
 script.on_load(function()
-  Traincontroller:onLoad()
+  Traincontroller :onLoad()
+  ModCompatibility:onLoad()
 end)
 
 
@@ -46,7 +48,6 @@ end)
 
 script.on_event(defines.events.on_player_left_game, function(event)
   -- Called after a player leaves the game.
-  Help           .Gui:onPlayerLeftGame(event.player_index)
   Traindepot     .Gui:onPlayerLeftGame(event.player_index)
   Traincontroller.Gui:onPlayerLeftGame(event.player_index)
 end)
@@ -55,7 +56,8 @@ end)
 
 script.on_event({defines.events.on_built_entity      ,
                  defines.events.on_robot_built_entity,
-                 defines.events.script_raised_built  }, function(event)
+                 defines.events.script_raised_built  ,
+                 defines.events.script_raised_revive }, function(event)
   -- Called when an entity gets placed.
   local createdEntity = event.created_entity or event.entity
   if createdEntity and createdEntity.valid then
@@ -78,6 +80,7 @@ script.on_event({defines.events.on_player_mined_entity,
     Traindepot     :onRemoveEntity(removedEntity)
     Trainassembly  :onRemoveEntity(removedEntity)
     Traincontroller:onRemoveEntity(removedEntity)
+    TrainFuel      :onRemoveEntity(removedEntity, event.buffer)
   end
 end)
 
@@ -90,7 +93,8 @@ end)
 
 
 
-script.on_event(defines.events.on_player_rotated_entity, function(event)
+script.on_event({defines.events.on_player_rotated_entity,
+                 Traincontroller.Gui:getRotateEventID() }, function(event)
   -- Called when player rotates an entity.
   local rotatedEntity = event.entity
   if rotatedEntity and rotatedEntity.valid then
@@ -118,13 +122,6 @@ end)
 
 
 
-script.on_event(defines.events.on_mod_item_opened, function(event)
-  -- Called when the player opens a GUI.
-  Help:onOpenItem(event.item, event.player_index)
-end)
-
-
-
 script.on_event(defines.events.on_gui_opened, function(event)
   -- Called when the player opens a GUI.
   Traindepot     .Gui:onOpenEntity(event.entity, event.player_index)
@@ -135,10 +132,8 @@ end)
 
 script.on_event(defines.events.on_gui_closed, function(event)
   -- Called when the player closes a GUI.
-  Help           .Gui:onCloseEntity(event.element, event.player_index)
   Traindepot     .Gui:onCloseEntity(event.element, event.player_index)
   Traincontroller.Gui:onCloseEntity(event.element, event.player_index)
-  --Traincontroller.Gui:onCloseEntity(event.entity , event.player_index)
 end)
 
 
@@ -149,7 +144,6 @@ script.on_event({--defines.events.on_gui_elem_changed           , -- Called when
                  defines.events.on_gui_selection_state_changed, -- Called when selection state is changed (dropdown/listbox)
                  defines.events.on_gui_click                  }, function(event)
   -- Called when the player clicks on a GUI.
-  Help           .Gui:onClickElement(event.element, event.player_index)
   Traindepot     .Gui:onClickElement(event.element, event.player_index)
   Traincontroller.Gui:onClickElement(event.element, event.player_index)
 end)

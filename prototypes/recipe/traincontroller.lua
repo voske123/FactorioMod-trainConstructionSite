@@ -13,7 +13,6 @@ data:extend{
         {"arithmetic-combinator", 1},
         {"programmable-speaker", 2},
       },
-      expensive = nil,
       results =
       {
         {
@@ -23,5 +22,6 @@ data:extend{
         },
       },
     },
+    expensive = nil,
   }
 }

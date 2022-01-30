@@ -37,18 +37,29 @@ for _, trainType in pairs{
       local item = data.raw["item-with-entity-data"][itemName] or data.raw["item"][itemName]
 
       if item and data.raw[trainType][item.place_result] then
-        log(string.format("Creating train parts: %s (%s)", trainEntity.name, trainType))
+        --log(string.format("Creating train parts: %s (%s)", trainEntity.name, trainType))
         data.raw[trainType][item.place_result].order = item.order
 
-        item.localised_name = item.localised_name and {"item-name.trainparts", item.localised_name} or {"item-name.trainparts", "__ENTITY__"..trainEntity.name.."__"}
-        item.subgroup       = "transport"
-        item.order          = (itemOrder[trainType][item.name] and itemOrder[trainType][item.name].."-" or "") .. item.order
+        item.subgroup = "transport"
+        item.order    = (itemOrder[trainType][item.name] and (itemOrder[trainType][item.name].."-") or "") .. (item.order or trainEntity.order or "z[unknown]")
+        
+        -- create dummy item for placeable_by
+        local itemDummy = util.table.deepcopy(item)
+        itemDummy.name = itemDummy.name.."-trainConstructionSiteDummy"
+        itemDummy.flags = itemDummy.flags or {}
+        table.insert(itemDummy.flags, "hidden")
+        data:extend{itemDummy}
+        
+        item.localised_name        = (item.localised_name and {"item-name.trainparts", item.localised_name}) or (trainEntity.localised_name and {"item-name.trainparts", trainEntity.localised_name}) or {"item-name.trainparts", "__ENTITY__"..trainEntity.name.."__"}
+        item.localised_description = {"item-description.trainparts", {"", string.format("[img=item/%s] ", itemDummy.name), util.table.deepcopy(item.localised_name[2])}}
 
         -- Add item to remove the place_result.
         if not itemPlaceResult[item.type] then itemPlaceResult[item.type] = {} end
         itemPlaceResult[item.type][item.name] = (settings.startup["trainController-manual-placing-trains"].value == false)
+
         trainEntity.fast_upgrade_group = nil
         trainEntity.next_upgrade = nil
+        trainEntity.placeable_by = {item = itemDummy.name, count = 1}
 
       else
         log(string.format("Error creating train parts: %s (%s)", trainEntity.name, trainType))

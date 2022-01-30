@@ -24,7 +24,12 @@ for _,trainType in pairs({
 
 
         itemFluid.name            = itemName .. "-fluid"
-        itemFluid.localised_name  = {"item-name.localisedEntity", trainEntity.name}
+        if item.localised_name and type(item.localised_name) == "table" and item.localised_name[1] == "item-name.trainparts" then
+          itemFluid.localised_name  = util.table.deepcopy(item.localised_name)
+          itemFluid.localised_name[1] = "item-name.trainfluid"
+        else
+          itemFluid.localised_name  = {"__ENTITY__"..trainEntity.name.."__"}
+        end
         itemFluid.icon            = item.icon
         itemFluid.icon_size       = item.icon_size
         itemFluid.icons           = util.table.deepcopy(item.icons)

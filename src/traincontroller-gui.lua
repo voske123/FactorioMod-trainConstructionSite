@@ -3,6 +3,7 @@ require("__LSlib__/LSlib")
 
 -- Create class
 Traincontroller.Gui = {}
+Traincontroller.Gui.rotateEventID = script.generate_event_name()
 
 --------------------------------------------------------------------------------
 -- Initiation of the class
@@ -19,11 +20,10 @@ end
 -- Initiation of the global data
 function Traincontroller.Gui:initGlobalData()
   local gui = {
-    ["version"       ] = 1, -- version of the global data
+    ["version"       ] = 5, -- version of the global data
     ["surfaceName"   ] = "trainConstructionSite",
     ["prototypeData" ] = self:initPrototypeData(), -- data storing info about the prototypes
-    ["clickHandler"  ] = self:initClickHandlerData(),
-    ["openedEntities"] = {} -- opened entity for each player
+    ["openedEntities"] = {}, -- opened entity for each player
   }
 
   return util.table.deepcopy(gui)
@@ -136,7 +136,7 @@ end
 
 
 
-function Traincontroller.Gui:initClickHandlerData()
+function Traincontroller.Gui:initClickHandlers()
   local clickHandlers = {}
 
   ------------------------------------------------------------------------------
@@ -148,7 +148,18 @@ function Traincontroller.Gui:initClickHandlerData()
     Traincontroller.Gui:setOpenedControllerEntity(playerIndex, nil)
 
     -- open the new UI
-    Help.Gui:openGui(playerIndex)
+    --Help.Gui:openGui(playerIndex)
+  end
+
+
+
+  ------------------------------------------------------------------------------
+  -- close button handler
+  ------------------------------------------------------------------------------
+  clickHandlers["traincontroller-close"] = function(clickedElement, playerIndex)
+    -- close this UI
+    game.players[playerIndex].opened = Traincontroller.Gui:destroyGui(playerIndex)
+    Traincontroller.Gui:setOpenedControllerEntity(playerIndex, nil)
   end
 
 
@@ -223,7 +234,7 @@ function Traincontroller.Gui:initClickHandlerData()
     -- rotate the assembler
     local previous_direction = trainAssembler.direction
     trainAssembler.rotate()
-    script.raise_event(defines.events.on_player_rotated_entity, {
+    script.raise_event(Traincontroller.Gui:getRotateEventID(), {
       entity = trainAssembler,
       previous_direction = previous_direction,
       player_index = playerIndex
@@ -255,7 +266,7 @@ function Traincontroller.Gui:initClickHandlerData()
         local colorPickerIndexFrame = colorPickerFrame[string.format(colorName, "flow-"..colorIndex)]
         local colorPickerIndexValue = math.floor(.5 + (color[colorIndex] or 0) * 255)
         colorPickerIndexFrame[string.format(colorName, "slider"   )].slider_value = colorPickerIndexValue
-        colorPickerIndexFrame[string.format(colorName, "textfield")].text         = colorPickerIndexValue
+        colorPickerIndexFrame[string.format(colorName, "textfield")].text         = ""..colorPickerIndexValue
       end
 
       -- set the entity-preview entity
@@ -301,14 +312,17 @@ function Traincontroller.Gui:initClickHandlerData()
 
     -- also remove the entity-preview entity
     local entityRadius = 10
-    game.surfaces[Traincontroller.Gui:getControllerSurfaceName()].find_entities_filtered{
+    local entity = game.surfaces[Traincontroller.Gui:getControllerSurfaceName()].find_entities_filtered{
       name      = "straight-rail",
       invert    = true,
       position  = {x = 3*entityRadius*playerIndex,
                    y = 0                         },
       radius    = entityRadius,
       limit     = 1,
-    }[1].destroy()
+    }[1]
+    if entity then
+      entity.destroy()
+    end
 
     -- STEP 2: find the selected one
     local clickedElementStyle        = "traincontroller_color_indicator_button_housing"
@@ -368,9 +382,22 @@ function Traincontroller.Gui:initClickHandlerData()
         -- STEP 4: save the machine tint
         local controllerEntity = Traincontroller.Gui:getOpenedControllerEntity(playerIndex)
         local trainAssemblerLocation = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(controllerEntity))[tonumber(assemblerElementIndex)]
-        Trainassembly:setMachineTint(Trainassembly:getMachineEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position), colorElement[colorElement.name].style.color)
+        local trainAssemblerEntity = Trainassembly:getMachineEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position)
+        Trainassembly:setMachineTint(trainAssemblerEntity, colorElement[colorElement.name].style.color)
 
-        -- STEP 5: update opened UI's
+        -- STEP 5: update the color of the build entity (if any)
+        local createdEntity = Trainassembly:getCreatedEntity(trainAssemblerLocation.surfaceIndex, trainAssemblerLocation.position)
+        if createdEntity then
+          local createdEntityColor = Trainassembly:getMachineTint(trainAssemblerEntity)
+          createdEntity.color = {
+            r = createdEntityColor.r,
+            g = createdEntityColor.g,
+            b = createdEntityColor.b,
+            a = createdEntity.color and createdEntity.color.a or 127/255, -- hardcoded for vanilla trains
+          }
+        end
+
+        -- STEP 6: update opened UI's
         Traincontroller.Gui:updateOpenedGuis(controllerEntity)
 
         break -- no need to look further
@@ -457,7 +484,7 @@ function Traincontroller.Gui:initClickHandlerData()
     local clickedElementValue = math.floor(.5 + clickedElement.slider_value)
     local textfieldElement = clickedElement.parent["traincontroller-color-picker-textfield"]
     if tonumber(textfieldElement.text) ~= clickedElementValue then
-      textfieldElement.text = clickedElementValue
+      textfieldElement.text = ""..clickedElementValue
     else
       return -- no update required
     end
@@ -534,7 +561,7 @@ function Traincontroller.Gui:initClickHandlerData()
   --------------------
   return clickHandlers
 end
-
+Traincontroller.Gui.clickHandlers = Traincontroller.Gui:initClickHandlers()
 
 
 --------------------------------------------------------------------------------
@@ -590,8 +617,14 @@ end
 
 
 
+function Traincontroller.Gui:getRotateEventID()
+  return Traincontroller.Gui.rotateEventID
+end
+
+
+
 function Traincontroller.Gui:getClickHandler(guiElementName)
-  return global.TC_data.Gui["clickHandler"][guiElementName]
+  return Traincontroller.Gui.clickHandlers[guiElementName]
 end
 
 
@@ -667,7 +700,7 @@ end
 function Traincontroller.Gui:destroyGui(playerIndex)
   -- make sure the color picker is closed first
   local colorPickerElement = LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("traincontroller-color-picker"))
-  if colorPickerElement.visible then
+  if colorPickerElement and colorPickerElement.visible then
     -- simulate clicking discard
     self:getClickHandler("traincontroller-color-picker-button-discard")(nil, playerIndex)
   end

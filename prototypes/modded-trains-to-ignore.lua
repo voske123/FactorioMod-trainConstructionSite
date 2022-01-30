@@ -6,6 +6,10 @@ local trainsToIgnore = {
 }
 
 trainsToIgnore["locomotive"]["trainassembly-placeable"] = true -- trainassembly
+trainsToIgnore["locomotive"]["traindisassembly-placeable"] = true -- traindisassembly
+--if mods["trainDeconstructionSite"] then 
+--  trainsToIgnore["locomotive"]["traindisassembly-placeable"] = true -- traindisassembly
+--end
 
 if mods["creative-mod"] then
   for _,cargowagon in pairs{
@@ -18,6 +22,12 @@ if mods["creative-mod"] then
 end
 
 if mods["cargo-ships"] then
+  for _,locomotive in pairs{
+    "cargo_ship_engine",
+    "boat_engine"      ,
+  } do
+    trainsToIgnore["locomotive"][locomotive] = true
+  end
   for _,cargowagon in pairs{
     "cargo_ship",
     "boat"      ,
@@ -33,7 +43,7 @@ end
 
 if mods["Armored-train"] then
   for _,cargowagon in pairs{
-    "armored-platform-radar-mk1",
+    --"armored-platform-radar-mk1",
   } do
     trainsToIgnore["cargo-wagon"][cargowagon] = true
   end
@@ -44,6 +54,29 @@ if mods["MultipleUnitTrainControl"] then
     if string.sub(locomotive, -3) == "-mu" then
       trainsToIgnore["locomotive"][locomotive] = true
     end
+  end
+end
+
+if mods["VehicleWagon2"] then
+  for _,cargowagon in pairs{
+    "loaded-vehicle-wagon-tank",
+    "loaded-vehicle-wagon-car",
+    "loaded-vehicle-wagon-tarp",
+  } do
+    trainsToIgnore["cargo-wagon"][cargowagon] = true
+  end
+end
+
+if mods["JunkTrain3"] then
+  for _,locomotive in pairs{
+    "JunkTrain",
+  } do
+    trainsToIgnore["locomotive"][locomotive] = true
+  end
+  for _,cargowagon in pairs{
+    "ScrapTrailer",
+  } do
+    trainsToIgnore["cargo-wagon"][cargowagon] = true
   end
 end
 

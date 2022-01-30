@@ -19,13 +19,14 @@ end
 -- Initiation of the global data
 function Trainassembly:initGlobalData()
   local TA_data = {
-    ["version"] = 3, -- version of the global data
+    ["version"] = 5, -- version of the global data
     ["prototypeData"] = self:initPrototypeData(), -- data storing info about the prototypes
 
     ["trainAssemblers"] = {}, -- keep track of all assembling machines
 
     ["trainBuilders"] = {}, -- keep track of all builders that contain one or more trainAssemblers
     ["nextTrainBuilderIndex"] = 1, -- next free space in the trainBuilders table
+    ["fuelItems"] = {}, -- cache to more efficiently decide if an item is fuel or not
   }
 
   return util.table.deepcopy(TA_data)
@@ -90,7 +91,7 @@ function Trainassembly:saveNewStructure(machineEntity, machineRenderID)
   global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x] =
   {
     ["entity"           ] = machineEntity,           -- the entity
-    ["renderID"         ] = machineRenderID,         -- the render of the building
+    ["renderID"         ] = machineRenderID,         -- the renders of the building
     ["direction"        ] = machineEntity.direction, -- the direction its facing
     ["trainColor"       ] = LSlib.utils.table.convertRGBA{r = 234, g = 17, b = 0}, -- the color of the train entity when it will be created
     ["createdEntity"    ] = nil,                     -- the created train entity from this building
@@ -402,16 +403,16 @@ function Trainassembly:deleteBuilding(machineEntity)
 
     if (trainAssemblerNW and (not trainAssemblerSE)) or (trainAssemblerSE and (not trainAssemblerNW)) then -- only one neighbour
 
-    local trainBuilderIndex = global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"]
-    Traincontroller:onTrainbuilderAltered(trainBuilderIndex)
+      local trainBuilderIndex = global.TA_data["trainAssemblers"][machineSurface.index][machinePosition.y][machinePosition.x]["trainBuilderIndex"]
+      Traincontroller:onTrainbuilderAltered(trainBuilderIndex)
 
-    -- delete the assembler out of the trainbuilder
-    for locationIndex, location in pairs(global.TA_data["trainBuilders"][trainBuilderIndex]) do
-      if location["surfaceIndex"] == machineSurface.index and location["position"].y == machinePosition.y and location["position"].x == machinePosition.x then
-        table.remove(global.TA_data["trainBuilders"][trainBuilderIndex], locationIndex)
-        break
+      -- delete the assembler out of the trainbuilder
+      for locationIndex, location in pairs(global.TA_data["trainBuilders"][trainBuilderIndex]) do
+        if location["surfaceIndex"] == machineSurface.index and location["position"].y == machinePosition.y and location["position"].x == machinePosition.x then
+          table.remove(global.TA_data["trainBuilders"][trainBuilderIndex], locationIndex)
+          break
+        end
       end
-    end
 
     else -- there are two neighbours
 
@@ -432,7 +433,7 @@ function Trainassembly:deleteBuilding(machineEntity)
           break
         end
       end
-
+      
       for locationIndex, location in pairs(global.TA_data["trainBuilders"][trainBuilderIndex]) do
         local needToMove = false
 
@@ -550,6 +551,18 @@ function Trainassembly:deleteCreatedTrainEntity(machineSurfaceIndex, machinePosi
   if createdTrainEntity and createdTrainEntity.valid then
     createdTrainEntity.destroy()
     self:setCreatedEntity(machineSurfaceIndex, machinePosition, nil)
+
+    -- attempt to put the train back in the recipe result.
+    local machineEntity = self:getMachineEntity(machineSurfaceIndex, machinePosition)
+    if machineEntity and machineEntity.valid then
+      local machineRecipe = machineEntity.get_recipe()
+      if machineRecipe then
+        machineEntity.insert_fluid({
+          name = machineRecipe.products[1].name,
+          amount = 1
+        })
+      end
+    end
   end
 end
 
@@ -631,7 +644,7 @@ end
 
 
 
-function Trainassembly:getMachineRenderID(machineEntity)
+function Trainassembly:getMachineRenderIDs(machineEntity)
   -- STEP 1: If the machineEntity isn't valid, its position isn't valid either
   if not (machineEntity and machineEntity.valid) then
     return nil
@@ -981,15 +994,21 @@ function Trainassembly:onBuildEntity(createdEntity, playerIndex)
         railEntity.minable      = false -- entity can't be mined
       end
 
-      local machineRenderID = rendering.draw_animation{
-        animation = machineEntity.name .. "-" .. LSlib.utils.directions.toString(machineEntity.direction),
+      local machineRenderID = {}
+      for animationLayer,renderLayer in pairs{
+        ["base"] = 124,
         -- @Bilka said:
         -- "item-in-inserter-hand" = 134
         -- "higher-object-above"   = 132
-        render_layer = 133,
-        target = machineEntity,
-        surface = machineEntity.surface,
-      }
+        ["overlay"] = 133
+      } do
+        machineRenderID[animationLayer] = rendering.draw_animation{
+          animation = machineEntity.name .. "-" .. LSlib.utils.directions.toString(machineEntity.direction) .. "-" .. animationLayer,
+          render_layer = tostring(renderLayer),
+          target = machineEntity,
+          surface = machineEntity.surface,
+        }
+      end
 
       -- STEP 4: delete the locomotive that was build.
       createdEntity.destroy()
@@ -1095,8 +1114,11 @@ function Trainassembly:onPlayerRotatedEntity(rotatedEntity)
     local newDirection = LSlib.utils.directions.oposite(self:getMachineDirection(rotatedEntity))
 
     -- STEP 2: set the new rotated direction
+    local renderIDs = self:getMachineRenderIDs(rotatedEntity)
     rotatedEntity.direction = newDirection
-    rendering.set_animation(self:getMachineRenderID(rotatedEntity), rotatedEntity.name .. "-" .. LSlib.utils.directions.toString(newDirection))
+    for _,animationLayer in pairs{"base", "overlay"} do
+      rendering.set_animation(renderIDs[animationLayer], rotatedEntity.name .. "-" .. LSlib.utils.directions.toString(newDirection) .. "-" .. animationLayer)
+    end
 
     -- STEP 3: save the state to the data structure
     self:updateMachineDirection(rotatedEntity)
@@ -1105,6 +1127,36 @@ function Trainassembly:onPlayerRotatedEntity(rotatedEntity)
     local createdTrainEntity = self:getCreatedEntity(rotatedEntity.surface.index, rotatedEntity.position)
     if createdTrainEntity and createdTrainEntity.valid then
       createdTrainEntity.rotate()
+      if createdTrainEntity.direction ~= newDirection then
+        local createdTrainEntityStats = {
+          type               = createdTrainEntity.type,
+          name               = createdTrainEntity.name,
+          surface            = createdTrainEntity.surface,
+          position           = createdTrainEntity.position,
+          direction          = newDirection,
+          force              = createdTrainEntity.force,
+          snap_to_train_stop = false,
+          color              = createdTrainEntity.color
+        }
+        createdTrainEntity.destroy{raise_destroy=true}
+        createdTrainEntity = createdTrainEntityStats.surface.create_entity(createdTrainEntityStats)
+        local rotatedEntityRecipe = rotatedEntity.get_recipe()
+        if rotatedEntityRecipe then
+          for _,ingredient in pairs(rotatedEntityRecipe.ingredients) do
+            if ingredient.name == "trainassembly-recipefuel" then
+              createdTrainEntity.get_fuel_inventory().insert{
+                name  = "trainassembly-trainfuel",
+                count = ingredient.amount,
+              }
+            end
+          end
+        end
+        createdTrainEntity.color = createdTrainEntityStats.color
+        script.raise_event(defines.events.script_raised_built, {
+          entity = createdTrainEntity
+        })
+        Trainassembly:setCreatedEntity(rotatedEntity.surface.index, rotatedEntity.position, createdTrainEntity)
+      end
     end
   end
 end
@@ -1116,4 +1168,20 @@ function Trainassembly:onPlayerChangedSettings(sourceEntity, destinationEntity)
      destinationEntity.name == self:getMachineEntityName() then
     self:setMachineTint(destinationEntity, self:getMachineTint(sourceEntity))
   end
+end
+
+
+
+function Trainassembly:isFuelItem(itemName)
+  -- Attempt to return cached value.
+  -- If value doesn't exist, calculate it (expensive), cache it, and return
+  global.TA_data["fuelItems"] = global.TA_data["fuelItems"] or {}
+  local isFuelItem = global.TA_data["fuelItems"][itemName]
+
+  if isFuelItem == nil then
+    isFuelItem = (game.item_prototypes[itemName].fuel_value > 0)
+    global.TA_data["fuelItems"][itemName] = isFuelItem
+  end
+
+  return isFuelItem
 end

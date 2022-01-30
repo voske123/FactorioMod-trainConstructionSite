@@ -1,4 +1,5 @@
 local itemOverride   = require("prototypes/modded-trains-item-override")
+local recipeOverride = require("prototypes/modded-trains-recipe-override")
 
 -- For each train-like entity we want to create a recipe so we can put this in
 -- our trainbuilding to make an actual train on the tracks. To get the fluidname
@@ -17,6 +18,7 @@ for _, trainType in pairs({
     if (not trainsToIgnore[trainType][trainEntity.name]) and trainEntity.minable and trainEntity.minable.result then
 
       local itemName = itemOverride[trainType][trainEntity.name] or trainEntity.minable.result
+      local item = data.raw["item-with-entity-data"][itemName] or data.raw["item"][itemName]
 
       -- now that we have the itemname we can create the fluid recipe.
       data:extend{
@@ -41,6 +43,8 @@ for _, trainType in pairs({
                 amount  = 1,
               },
             },
+            main_product = itemName .. "-fluid",
+            always_show_products = true,
           },
         }
       }
@@ -52,6 +56,19 @@ for _, trainType in pairs({
         table.insert(data.raw["recipe"][trainEntity.name .. "-fluid[" .. trainType .. "]"].normal.ingredients, {"trainassembly-recipefuel", 1})
       end
 
+      -- Now we update the existing recipe. We need to update the localised_name...
+      local recipeName = recipeOverride[trainType][trainEntity.name] or itemName
+      if item then
+        if data.raw.recipe[recipeName] then
+          data.raw.recipe[recipeName].icon = nil
+          data.raw.recipe[recipeName].icon_size = nil
+          data.raw.recipe[recipeName].icon_mipmaps = nil
+          data.raw.recipe[recipeName].icons = nil
+        end
+        LSlib.recipe.setLocalisedName(recipeName, util.table.deepcopy(item.localised_name))
+        LSlib.recipe.setMainResult(recipeName, itemName)
+        LSlib.recipe.setShowProduct(recipeName, true)
+      end
     end
   end
 end
