@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.19
+Date: 13. 02. 2022
+  Changes:
+    - Added support for modded trains with custom fuel
+  Buxfixes:
+    - Fixed collision layers with mod "Hovercrafts"
+---------------------------------------------------------------------------------------------------
 Version: 0.2.18
 Date: 27. 01. 2022
   Changes:

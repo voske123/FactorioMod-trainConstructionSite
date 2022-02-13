@@ -108,6 +108,8 @@ end
 -- Other changes --------------------------------------------------------------
 -------------------------------------------------------------------------------
 local trainOrdering = require("prototypes.modded-trains-ordening")
+local collision_mask_util = require("collision-mask-util")
+
 if mods["FARL"] then
     LSlib.technology.removePrerequisite("rail-signals", "trainassembly-automated-train-assembling")
     LSlib.technology.moveRecipeUnlock("rail-signals", "trainassembly-automated-train-assembling", "farl")
@@ -193,12 +195,16 @@ if mods["space-exploration"] then
   LSlib.item.setOrderstring("item", "rail-chain-signal", "c[signal]-b[chain]")
 end
 
-  -- Cargo ships change the order to fit in Transport Logistics instead of Logistics
-
+-- Cargo ships change the order to fit in Transport Logistics instead of Logistics
 if mods ["cargo-ships"] then
   local subgroup = data.raw["item-subgroup"]["water_transport"]
   if subgroup then
     subgroup.group = "transport-logistics"
     subgroup.order = "i[water]"
   end
+end
+
+-- Hovercraft add train-layer to the construction sites
+if mods ["Hovercrafts"] then
+  collision_mask_util.remove_layer(data.raw["assembling-machine"]["trainassembly-machine"].collision_mask, "train-layer")
 end
