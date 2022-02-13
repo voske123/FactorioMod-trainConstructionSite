@@ -6,6 +6,7 @@ local trainControllerGui = require("prototypes.gui.layout.traincontroller")
 local trainDepotGui = require("prototypes.gui.layout.traindepot")
 
 require("src.traincontroller")
+require("src.traindepot")
 
 return function(configurationData)
   local modChanges = configurationData.mod_changes["trainConstructionSite"]
@@ -238,6 +239,43 @@ return function(configurationData)
     if global.TD_data.version == 1 then
       log("Updating Traindepot from version 1 to version 2.")
       global.TD_data.version = 2
+    end
+
+    if global.TD_data.version == 2 then 
+      log("Updating Traindepot from version 2 to version 3.")
+      for depotSurfaceIndex, depotSurfaceData in pairs(global.TD_data["depots"]) do 
+        for depotPositionY,depotPositionList in pairs(depotSurfaceData) do
+          for depotPositionX,depotEntityData in pairs(depotPositionList) do
+            local depotEntity = depotEntityData.entity
+            if depotEntity.valid then
+            else
+              local foundEntity = game.get_surface(depotSurfaceIndex).find_entities_filtered {
+                type = "train-stop",
+                name = Traindepot:getDepotEntityName(),
+                position = {x = depotPositionX, y = depotPositionY},
+                radius = 1,
+                limit = 1,
+              }[1]
+              if foundEntity then
+                global.TD_data["depots"][depotSurfaceIndex][depotPositionX][depotPositionY].entity = foundEntity
+              else
+                if global.TD_data["depots"][depotSurfaceIndex][depotPositionY][depotPositionX] then
+                  global.TD_data["depots"][depotSurfaceIndex][depotPositionY][depotPositionX] = nil
+
+                  if LSlib.utils.table.isEmpty(global.TD_data["depots"][depotSurfaceIndex][depotPositionY]) then
+                    global.TD_data["depots"][depotSurfaceIndex][depotPositionY] = nil
+
+                    if LSlib.utils.table.isEmpty(global.TD_data["depots"][depotSurfaceIndex]) then
+                      global.TD_data["depots"][depotSurfaceIndex] = nil
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+      global.TD_data.version = 3
     end
 
     --------------------------------------------------

@@ -21,7 +21,7 @@ end
 -- Initiation of the global data
 function Traindepot:initGlobalData()
   local TD_data = {
-    ["version"        ] = 2, -- version of the global data
+    ["version"        ] = 3, -- version of the global data
     ["prototypeData"  ] = self:initPrototypeData(), -- data storing info about the prototypes
 
     ["depots"         ] = {},  -- keep track of all depots and there entity data
@@ -270,7 +270,7 @@ function Traindepot:getAllTrainsPathingToDepot(depotSurfaceIndex, depotName)
     for depotPositionX,depotEntityData in pairs(depotPositionList) do
 
       -- check if a depot has the correct name
-      if depotEntityData.entity.backer_name == depotName then
+      if depotEntityData.entity.valid and depotEntityData.entity.backer_name == depotName then
         return depotEntityData.entity.get_train_stop_trains()
       end
 
@@ -307,7 +307,7 @@ function Traindepot:getNumberOfTrainsStoppedInDepot(depotSurfaceIndex, depotName
   for depotPositionY,depotPositionList in pairs(global.TD_data["depots"][depotSurfaceIndex]) do
     for depotPositionX,depotEntityData in pairs(depotPositionList) do
       local depotEntity = depotEntityData.entity
-      if depotEntity.backer_name == depotName and depotEntity.get_stopped_train() then
+      if depotEntity.valid and depotEntity.backer_name == depotName and depotEntity.get_stopped_train() then
         amount = amount + 1
       end
     end
