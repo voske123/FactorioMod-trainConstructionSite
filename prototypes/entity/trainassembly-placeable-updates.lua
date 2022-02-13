@@ -45,3 +45,4 @@ for _, beltType in pairs({
     collision_mask_util.add_layer(beltEntity.collision_mask, extraLayer2)
   end
 end
+
