@@ -144,15 +144,16 @@ function Traindepot.Gui:initClickHandlers()
     local depotForceName    = depotEntity.force.name
     local depotSurfaceIndex = depotEntity.surface.index
     local depotName         = depotEntity.backer_name
+    local depotStationCount = Traindepot:getDepotStationCount(depotForceName, depotSurfaceIndex, depotName)
+    local currentRequestCount = Traindepot:getDepotRequestCount(depotForceName, depotSurfaceIndex, depotName)
+    local newRequestCount = (currentRequestCount == Traindepot.INFINITY) and depotStationCount or currentRequestCount - 1
 
     -- update the data
-    Traindepot:setDepotRequestCount(depotForceName, depotSurfaceIndex, depotName,
-      Traindepot:getDepotRequestCount(depotForceName, depotSurfaceIndex, depotName) - 1)
+    Traindepot:setDepotRequestCount(depotForceName, depotSurfaceIndex, depotName, newRequestCount)
 
     -- update the gui element
     LSlib.gui.getElement(playerIndex, Traindepot.Gui:getUpdateElementPath("statistics-builder-amount-value")).caption = string.format("%i/%i",
-      Traindepot:getDepotRequestCount(depotForceName, depotSurfaceIndex, depotName),
-      Traindepot:getDepotStationCount(depotForceName, depotSurfaceIndex, depotName))
+      Traindepot:getDepotRequestCountString(depotForceName, depotSurfaceIndex, depotName), depotStationCount)
   end
 
   clickHandlers["statistics-builder-amount-value+"] = function(clickedElement, playerIndex)
@@ -160,15 +161,16 @@ function Traindepot.Gui:initClickHandlers()
     local depotForceName    = depotEntity.force.name
     local depotSurfaceIndex = depotEntity.surface.index
     local depotName         = depotEntity.backer_name
+    local depotStationCount = Traindepot:getDepotStationCount(depotForceName, depotSurfaceIndex, depotName)
+    local currentRequestCount = Traindepot:getDepotRequestCount(depotForceName, depotSurfaceIndex, depotName)
+    local newRequestCount = currentRequestCount >= depotStationCount and Traindepot.INFINITY or currentRequestCount + 1
 
     -- update the data
-    Traindepot:setDepotRequestCount(depotForceName, depotSurfaceIndex, depotName,
-      Traindepot:getDepotRequestCount(depotForceName, depotSurfaceIndex, depotName) + 1)
+    Traindepot:setDepotRequestCount(depotForceName, depotSurfaceIndex, depotName, newRequestCount)
 
     -- update the gui element
-    LSlib.gui.getElement(playerIndex, Traindepot.Gui:getUpdateElementPath("statistics-builder-amount-value")).caption = string.format("%i/%i",
-      Traindepot:getDepotRequestCount(depotForceName, depotSurfaceIndex, depotName),
-      Traindepot:getDepotStationCount(depotForceName, depotSurfaceIndex, depotName))
+    LSlib.gui.getElement(playerIndex, Traindepot.Gui:getUpdateElementPath("statistics-builder-amount-value")).caption = string.format("%s/%i",
+      Traindepot:getDepotRequestCountString(depotForceName, depotSurfaceIndex, depotName), depotStationCount)
   end
 
   clickHandlers["statistics-builder-list-button"] = function(clickedElement, playerIndex)
@@ -335,7 +337,7 @@ function Traindepot.Gui:updateGuiInfo(playerIndex)
 
   -- number of trains to be available at the depot
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-amount-value")).caption = string.format(
-    "%i/%i", Traindepot:getDepotRequestCount(depotForceName, depotSurfaceIndex, depotName), depotStationCount)
+    "%s/%i", Traindepot:getDepotRequestCountString(depotForceName, depotSurfaceIndex, depotName), depotStationCount)
 
   -- number of trainbuilders that are connected to this builder
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-working-amount-value")).caption =

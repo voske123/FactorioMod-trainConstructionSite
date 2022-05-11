@@ -5,6 +5,9 @@ require("__LSlib__/LSlib")
 Traindepot = {}
 require 'src.traindepot-gui'
 
+-- Constants
+Traindepot.INFINITY = 0x7FFFFFF00
+
 --------------------------------------------------------------------------------
 -- Initiation of the class
 --------------------------------------------------------------------------------
@@ -152,7 +155,7 @@ function Traindepot:setStationAmount(depotForceName, depotSurfaceIndex, depotNam
     if (not depotData["requestAmount"]) or depotData["requestAmount"] < 0 then
       depotData["requestAmount"] = 1
     end
-    if depotData["requestAmount"] > newStationAmount then
+    if (depotData["requestAmount"] ~= Traindepot.INFINITY) and (depotData["requestAmount"] > newStationAmount) then
       depotData["requestAmount"] = newStationAmount
     end
 
@@ -173,14 +176,12 @@ function Traindepot:setStationAmount(depotForceName, depotSurfaceIndex, depotNam
   end
 end
 
-
-
 function Traindepot:setDepotRequestCount(depotForceName, depotSurfaceIndex, depotName, newStationRequestAmount)
   local depotData = self:getDepotData(depotForceName, depotSurfaceIndex)[depotName]
   if not depotData then return end
 
   if newStationRequestAmount > depotData["stationAmount"] then
-    depotData["requestAmount"] = depotData["stationAmount"]
+    depotData["requestAmount"] = Traindepot.INFINITY
   elseif newStationRequestAmount < 0 then
     depotData["requestAmount"] = 0
   else
@@ -259,6 +260,13 @@ end
 
 function Traindepot:getDepotRequestCount(depotForceName, depotSurfaceIndex, depotName)
   return (self:getDepotData(depotForceName, depotSurfaceIndex)[depotName] or {})["requestAmount"] or 0
+end
+
+
+
+function Traindepot:getDepotRequestCountString(depotForceName, depotSurfaceIndex, depotName)
+  local count = self:getDepotRequestCount(depotForceName, depotSurfaceIndex, depotName)
+  return (count == Traindepot.INFINITY) and "∞" or tostring(count)
 end
 
 
