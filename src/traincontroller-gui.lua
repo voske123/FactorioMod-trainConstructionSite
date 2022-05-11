@@ -725,9 +725,9 @@ function Traincontroller.Gui:updateGuiInfo(playerIndex)
   local controllerSurfaceIndex = openedEntity.surface.index or game.get_player(playerIndex).surface.index or 1
   local controllerDirection    = openedEntity.direction or defines.direction.north
 
-  local depotForceName    = Traincontroller:getDepotForceName(controllerForceName)
-  local depotRequestCount = Traindepot:getDepotRequestCount(depotForceName, controllerSurfaceIndex, controllerName)
-  local depotTrainCount   = Traindepot:getNumberOfTrainsPathingToDepot(controllerSurfaceIndex, controllerName)
+  local depotForceName          = Traincontroller:getDepotForceName(controllerForceName)
+  local depotRequestCountString = Traindepot:getDepotRequestCountString(depotForceName, controllerSurfaceIndex, controllerName)
+  local depotTrainCount         = Traindepot:getNumberOfTrainsPathingToDepot(controllerSurfaceIndex, controllerName)
 
   local trainBuilder         = Trainassembly:getTrainBuilder(Traincontroller:getTrainBuilderIndex(openedEntity))
   local trainBuilderIterator = Trainassembly:getTrainBuilderIterator(controllerDirection)
@@ -738,7 +738,7 @@ function Traincontroller.Gui:updateGuiInfo(playerIndex)
 
   -- requested amount of trains in depot
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-depot-request-value")).caption = string.format(
-    "%i/%i", depotTrainCount, depotRequestCount)
+    "%i/%s", depotTrainCount, depotRequestCountString)
 
   -- status of the builder
   LSlib.gui.getElement(playerIndex, self:getUpdateElementPath("statistics-builder-status-value")).caption = self:getOpenedControllerStatusString(playerIndex)

@@ -30,7 +30,7 @@ When you open the depot entity, you can see some basic information about the dep
   - Available depot spots: The amount of depot spots that are available. This is shown as "available/total" station count. Building more stations with the same name extends the total amount of trains that stay in the depot.
 
 ## 2.3 Depot configuration settings
-  - Requested amount: In the depot menu you can set the amount of trains you want to have in the depot. When the amount of trains that is present in the depot is lower than the requested amount, the connected builders will create more trains until the request is fullfilled.
+  - Requested amount: In the depot menu you can set the amount of trains you want to have in the depot. When the amount of trains that is present in the depot is lower than the requested amount, the connected builders will create more trains until the request is fullfilled. Increasing the number of trains past the number of available depots results in requesting infinite trains. The depots will just keep pulling more trains in when possible and it is up to the player to control this process, perhaps by circuits or by another train mod such as LTN.
   - Connected trainbuilders: The trainbuilders that are connected to this depot to fullfill the requests. This also shows a list of all the controllers which you can access from here.
 
 # 3. Trainbuilder
