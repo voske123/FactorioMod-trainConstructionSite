@@ -83,8 +83,16 @@ if mods["ElectricTrain"] then
   trainConstructionSite.remote.addElectricTrain("locomotive", "et-electric-locomotive-3")
 end
 
+if mods["pyindustry"] and mods["pycoalprocessing"] then
+  trainConstructionSite.remote.addCustomFuelTrain("locomotive", "mk02-locomotive", "syngas-canister")
+end
+
 if mods["pyhightech"] then
   trainConstructionSite.remote.addCustomFuelTrain("locomotive", "ht-locomotive", "nexelit-battery")
+end
+
+if mods["pyalternativeenergy"] then
+  trainConstructionSite.remote.addCustomFuelTrain("locomotive", "mk04-locomotive", "quantum-battery")
 end
 
 if mods["EditorExtensions"] then
